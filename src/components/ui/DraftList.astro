@@ -33,6 +33,10 @@ flex flex-col h-dvh"
         const $toggle = document.getElementById("toggle");
         const $aside = document.getElementById("list");
 
+        if (!$toggle || !$aside) {
+            return;
+        }
+
         $toggle.addEventListener("click", () => {
             $aside.classList.toggle("hidden");
         });
