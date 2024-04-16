@@ -1,4 +1,11 @@
 {
+    "llms": [
+        "ChatGPT 3.5",
+        "LLaMa 70B",
+        "Mistral 7B",
+        "GPT-4",
+        "Gemini"
+    ],
     "decisions": [
         {
             "id": "classes",
@@ -89,24 +96,61 @@
                     "nextDecision": true
                 }
             ]
+        },
+        {
+            "id": "enums",
+            "title": "Correct enums?",
+            "arrows": [
+                {
+                    "to": "enums_prompt",
+                    "label": "No"
+                },
+                {
+                    "to": "operations",
+                    "label": "Yes",
+                    "nextDecision": true
+                }
+            ]
+        },
+        {
+            "id": "operations",
+            "title": "Correct operations?",
+            "arrows": [
+                {
+                    "to": "operations_prompt",
+                    "label": "No"
+                },
+                {
+                    "to": "finish",
+                    "label": "Yes",
+                    "nextDecision": true
+                }
+            ]
         }
     ],
     "actions": [
         {
             "id": "zero",
-            "title": "Run your first prompt",
+            "title": "First prompt",
+            "description": "Run prompt with the description AND evaluate the model AND get score",
             "evaluate": true,
             "to": "classes",
-            "prePrompt": "Errors found...",
-            "prompts": ["The following classes are missing: <List of classes separated by comma>"],
-            "postPrompt": "Please fix them"
+            "prePrompt": "",
+            "prompts": [],
+            "postPrompt": ""
         },
         {
             "id": "classes_prompt",
             "title": "Run classes prompt",
             "evaluate": false,
             "to": "attributes",
-            "prompts": ["2"],
+            "prePrompt": "Incorrect classes: There are some problems with the classes in the model.",
+            "postPrompt": "Can you fix the model?",
+            "prompts": [
+                "- The following classes are missing: <List of classes separated by comma>",
+                "- The following classes should not be part of the model: <List of classes separated by comma>",
+                "- <Class 1> should [not] be abstract."
+            ],
             "fewShot": "An example of a class is...."
         },
         {
@@ -114,21 +158,39 @@
             "title": "Run attributes prompt",
             "evaluate": false,
             "to": "associations",
-            "prompts": ["3"]
+            "prePrompt": "Incorrect attributes: There are some problems with the attributes in the model:",
+            "postPrompt": "Can you fix these problems?",
+            "prompts": [
+                "- Class <class name> is missing attribute/s: <list of attribute names>",
+                "- Class <class name> has the following extra attribute/s: <list of attribute names>"
+            ]
         },
         {
             "id": "associations_prompt",
             "title": "Run associations prompt",
             "evaluate": false,
             "to": "inheritance",
-            "prompts": ["4"]
+            "prePrompt": "Incorrect associations: There are some problems with the associations in the model:",
+            "postPrompt": "Can you fix these problems?",
+            "prompts": [
+                "- The association between classes <class 1, class 2> is missing.",
+                "- There is an association between classes <class 1, class 2> that should not exist.",
+                "- The association type between classes <class 1> and <class 2> is wrong. It should be a composition association.",
+                "- The association type between classes <class 1> and <class 2> is wrong. It should be a aggregation association.",
+                "- The association type between classes <class 1> and <class 2> is wrong. It should be a standard association."
+            ]
         },
         {
             "id": "assoc_mult_prompt",
             "title": "Run assoc mult prompt",
             "evaluate": false,
             "to": "assoc_mult",
-            "prompts": ["5"]
+            "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
+            "postPrompt": "Can you fix these problems?",
+            "prompts": [
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) should expect <cardinality_class 1> <class 1> to be related with <cardinality_class2> <class 2>.",
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) have the multiplicities of each entity in the reverse side."
+            ]
         }
-    ]   
+    ]
 }

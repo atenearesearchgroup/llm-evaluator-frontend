@@ -51,7 +51,7 @@ export const POST: APIRoute = async ({ request, params, redirect }) => {
 
     draft.currentDecision = nextDecision.id
 
-    await db.update(Draft).set({ currentDecision: nextDecision.id }).where(eq(Draft.id, draft.id))
+    await db.update(Draft).set({ currentDecision: nextDecision.id, lastDate: new Date() }).where(eq(Draft.id, draft.id))
 
     // redirect to /drafts/[draftId]
 

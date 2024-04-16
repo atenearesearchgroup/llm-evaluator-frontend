@@ -3,6 +3,7 @@ import { Draft, db } from "astro:db";
 
 type DraftForm = {
     title: string;
+    llm: string;
 }
 
 export const POST: APIRoute = async({request, redirect}) => {
@@ -10,7 +11,8 @@ export const POST: APIRoute = async({request, redirect}) => {
     const form = await request.formData()
 
     const data : DraftForm = {
-        title: form.get('title') as string
+        title: form.get('title') as string,
+        llm: form.get('llm') as string
     }
 
     if(!data) return new Response("Invalid form data", { status: 400 })
@@ -19,6 +21,7 @@ export const POST: APIRoute = async({request, redirect}) => {
 
     const inserted = await db.insert(Draft).values({
         title: data.title,
+        llm: data.llm,
         currentPhase: "zero",
         lastDate: new Date()
     }).returning()

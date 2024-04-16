@@ -1,3 +1,4 @@
+import { getAvailableLLms } from '@/utils/phase';
 import { column, defineDb, defineTable } from 'astro:db';
 
 
@@ -5,10 +6,19 @@ const Draft = defineTable({
   columns: {
     id: column.number({ primaryKey: true }),
     title: column.text(),
+    llm: column.text({ default: getAvailableLLms()[0]}),
+
     currentPhase: column.text(),
     currentDecision: column.text({ optional: true }),
+
     lastDate: column.date()
-  }
+  },
+  indexes: [
+    {
+      unique: false,
+      on: ["llm"]
+    }
+  ]
 })
 
 const Interaction = defineTable({

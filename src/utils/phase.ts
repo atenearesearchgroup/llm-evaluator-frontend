@@ -9,3 +9,8 @@ export const getAction = (id: string) : Action => {
 export const getDecision = (id: string) : Decision => {
     return mockData.decisions.find(action => action.id === id) as Decision
 }
+
+
+export const getAvailableLLms = () => {
+    return mockData.llms
+}

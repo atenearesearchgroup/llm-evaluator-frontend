@@ -1,7 +1,23 @@
 ---
+import type { DraftGroup } from "@/model/draft";
+import DraftGroupList from "./DraftGroupList.astro"
+import { desc } from "astro:db";
 import { db, Draft, Interaction } from "astro:db";
+import { getAvailableLLms } from "@/utils/phase";
 
-const drafts = await db.select().from(Draft);
+const drafts = await db.select().from(Draft).orderBy(desc(Draft.lastDate));
+
+const draftsGroup : Record<string, DraftGroup[]> = {};
+
+getAvailableLLms().forEach((llm) => {
+    draftsGroup[llm] = [];
+});
+
+
+drafts.forEach((draft) => {
+    draftsGroup[draft.llm].push(draft);
+});
+
 ---
 
 <aside
@@ -16,14 +32,10 @@ flex flex-col h-dvh"
     </div>
     <ul id="list" class="m-3 max-h-dvh overflow-x-auto overflow-y-hidden">
         {
-            drafts.map((draft) => (
-                <li class="m-4 flex flex-col bg-slate-600 bg-opacity-30 p-2 text-sm rounded-lg">
-                    <a href={`/drafts/${draft.id}`} class="font-bold">
-                        {draft.title}
-                    </a>
-                    <p class="text-end">{draft.currentPhase}</p>
-                </li>
-            ))
+            Object.entries(draftsGroup).map((object) => {
+                const [llm, drafts] = object;
+                return <DraftGroupList llm={llm} drafts={drafts} />
+            })
         }
     </ul>
 </aside>

@@ -1,8 +1,9 @@
 export type DraftGroup = {
-    id: string;
+    id: number;
     title: string;
+    llm: string;
     currentPhase: string;
-    history?: Message[];
+    currentDecision: string | null;
     lastDate: Date;
 }
 

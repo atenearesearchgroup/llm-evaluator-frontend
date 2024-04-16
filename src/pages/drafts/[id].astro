@@ -2,6 +2,7 @@
 import ActionNode from "@/components/diagram/ActionNode.astro";
 import DecisionNode from "@/components/diagram/DecisionNode.astro";
 import { DeleteDraft } from "@/components/ui/DeleteDraft";
+import { DraftTitle } from "@/components/ui/DraftTitle";
 import Layout from "@/layouts/Layout.astro";
 import { getAction, getDecision } from "@/utils/phase";
 import { eq } from "astro:db";
@@ -40,17 +41,12 @@ if (currentPhase === undefined) {
 const currentDecision =
     draft.currentDecision === null ? null : getDecision(draft.currentDecision);
 
-console.log(currentPhase);
 ---
 
 <Layout title={`Chat ${draft.title}`}>
     <DeleteDraft draftId={draft.id} client:visible/>
 
-    <h1
-        class="flex bg-slate-700 bg-opacity-70 p-2 rounded-md text-lg font-bold"
-    >
-        {draft.title}
-    </h1>
+    <DraftTitle draftId={draft.id} title={draft.title} client:visible />
 
     {
         currentDecision !== null ? (

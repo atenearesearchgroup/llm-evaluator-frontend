@@ -11,17 +11,17 @@ type PromptListProps = {
 
 const generateFullPrompt = (currentText: string, {prePrompt = '', postPrompt = '', fewShot}: Action, useFewShot : boolean) => {
     let result = prePrompt
-    .concat('\n')
-    .concat(currentText)
-    .concat('\n')
-    .concat(postPrompt)
- 
-    console.log('useFewShot', useFewShot)
-    console.log('fewShot', fewShot)
+
+    if(result.length > 0) result = result.concat('\n')
+
+    result = result.concat(currentText)
+
+    if(currentText.length > 0 && postPrompt.length > 0) result = result.concat('\n')
+
+    result = result.concat(postPrompt)
 
     if(useFewShot && fewShot) {
         result = fewShot?.concat('\n').concat(result)
-        console.log('fewShot', fewShot)
     }
     
     return result
@@ -31,9 +31,6 @@ const generateFullPrompt = (currentText: string, {prePrompt = '', postPrompt = '
 export const PromptList = ({ prompts, action }: PromptListProps) => {
     const [currentText, setCurrentText] = useState('');
     const [useFewShot, setFewShot] = useState(false)
-
-    console.log(action)
-
 
     const addPrompt = (prompt: string) => {
         setCurrentText((prev) => prev.concat('\n').concat(prompt))
@@ -54,7 +51,9 @@ export const PromptList = ({ prompts, action }: PromptListProps) => {
                     )
                 })}
 
-                <div className="mx-2 gap-2">
+                {prompts.length === 0 && <p className="mx-2">No prompts available</p>}
+
+                <div className="mx-auto bg-slate-400 bg-opacity-30 rounded-lg flex gap-2 justify-center items-center ">
                     <input type="checkbox" id="fewShot" name="fewShot" onChange={() => setFewShot(!useFewShot)} />
                     <label htmlFor="fewShot">Few Shot</label>
                 </div>
