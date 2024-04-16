@@ -1,7 +1,7 @@
 
 
 // example: {VALUE} 
-const placeholderRegex = /<([a-zA-Z_\s]+)>/g; 
+const placeholderRegex = /<([a-zA-Z_\s0-9,]+)>/g; 
 
 export const getPlaceholders = (text: string) => {
     const placeholders = []
