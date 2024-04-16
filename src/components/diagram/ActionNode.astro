@@ -1,0 +1,88 @@
+---
+import { type Action } from "@/model/diagram";
+import { PromptList } from "./PromptList";
+
+export interface Props {
+    draftId: number;
+    action: Action;
+}
+
+const { draftId, action } = Astro.props;
+---
+
+<h2 class="font-bold text-xl mt-6 text-center">ACCION</h2>
+
+<section class="mb-10 bg-slate-600 p-2 rounded-lg">
+    <h2 class="font-bold">{action.title}</h2>
+
+    <p class="whitespace-pre-line">Descripcion: {action.description}</p>
+
+    <PromptList
+        prompts={action.prompts}
+        action={action}
+        client:visible
+    />
+
+
+    <h3 class="font-bold mt-10">Escriba la respuesta a la acción</h3>
+
+    <form
+        action={`/api/drafts/${draftId}/action`}
+        method="post"
+        class="flex flex-col gap-5"
+    >
+        <div class="w-full">
+            <p>Prompt:</p>
+            <textarea class="w-full" name="prompt" required minlength="4"
+            ></textarea>
+        </div>
+        <div class="w-full">
+            <p>Response:</p>
+            <textarea class="w-full" name="response" required minlength="4"
+            ></textarea>
+        </div>
+
+        {action.evaluate && (
+            <div class="w-full">
+                <p>Score:</p>
+                <input class="w-full" name="score" required type="number" min="0" />
+            </div>
+        )}
+
+        <button type="submit">Save</button>
+    </form>
+</section>
+
+<!--
+cojo la prompt general generada con los prompts que vaya generando
+    , saco la response y la guardo, 
+    y el action va a un decision
+
+decision -> Si o No 
+
+-> Si, siguiente decision | No, a la accion designada 
+
+
+API Para pasar de accion a la siguiente decision
+
+/api/drafts/[id]/actions/[id]
+
+POST
+{
+    "draftId"
+    "prompt"
+    "response"
+}
+
+
+API para elegir el resultado de la decision
+
+/api/drafts/[id]/decision
+POST
+{
+    "draftId"
+    "decision" : "Y|N"
+}
+
+
+-->

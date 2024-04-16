@@ -1,0 +1,92 @@
+---
+import ActionNode from "@/components/diagram/ActionNode.astro";
+import DecisionNode from "@/components/diagram/DecisionNode.astro";
+import { DeleteDraft } from "@/components/ui/DeleteDraft";
+import Layout from "@/layouts/Layout.astro";
+import { getAction, getDecision } from "@/utils/phase";
+import { eq } from "astro:db";
+import { Draft, Interaction } from "astro:db";
+import { db } from "astro:db";
+
+const { id } = Astro.params;
+
+const draft = await db
+    .select()
+    .from(Draft)
+    .where(eq(Draft.id, Number(id)))
+    .limit(1)
+    .get();
+
+if (draft == null) {
+    return Astro.redirect("/");
+}
+
+if (Astro.request.method === "POST") {
+    return Astro.redirect(`/chat/${id}`);
+}
+
+const messages = await db
+    .select()
+    .from(Interaction)
+    .where(eq(Interaction.draftId, Number(id)));
+
+const currentPhase = getAction(draft.currentPhase);
+
+if (currentPhase === undefined) {
+    console.log("No phase found");
+    return;
+}
+
+const currentDecision =
+    draft.currentDecision === null ? null : getDecision(draft.currentDecision);
+
+console.log(currentPhase);
+---
+
+<Layout title={`Chat ${draft.title}`}>
+    <DeleteDraft draftId={draft.id} client:visible/>
+
+    <h1
+        class="flex bg-slate-700 bg-opacity-70 p-2 rounded-md text-lg font-bold"
+    >
+        {draft.title}
+    </h1>
+
+    {
+        currentDecision !== null ? (
+            <DecisionNode draftId={draft.id} decision={currentDecision} />
+        ) : (
+            <ActionNode draftId={draft.id} action={currentPhase} />
+        )
+    }
+
+    <h2 class="font-bold">Transcript:</h2>
+
+    <ul id="messages-list" class="bg-slate-600 bg-opacity-40 p-4 mt-4">
+        {
+            messages.map((message) => (
+                <li class="my-3">
+                    <p class="font-semibold">
+                        {getAction(message.phaseId)?.title}
+                    </p>
+                    <p>
+                        Prompt: <br />
+                        {message.prompt}
+                    </p>
+                    <p>
+                        Response: <br />
+                        {message.response}
+                    </p>
+
+                    {message.score !== null && message.score !== -1 ? (
+                        <p>
+                            Score: {message.score}
+                        </p>
+                    ) : null}
+                </li>
+            ))
+        }
+    </ul>
+</Layout>
+
+<script></script>

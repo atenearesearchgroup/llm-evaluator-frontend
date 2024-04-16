@@ -1,0 +1,134 @@
+{
+    "decisions": [
+        {
+            "id": "classes",
+            "title": "Correct classes?",
+            "arrows": [
+                {
+                    "to": "classes_prompt",
+                    "label": "No"
+                },
+                {
+                    "to": "attributes",
+                    "label": "Yes",
+                    "nextDecision": true
+                }
+            ]
+        },
+        {
+            "id": "attributes",
+            "title": "Correct attributes?",
+            "arrows": [
+                {
+                    "to": "attributes_prompt",
+                    "label": "No"
+                },
+                {
+                    "to": "associations",
+                    "label": "Yes",
+                    "nextDecision": true
+                }
+            ]
+        },
+        {
+            "id": "associations",
+            "title": "Correct associations?",
+            "arrows": [
+                {
+                    "to": "associations_prompt",
+                    "label": "No"
+                },
+                {
+                    "to": "inheritance",
+                    "label": "Yes",
+                    "nextDecision": true
+                }
+            ]
+        },
+        {
+            "id": "inheritance",
+            "title": "Correct inheritance?",
+            "arrows": [
+                {
+                    "to": "inheritance_prompt",
+                    "label": "No"
+                },
+                {
+                    "to": "assoc_mult",
+                    "label": "Yes",
+                    "nextDecision": true
+                }
+            ]
+        },
+        {
+            "id": "assoc_mult",
+            "title": "Correct association multiplicities?",
+            "arrows": [
+                {
+                    "to": "assoc_mult_prompt",
+                    "label": "No"
+                },
+                {
+                    "to": "assoc_role_names",
+                    "label": "Yes",
+                    "nextDecision": true
+                }
+            ]
+        },
+        {
+            "id": "assoc_role_names",
+            "title": "Correct association and role names?",
+            "arrows": [
+                {
+                    "to": "assoc_role_prompt",
+                    "label": "No"
+                },
+                {
+                    "to": "enums",
+                    "label": "Yes",
+                    "nextDecision": true
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "id": "zero",
+            "title": "Run your first prompt",
+            "evaluate": true,
+            "to": "classes",
+            "prePrompt": "Errors found...",
+            "prompts": ["The following classes are missing: <List of classes separated by comma>"],
+            "postPrompt": "Please fix them"
+        },
+        {
+            "id": "classes_prompt",
+            "title": "Run classes prompt",
+            "evaluate": false,
+            "to": "attributes",
+            "prompts": ["2"],
+            "fewShot": "An example of a class is...."
+        },
+        {
+            "id": "attributes_prompt",
+            "title": "Run attributes prompt",
+            "evaluate": false,
+            "to": "associations",
+            "prompts": ["3"]
+        },
+        {
+            "id": "associations_prompt",
+            "title": "Run associations prompt",
+            "evaluate": false,
+            "to": "inheritance",
+            "prompts": ["4"]
+        },
+        {
+            "id": "assoc_mult_prompt",
+            "title": "Run assoc mult prompt",
+            "evaluate": false,
+            "to": "assoc_mult",
+            "prompts": ["5"]
+        }
+    ]   
+}

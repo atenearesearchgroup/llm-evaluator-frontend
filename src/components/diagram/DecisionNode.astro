@@ -1,0 +1,35 @@
+---
+import type { Decision } from "@/model/diagram";
+
+export interface Props {
+    draftId: number;
+    decision: Decision;
+}
+
+const { draftId, decision } = Astro.props;
+---
+
+<h2 class="font-bold text-xl mt-6 text-center">DECISION</h2>
+
+<section class="mb-10 bg-slate-600 p-2 rounded-lg">
+    <h2 class="font-bold">{decision.title}</h2>
+
+    <p class="whitespace-pre-line">Descripcion: {decision.description}</p>
+
+    <h3 class="font-bold mt-10">Escriba la respuesta a la decisión:</h3>
+
+    <form
+        action={`/api/drafts/${draftId}/decision`}
+        method="post"
+        class="flex flex-col gap-5"
+    >
+        <select name="decision" required>
+            {
+                decision.arrows.map((arrow) => {
+                    return <option value={arrow.to}>{arrow.label}</option>;
+                })
+            }</select
+        >
+        <button type="submit">Save</button>
+    </form>
+</section>
