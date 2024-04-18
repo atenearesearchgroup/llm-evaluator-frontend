@@ -35,7 +35,7 @@ const messages = await db
             <h1 class="font-bold text-3xl">{draft.title}</h1>
         </div>
 
-        <ul class="flex flex-col gap-5">
+        <ul class="flex flex-col gap-5 divide-y-2 divide-slate-700/15">
             {
                 messages.map((message, _) => {
                     return <Transcript message={message} />;
