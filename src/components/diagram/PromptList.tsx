@@ -27,7 +27,6 @@ const generateFullPrompt = (currentText: string, {prePrompt = '', postPrompt = '
     return result
 }
 
-
 export const PromptList = ({ prompts, action }: PromptListProps) => {
     const [currentText, setCurrentText] = useState('');
     const [useFewShot, setFewShot] = useState(false)
@@ -63,9 +62,9 @@ export const PromptList = ({ prompts, action }: PromptListProps) => {
                     <p className="mb-5 mx-2 whitespace-pre-line bg-slate-600 bg-opacity-70 rounded-md p-1" >{resultText}</p>
 
                     <div className="flex flex-row justify-evenly">
-                        <button onClick={() => {
-                            console.log("currentText", currentText)
-                            navigator.clipboard.writeText(resultText);
+                        <button onClick={async() => {
+                            console.log("resultText", resultText)
+                            await navigator.clipboard.writeText(resultText);
                             alert('Copied to clipboard')
                         }}
                             className="bg-lime-500 hover:bg-lime-700 bg-opacity-80 text-lg p-1 rounded-md block"
