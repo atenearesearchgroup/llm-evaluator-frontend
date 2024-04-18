@@ -1,0 +1,46 @@
+---
+import Transcript from "@/components/pdf/Transcript.astro";
+import PdfLayout from "@/layouts/PdfLayout.astro";
+import { eq } from "astro:db";
+import { Draft, Interaction } from "astro:db";
+import { db } from "astro:db";
+
+const { id } = Astro.params;
+
+const draft = await db
+    .select()
+    .from(Draft)
+    .where(eq(Draft.id, Number(id)))
+    .limit(1)
+    .get();
+
+if (draft == null) {
+    return Astro.redirect("/");
+}
+
+if (Astro.request.method === "POST") {
+    return Astro.redirect(`/chat/${id}`);
+}
+
+const messages = await db
+    .select()
+    .from(Interaction)
+    .where(eq(Interaction.draftId, Number(id)));
+---
+
+<PdfLayout title={`Draft ${draft.title} - ${draft.llm}`}>
+    <section>
+        <div class="my-10 font-catamaran">
+            <p class="text-end font-bold">{draft.llm}</p>
+            <h1 class="font-bold text-3xl">{draft.title}</h1>
+        </div>
+
+        <ul class="flex flex-col gap-5">
+            {
+                messages.map((message, _) => {
+                    return <Transcript message={message} />;
+                })
+            }
+        </ul>
+    </section>
+</PdfLayout>

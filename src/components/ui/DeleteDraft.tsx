@@ -21,7 +21,7 @@ export const DeleteDraft = ({ draftId }: DeleteDraftProps) => {
 
     return (
         <div>
-            <button className="bg-red-500 backdrop-blur-md m-3 px-1 rounded-md ml-auto flex " onClick={() => setModal(true)}>
+            <button className="bg-red-500 backdrop-blur-md m-3 px-2 py-1 rounded-md ml-auto flex " onClick={() => setModal(true)}>
                 Delete Draft
             </button>
 

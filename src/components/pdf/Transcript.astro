@@ -1,0 +1,45 @@
+---
+import { type DraftMessage } from "@/model/draft";
+import { getAction } from "@/utils/phase";
+
+export interface Props {
+    message: DraftMessage;
+}
+
+const { message } = Astro.props;
+
+const phase = getAction(message.phaseId);
+---
+
+<article class="flex flex-col">
+    <h2 class="font-catamaran font-semibold text-xl">{phase.title}</h2>
+
+    <section>
+        <h3 class="font-catamaran font-semibold text-lg">Prompt:</h3>
+        <p class="whitespace-pre-line">
+            {message.prompt}
+        </p>
+    </section>
+    <section>
+        <h3 class="font-catamaran font-semibold text-lg">Response:</h3>
+        <p class="whitespace-pre-line">
+            {message.response}
+        </p>
+    </section>
+
+    {
+        message.score && message.score !== -1 && (
+            <div
+                class="mt-5 text-right 
+         flex flex-row justify-end"
+            >
+                <p
+                    class="py-1 px-3 rounded-full
+            bg-yellow-400 bg-opacity-40 text-"
+                >
+                    Score: {message.score}
+                </p>
+            </div>
+        )
+    }
+</article>

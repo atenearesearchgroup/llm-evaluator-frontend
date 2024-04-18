@@ -40,12 +40,17 @@ if (currentPhase === undefined) {
 
 const currentDecision =
     draft.currentDecision === null ? null : getDecision(draft.currentDecision);
-
 ---
 
 <Layout title={`Chat ${draft.title}`}>
-    <DeleteDraft draftId={draft.id} client:visible/>
-
+    <div class="flex flex-row justify-between items-center">
+        <a
+            href={`/drafts/${draft.id}/print`}
+            target="_blank"
+            class="bg-lime-300 bg-opacity-70 rounded-lg px-2 py-1">Print</a
+        >
+        <DeleteDraft draftId={draft.id} client:visible />
+    </div>
     <DraftTitle draftId={draft.id} title={draft.title} client:visible />
 
     {
@@ -75,9 +80,7 @@ const currentDecision =
                     </p>
 
                     {message.score !== null && message.score !== -1 ? (
-                        <p>
-                            Score: {message.score}
-                        </p>
+                        <p>Score: {message.score}</p>
                     ) : null}
                 </li>
             ))

@@ -8,9 +8,11 @@ export type DraftGroup = {
 }
 
 export type DraftMessage = {
-    id: string;
-    prompt: string;
     response: string;
-    score: number;
+    id: number;
     date: Date;
+    phaseId: string;
+    draftId: number;
+    prompt: string;
+    score: number | null;
 }
