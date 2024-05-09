@@ -1,40 +1,43 @@
 ---
+import {type RequestError } from "@/model/request";
 import type { DraftGroup } from "@/model/draft";
 import DraftGroupList from "./DraftGroupList.astro"
 import { desc } from "astro:db";
 import { db, Draft, Interaction } from "astro:db";
 import { getAvailableLLms } from "@/utils/phase";
+import {getModels, getInstancesFromModel} from "@/services/intentService"
+import type { IntentModel } from "@/model/model";
 
-const drafts = await db.select().from(Draft).orderBy(desc(Draft.lastDate));
+const intentModels = await getModels()
 
-const draftsGroup : Record<string, DraftGroup[]> = {};
+console.log(intentModels)
 
-getAvailableLLms().forEach((llm) => {
-    draftsGroup[llm] = [];
-});
+// check if intentModels is part of RequestError interface
+if ((intentModels as RequestError).status !== undefined) {
+    console.error(intentModels as RequestError);
+    return;
+}
 
+const intents = intentModels as IntentModel[]
 
-drafts.forEach((draft) => {
-    draftsGroup[draft.llm].push(draft);
-});
+console.log("intents",intents[0])
 
 ---
 
 <aside
     class="bg-slate-800 bg-opacity-70 rounded-r-3xl
 pr-2 py-3
-flex flex-col h-dvh"
+flex flex-col h-dvh fixed"
 >
     <div class="flex flex-row">
-        <h2 class="font-bold text-lg ml-8">Drafts</h2>
+        <h2 id="draft-title" class="font-bold text-lg ml-8">Drafts</h2>
 
         <button id="toggle" class="text-md font-bold mx-2"> X </button>
     </div>
     <ul id="list" class="m-3 max-h-dvh overflow-x-auto overflow-y-hidden">
         {
-            Object.entries(draftsGroup).map((object) => {
-                const [llm, drafts] = object;
-                return <DraftGroupList llm={llm} drafts={drafts} />
+            intents.map((intent,_)=> {
+                return <DraftGroupList llm={intent.displayName} />
             })
         }
     </ul>
@@ -44,13 +47,15 @@ flex flex-col h-dvh"
     function init() {
         const $toggle = document.getElementById("toggle");
         const $aside = document.getElementById("list");
+        const $title = document.getElementById("draft-title");
 
-        if (!$toggle || !$aside) {
+        if (!$toggle || !$aside || !$title) {
             return;
         }
 
         $toggle.addEventListener("click", () => {
             $aside.classList.toggle("hidden");
+            $title.classList.toggle("hidden");
         });
     }
     init();

@@ -1,27 +1,41 @@
 ---
-import type { DraftGroup } from "@/model/draft";
+import type { IntentInstance } from "@/model/model";
+import type { RequestError } from "@/model/request";
+import { getInstancesFromModel } from "@/services/intentService";
 
 export interface Props {
     llm: string;
-    drafts: DraftGroup[];
+    // drafts: DraftGroup[];
 }
 
-const { llm, drafts } = Astro.props;
+const { llm } = Astro.props;
+
+const instancesResponse = await getInstancesFromModel(llm);
+
+if ((instancesResponse as RequestError).status !== undefined) {
+    console.error(instancesResponse as RequestError);
+    return;
+}
+
+const instances = instancesResponse as IntentInstance[];
+
+console.log("instances", instances)
+
 ---
 
 <h3 class="text-center mx-auto font-semibold mb-4">{llm}</h3>
 
 {
-    drafts.map((draft) => (
+    instances.map((instance) => (
         <li
-            id={`list-${draft.id}`}
-            data-id={`${draft.id}`}
+            id={`list-${instance.id}`}
+            data-id={`${instance.id}`}
             class=" draft-cell m-4 flex flex-col bg-slate-600 bg-opacity-30 p-2 text-sm rounded-lg"
         >
-            <a href={`/drafts/${draft.id}`} class="font-bold">
-                {draft.title}
+            <a href={`/drafts/${instance.id}`} class="font-bold">
+                {instance.displayName || "Untitled"}
             </a>
-            <p class="text-end">{draft.currentPhase}</p>
+            <p class="text-end">{instance.platform}</p>
         </li>
     ))
 }
