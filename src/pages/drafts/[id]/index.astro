@@ -43,8 +43,10 @@ const currentDecision =
 ---
 
 <Layout title={`Chat ${draft.title}`}>
-    <div class="flex flex-row justify-between items-center">
+    <div class="flex flex-row justify-between items-center"> 
         <a
+            id="print-button"
+            data-id={draft.id}
             href={`/drafts/${draft.id}/print`}
             target="_blank"
             class="bg-lime-300 bg-opacity-70 rounded-lg px-2 py-1">Print</a
@@ -63,7 +65,7 @@ const currentDecision =
 
     <h2 class="font-bold">Transcript:</h2>
 
-    <ul id="messages-list" class="bg-slate-600 bg-opacity-40 p-4 mt-4">
+    <ul id="messages-list" class="bg-slate-600 bg-opacity-40 p-4 my-4">
         {
             messages.map((message) => (
                 <li class="my-3">
@@ -87,5 +89,3 @@ const currentDecision =
         }
     </ul>
 </Layout>
-
-<script></script>

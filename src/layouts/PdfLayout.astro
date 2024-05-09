@@ -10,14 +10,26 @@ const { title } = Astro.props;
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>{title }</title>
+        <title>{title}</title>
+        <meta name="viewport" content="width=700px" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.webp" />
     </head>
     <body
-        class="max-w-[700px] mx-auto
+        class="mx-auto max-w-[700px]
      bg-slate-500 bg-opacity-10
-     backdrop-blur-md p-2
-     "
+     backdrop-blur-md p-2"
     >
         <slot />
     </body>
 </html>
+
+<script is:inline>
+    // new ResizeObserver(() => {
+    //     console.log("resized");
+    //     const scale = document.body.clientWidth / 700 ;
+    //     console.log(scale);
+    //     document.body.style.transform = `scale(calc(${scale} / 700px)`;
+    // }).observe(document.body);
+
+    // console.log(scale);
+</script>
