@@ -23,7 +23,7 @@ export type IntentModel = {
  */
 
 export interface IntentInstance extends EvaluationSettings {
-    id: Number;
+    id: number;
     platform: string;
     displayName: string;
     intentModel?: IntentModel;

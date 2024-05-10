@@ -1,10 +1,14 @@
 ---
 import { getAvailableLLms } from "@/utils/phase";
-import { CreateDraftForm } from "./CreateDraftForm";
+import { CreateDraftForm } from "@/components/ui/form/CreateDraftForm";
 
 const llms = getAvailableLLms();
 ---
 
-<section class="bg-slate-700 bg-opacity-70 rounded-lg">
+<!-- bg-slate-700 -->
+<section
+    class="antialiased bg-card text-card-foreground border
+ bg-opacity-70 rounded-lg items-center mx-auto"
+>
     <CreateDraftForm client:visible />
 </section>
