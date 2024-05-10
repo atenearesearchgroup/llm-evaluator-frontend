@@ -76,6 +76,7 @@ export type PromptIteration = {
 
 type Message = {
     id: number;
+    type: 'user' | 'ai';
     timestamp: Date;
     content: string;
     promptIteration?: PromptIteration;

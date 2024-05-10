@@ -27,6 +27,7 @@ export type CreateMessageRequest = {
 }
 
 export interface RequestError {
+    requestError?: boolean = true;
     message: string;
     status: number;
     statusText: string;

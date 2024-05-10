@@ -1,43 +1,60 @@
 ---
-import {type RequestError } from "@/model/request";
+import { type RequestError } from "@/model/request";
 import type { DraftGroup } from "@/model/draft";
-import DraftGroupList from "./DraftGroupList.astro"
+import DraftGroupList from "./DraftGroupList.astro";
 import { desc } from "astro:db";
 import { db, Draft, Interaction } from "astro:db";
 import { getAvailableLLms } from "@/utils/phase";
-import {getModels, getInstancesFromModel} from "@/services/intentService"
+import { getModels, getInstancesFromModel } from "@/services/intentService";
 import type { IntentModel } from "@/model/model";
+import { IntentGroup } from "./sidebar/IntentGroup";
+import { CreateDraftForm } from "./form/CreateDraftForm";
+import {
+    ChevronDownIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    ChevronUpIcon,
+} from "lucide-react";
+import { Button } from "../shadcdn/ui/button";
 
-const intentModels = await getModels()
+const intentModels = await getModels();
 
-console.log(intentModels)
+let intents: IntentModel[] = [];
 
 // check if intentModels is part of RequestError interface
 if ((intentModels as RequestError).status !== undefined) {
     console.error(intentModels as RequestError);
-    return;
+} else {
+    intents = intentModels as IntentModel[];
 }
-
-const intents = intentModels as IntentModel[]
-
-console.log("intents",intents[0])
-
 ---
 
 <aside
-    class="bg-slate-800 bg-opacity-70 rounded-r-3xl
+    class="bg-card
+     bg-opacity-70 rounded-r-3xl
 pr-2 py-3
-flex flex-col h-dvh fixed"
+flex flex-col h-dvh"
 >
-    <div class="flex flex-row">
-        <h2 id="draft-title" class="font-bold text-lg ml-8">Drafts</h2>
+    <div class="flex flex-row justify-start space-x-6 items-center">
+        <h2
+            id="draft-title"
+            class="font-bold text-lg ml-8 opacity-100 transition-all duration-300"
+        >
+            Drafts
+        </h2>
 
-        <button id="toggle" class="text-md font-bold mx-2"> X </button>
+        <Button id="toggle" variant="secondary" size="icon" className="size-8">
+            <ChevronLeftIcon id="toggle-off" className="size-5" />
+            <ChevronRightIcon id="toggle-on" className="size-5 hidden" />
+        </Button>
     </div>
-    <ul id="list" class="m-3 max-h-dvh overflow-x-auto overflow-y-hidden">
+    <ul
+        id="list"
+        class="m-3 max-h-dvh overflow-x-auto overflow-y-hidden grid opacity-100 gap-3 transition-all duration-200"
+    >
         {
-            intents.map((intent,_)=> {
-                return <DraftGroupList llm={intent.displayName} />
+            intents.map((intent, _) => {
+                return <IntentGroup intentModel={intent} client:visible />;
             })
         }
     </ul>
@@ -48,17 +65,79 @@ flex flex-col h-dvh fixed"
         const $toggle = document.getElementById("toggle");
         const $aside = document.getElementById("list");
         const $title = document.getElementById("draft-title");
+        let timeout: NodeJS.Timeout | null = null;
 
         if (!$toggle || !$aside || !$title) {
             return;
         }
 
         $toggle.addEventListener("click", () => {
-            $aside.classList.toggle("hidden");
-            $title.classList.toggle("hidden");
+            if (timeout !== null) {
+                clearTimeout(timeout);
+                timeout = null;
+            }
+
+            if ($aside.classList.contains("opacity-100")) {
+                timeout = setTimeout(() => {
+                    $aside.classList.toggle("hidden");
+                    $title.classList.toggle("hidden");
+                    timeout = null;
+                }, 210);
+            } else {
+                $aside.classList.remove("hidden");
+                $title.classList.remove("hidden");
+            }
+
+            // $aside.classList.toggle("hidden")
+            $aside.classList.toggle("opacity-0");
+            $aside.classList.toggle("opacity-100");
+            // $title.classList.toggle("hidden")
+            $title.classList.toggle("opacity-0");
+            $title.classList.toggle("opacity-100");
+
+            const $toggleOff = document.getElementById("toggle-off");
+            const $toggleOn = document.getElementById("toggle-on");
+
+            if ($toggleOff && $toggleOn) {
+                $toggleOff.classList.toggle("hidden");
+                $toggleOn.classList.toggle("hidden");
+            }
         });
     }
     init();
 
     document.addEventListener("astro:after-swap", init);
+</script>
+
+<script>
+    const bc = new BroadcastChannel("title_change");
+
+    function checkUpdate(instanceId: Number, newTitle: string) {
+        console.log({ instanceId, newTitle });
+
+        const $draftLi = document.querySelectorAll(`.draft-cell`);
+
+        $draftLi.forEach((li) => {
+            const id = li.getAttribute("data-id");
+
+            if (id === null || parseInt(id) !== instanceId) {
+                return;
+            }
+
+            const $title = li.querySelector("a");
+
+            if ($title === null) {
+                console.error("Title anchor not found");
+                return;
+            }
+
+            $title.textContent = newTitle;
+        });
+    }
+
+    bc.onmessage = (event) => {
+        const { instanceId, newTitle } = event.data;
+
+        checkUpdate(instanceId, newTitle);
+    };
 </script>
