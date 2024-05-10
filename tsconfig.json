@@ -3,11 +3,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@components/*": [
+      "@design/*": [
         "./src/components/shadcdn/*"
+      ],"@/*": [
+        "./src/*"
       ]
     },
     "jsx": "react-jsx",
