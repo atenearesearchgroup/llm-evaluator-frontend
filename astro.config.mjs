@@ -7,7 +7,11 @@ import db from "@astrojs/db";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind(), react(), db()],
+  integrations: [
+    tailwind({
+      applyBaseStyles: false,
+    })
+    , react(), db()],
   output: "server",
   adapter: vercel()
 });
