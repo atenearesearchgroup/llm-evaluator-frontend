@@ -1,0 +1,50 @@
+---
+import type { Draft, Message } from "@/model/draft";
+import type { IntentInstance } from "@/model/model";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@design/ui/card";
+
+export type Props = {
+  instance: IntentInstance;
+};
+
+const { instance } = Astro.props;
+
+const prompts = instance.drafts.map((draft: Draft) =>
+  draft.promptIterations.forEach((iteration) =>
+    iteration.messages.filter((messages: Message) => messages.type === "user"),
+  ),
+);
+---
+
+<Card>
+  <!-- <CardHeader>
+      <CardTitle>Card Title</CardTitl>
+      <CardDescription>Card Description</CardDescription>
+    </CardHeader> -->
+  <CardContent className="py-3 px-6">
+    <ol class="flex flex-row justify-around">
+      <li class="flex flex-col gap-1 justify-center place-items-center">
+        <p class="font-semibold">Drafts</p>
+        <p class="">{instance.drafts.length}</p>
+      </li>
+      <li class="flex flex-col gap-1 justify-center place-items-center">
+        <p class="font-semibold">Prompts</p>
+        <p class="">{prompts.length}</p>
+      </li>
+      <li class="flex flex-col gap-1 justify-center place-items-center">
+        <p class="font-semibold">Drafts</p>
+        <p class="">{instance.drafts.length}</p>
+      </li>
+    </ol>
+  </CardContent>
+  <!-- <CardFooter>
+      <p>Card Footer</p>
+    </CardFooter> -->
+</Card>

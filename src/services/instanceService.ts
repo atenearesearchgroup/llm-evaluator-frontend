@@ -1,6 +1,6 @@
 import type { Draft } from "@/model/draft"
 import type { IntentInstance, IntentModel } from "@/model/model"
-import type { CreateInstanceRequest, CreateModelRequest, RequestError } from "@/model/request"
+import type { CreateInstanceRequest, CreateModelRequest, RequestError, UpdateInstanceRequest } from "@/model/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
 
@@ -32,10 +32,13 @@ export const getInstance = async (instanceId: number): Promise<IntentInstance | 
     return instance
 }
 
-export const updateInstance = async (instanceId: number, update: CreateInstanceRequest): Promise<IntentInstance | RequestError> => {
+export const updateInstance = async (instanceId: number, update: UpdateInstanceRequest): Promise<IntentInstance | RequestError> => {
     const instance = await fetch(`${API_URL}/instance/${instanceId}`, {
         method: 'PUT',
-        body: JSON.stringify(update)
+        body: JSON.stringify(update),
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
     .then(async (response) => {
         if (response.ok) {
@@ -63,21 +66,22 @@ export const updateInstance = async (instanceId: number, update: CreateInstanceR
     return instance
 }
 
-export const deleteInstance = async (instanceId: number): Promise<IntentInstance | RequestError> => {
+export const deleteInstance = async (instanceId: number): Promise<Response | RequestError> => {
     const instance = await fetch(`${API_URL}/instance/${instanceId}`, {
         method: 'DELETE'
     })
     .then(async (response) => {
-        if (response.ok) {
-            return await response.json() as IntentInstance
+        if (response.ok || response.status === 302) {
+            return response
         }
 
-        return {
-            message: response.statusText,
-            status: response.status,
-            statusText: response.statusText,
-            url: response.url
-        } as RequestError
+        return response
+        // return {
+        //     message: response.statusText,
+        //     status: response.status,
+        //     statusText: response.statusText,
+        //     url: response.url
+        // } as RequestError
     })
     .catch((error) => {
         console.log(error)
