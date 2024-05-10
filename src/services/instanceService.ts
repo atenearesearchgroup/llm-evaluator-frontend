@@ -2,7 +2,7 @@ import type { Draft } from "@/model/draft"
 import type { IntentInstance, IntentModel } from "@/model/model"
 import type { CreateInstanceRequest, CreateModelRequest, RequestError } from "@/model/request"
 
-const API_URL = import.meta.env.BACKEND_API_URL
+const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
 
 export const getInstance = async (instanceId: number): Promise<IntentInstance | RequestError> => {
     const instance = await fetch(`${API_URL}/instance/${instanceId}`)

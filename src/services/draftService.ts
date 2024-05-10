@@ -1,7 +1,7 @@
 import type { AIMessage, Draft, UserMessage } from "@/model/draft"
 import type { CreateMessageRequest, RequestError, UpdateDraftRequest } from "@/model/request"
 
-const API_URL = import.meta.env.BACKEND_API_URL
+const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
 
 
 

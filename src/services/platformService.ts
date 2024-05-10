@@ -3,7 +3,7 @@ import type { RequestError } from "@/model/request"
 const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
 
 export const getPlatforms = async (): Promise<string[] | RequestError> => {
-    console.log(API_URL, " API")
+    // console.log(API_URL, " API")
     const platforms = await fetch(`${API_URL}/platform`)
     .then(async (response) => {
         if (response.ok) {

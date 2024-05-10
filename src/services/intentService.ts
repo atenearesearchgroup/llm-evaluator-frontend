@@ -1,7 +1,7 @@
 import type { IntentInstance, IntentModel } from "@/model/model"
 import type { CreateInstanceRequest, CreateModelRequest, RequestError } from "@/model/request"
 
-const API_URL = import.meta.env.BACKEND_API_URL
+const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
 
 export const createModel = async (request: CreateModelRequest): Promise<IntentModel | RequestError> => {
     const newModel = await fetch(`${API_URL}/intent`, {
@@ -35,7 +35,9 @@ export const createModel = async (request: CreateModelRequest): Promise<IntentMo
 }
 
 export const getModels = async (): Promise<IntentModel[] | RequestError> => {
-    const models = await fetch(`${API_URL}/intent`)
+    const models = await fetch(`${API_URL}/intent`,{
+        method: 'GET',
+    })
         .then(async (response) => {
             if (response.ok) {
                 return await response.json() as IntentModel[]
@@ -95,6 +97,9 @@ export const createInstance = async (model: string, settings: CreateInstanceRequ
     const instance = await fetch(`${API_URL}/intent/${model}/instance`, {
         method: 'POST',
         body: JSON.stringify(settings),
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
         .then(async (response) => {
             if (response.ok) {
