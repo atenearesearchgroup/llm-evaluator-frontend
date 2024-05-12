@@ -1,28 +1,30 @@
 ---
 import InstanceInfo from "@/components/ui/instance/InstanceInfo.astro";
-import {DeleteInstance} from "@/components/ui/instance/DeleteInstance";
-import {InstanceTitle} from "@/components/ui/instance/InstanceTitle"
+import { DeleteInstance } from "@/components/ui/instance/DeleteInstance";
+import { InstanceTitle } from "@/components/ui/instance/InstanceTitle";
 import Layout from "@/layouts/Layout.astro";
 import type { Draft } from "@/model/draft";
 import { getInstance } from "@/services/instanceService";
 import { DraftInfo } from "@/components/ui/instance/DraftInfo";
+import { Button } from "@design/ui/button";
+import { CreateDraft } from "@/components/ui/instance/CreateDraft";
 
 const { id } = Astro.params;
 
-if(id == null) {
+if (id == null) {
     return Astro.redirect("/");
 }
 
 const instance = await getInstance(parseInt(id));
 
-if ('status' in instance) {
+if ("status" in instance) {
     console.error(instance);
 
-    if(instance.status === 404) {
+    if (instance.status === 404) {
         return Astro.redirect("/");
     }
 
-    return new Response(instance, instance.status)
+    return new Response(instance, instance.status);
 }
 
 // if (Astro.request.method === "POST") {
@@ -36,30 +38,45 @@ if ('status' in instance) {
 //     return;
 // }
 
-const drafts = instance.drafts
+const drafts = instance.drafts;
 
-const [finalizedDrafts, currentDraft] : [Draft[], Draft | null] = [drafts.filter(d => d.finalized), drafts.find(d => !d.finalized)]; 
+const [finalizedDrafts, currentDraft]: [Draft[], Draft | null] = [
+    drafts.filter((d) => d.finalized),
+    drafts.find((d) => !d.finalized),
+];
 
 // console.log(drafts)
-
 ---
 
 <Layout title={`Instance + ${instance.displayName}`}>
-    
-	<main class="flex-1 space-y-4 p-8 pt-6">
+    <main class="flex-1 space-y-4 p-8 pt-6">
+        <h2 class="text-xl font-bold mb-5">Instance #{instance.id}</h2>
+
         <div class="flex flex-row items-center justify-between space-y-2">
-            <InstanceTitle instanceId={instance.id} title={instance.displayName} client:visible />
+            <InstanceTitle
+                instanceId={instance.id}
+                title={instance.displayName}
+                client:visible
+            />
             <DeleteInstance instanceId={instance.id} client:visible />
         </div>
 
         <InstanceInfo instance={instance} />
 
-        <section id="draft-list" >
-                {instance.drafts.map((draft)=> {
-                    return (<DraftInfo draft={draft} client:visible/>)
-                })}
+        <CreateDraft instance={instance} client:visible />
+
+        <section id="draft-list">
+            {
+                instance.drafts.map((draft) => {
+                    return (
+                        <DraftInfo
+                            draft={draft}
+                            intentInstanceId={instance.id}
+                            client:visible
+                        />
+                    );
+                })
+            }
         </section>
-
     </main>
-
 </Layout>

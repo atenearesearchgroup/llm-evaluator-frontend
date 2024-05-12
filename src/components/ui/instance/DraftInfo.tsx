@@ -1,5 +1,5 @@
 import type { Draft, Message } from "@/model/draft"
-import { Button } from "@design/ui/button";
+import { Button, buttonVariants } from "@design/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@design/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@design/ui/collapsible";
 import { Separator } from "@design/ui/separator";
@@ -8,11 +8,12 @@ import { useState, type ReactNode } from "react";
 import { DraftTranscript } from "./DraftTranscript";
 
 type DraftInfoProps = {
+    intentInstanceId: number;
     draft: Draft;
     children?: ReactNode
 }
 
-export const DraftInfo = ({ draft, children }: DraftInfoProps) => {
+export const DraftInfo = ({ intentInstanceId, draft, children }: DraftInfoProps) => {
     const [isOpen, setIsOpen] = useState(!draft.finalized)
     const prompts = draft.promptIterations.map((iteration) =>
         iteration.messages.filter((messages: Message) => messages.type === "user"))
@@ -68,6 +69,11 @@ export const DraftInfo = ({ draft, children }: DraftInfoProps) => {
     </CardFooter> --> */}
             </Card>
 
+            {
+                !draft.finalized &&
+                <a href={`/instances/${intentInstanceId}/drafts/${draft.draftNumber}`}
+                    className={buttonVariants({ variant: "link" }) + " bg-lime-600/60 border mx-auto"} > {draft.actualNode == null ? "Start to evaluate":"Continue evaluation"} </a>
+            }
             {children}
 
             <CollapsibleContent className="grid gap-2">

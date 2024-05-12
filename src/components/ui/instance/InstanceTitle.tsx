@@ -11,7 +11,7 @@ interface InstanceTitleProps {
 const updateTitle = async (instanceId: number, title: string) => {
     const response = await updateInstance(instanceId, { displayName: title })
 
-    if ('status' in response) {
+    if ('requestError' in response) {
         console.error(response)
         return false
     }
@@ -24,14 +24,22 @@ export const InstanceTitle = ({ instanceId, title }: InstanceTitleProps) => {
     const { toast } = useToast()
     let channel = new BroadcastChannel('title_change')
 
-
     useEffect(() => {
         const timeout = setTimeout(() => {
             console.log(tempTitle, "value")
+
             if (!updateTitle(instanceId, tempTitle))
                 return
 
             channel.postMessage({ newTitle: tempTitle, instanceId })
+
+            // if()
+
+            // toast({
+            //     title: "Name has been updated",
+            //     className: "bg-lime-600",
+
+            // })
         }, 1000)
 
         return () => clearTimeout(timeout)

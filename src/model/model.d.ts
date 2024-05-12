@@ -3,24 +3,8 @@ export type IntentModel = {
     displayName: string;
 }
 
-/**
- @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "intent_model_id")
-    private IntentModelEntity intentModel;
-
-    @JsonIgnoreProperties("intentInstance")
-    @OneToMany(mappedBy = "intentInstance", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DraftEntity> drafts;
-
-    private String platform;
-
-    @OneToOne(mappedBy = "instance", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ModelSettingsEntity modelSettings;
- */
+type PlatformType = string | 'manual'
 
 export interface IntentInstance extends EvaluationSettings {
     id: number;
@@ -49,7 +33,6 @@ test: IntentInstance = {
     }
 
 }
-
 
 export type ModelSettings = {
     modelName?: string;

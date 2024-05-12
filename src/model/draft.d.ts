@@ -19,26 +19,6 @@ export type DraftMessage = {
     score: number | null;
 }
 
-
-/*
-
-    @Id
-    @GeneratedValue
-    private long id;
-
-    @ManyToOne
-    @JsonIgnoreProperties("drafts")
-    @JoinColumn(name = "instance_id")
-    private IntentInstanceEntity intentInstance;
-
-    @JsonIgnoreProperties("draft")
-    @OneToMany(mappedBy = "draft", cascade = CascadeType.ALL)
-    private List<PromptIterationEntity> promptIterations;
-
-    private int draftNumber;
-    private boolean finalized;
-*/
-
 export type Draft = {
     id: number;
     intentInstance?: IntentInstance;
@@ -48,33 +28,16 @@ export type Draft = {
     promptIterations: PromptIteration[];
 }
 
-/*
- @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String type;
-    //    @Id
-    private int iteration;
-
-    @JsonIgnoreProperties("promptIterations")
-    @ManyToOne
-    private DraftEntity draft;
-
-    @JsonIgnoreProperties("promptIteration")
-    @OneToMany(mappedBy = "promptIteration", cascade = CascadeType.ALL)
-    private List<MessageEntity> messages;
-    */
 
 export type PromptIteration = {
     id: number;
     type: string;
     iteration: number;
     draft?: Draft;
-    messages: Message[];
+    messages: (AIMessage | UserMessage)[];
 }
 
-type Message = {
+interface Message {
     id: number;
     type: 'user' | 'ai';
     timestamp: Date;
@@ -84,8 +47,8 @@ type Message = {
 
 export type UserMessage = {
 
-} | Message
+} & Message
 
 export type AIMessage = {
     score: number
-} | Message
+} & Message

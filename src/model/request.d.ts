@@ -26,8 +26,20 @@ export type CreateMessageRequest = {
     score?: number;
 }
 
+export type ScoreResponseRequest = {
+    score: number
+}
+
+export interface ResponseError {
+    error: string;
+    message: string;
+    path: string;
+    status: number;
+    timestamp: Date;
+}
+
 export interface RequestError {
-    requestError?: boolean = true;
+    requestError: boolean;
     message: string;
     status: number;
     statusText: string;
