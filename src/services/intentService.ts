@@ -7,6 +7,9 @@ export const createModel = async (request: CreateModelRequest): Promise<IntentMo
     const newModel = await fetch(`${API_URL}/intent`, {
         method: 'POST',
         body: JSON.stringify(request),
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
         .then(async (response) => {
             if (response.ok) {

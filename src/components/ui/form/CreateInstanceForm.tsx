@@ -161,7 +161,6 @@ export const CreateInstanceForm = ({ }) => {
 
         requestFunc()
     }
-    // console.log("llms", llms)
 
     return (
         <Form {...form} >

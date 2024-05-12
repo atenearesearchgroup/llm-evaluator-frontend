@@ -1,6 +1,7 @@
 ---
+import CreateModel from '@/components/ui/mainPage/CreateModel.astro';
 import Layout from '../layouts/Layout.astro';
-import CreateDraft from '@/components/ui/CreateInstance.astro';
+import CreateInstance from '@/components/ui/mainPage/CreateInstance.astro';
 
 
 ---
@@ -8,7 +9,9 @@ import CreateDraft from '@/components/ui/CreateInstance.astro';
 <Layout title="Home">
 	<main>
 
-		<CreateDraft />
+		<CreateInstance />
+
+		<CreateModel />
 		
 	</main>
 </Layout>

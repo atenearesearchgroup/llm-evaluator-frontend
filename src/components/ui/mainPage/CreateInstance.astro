@@ -5,28 +5,28 @@ import { Separator } from "@design/ui/separator";
 
 const llms = getAvailableLLms();
 
-const printChildren = (act: string) => {
-    let action = getDecision(act)
+// const printChildren = (act: string) => {
+//     let action = getDecision(act)
 
-    if (action == null)
-        return
+//     if (action == null)
+//         return
 
-    console.log(`${action.id} =>`)
+//     console.log(`${action.id} =>`)
 
-    action.arrows.forEach((arrow)=> {
-        console.log(`${arrow.to} - ${arrow.label} [${arrow.nextDecision}]`)
+//     action.arrows.forEach((arrow)=> {
+//         console.log(`${arrow.to} - ${arrow.label} [${arrow.nextDecision}]`)
 
-        if(arrow.nextDecision) {
-            console.log()
-            printChildren(arrow.to)
-        }
+//         if(arrow.nextDecision) {
+//             console.log()
+//             printChildren(arrow.to)
+//         }
 
-    })
+//     })
 
 
-}
+// }
 
-printChildren('classes')
+// printChildren('classes')
 
 
 ---

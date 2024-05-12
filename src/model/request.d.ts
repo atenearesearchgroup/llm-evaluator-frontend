@@ -16,8 +16,11 @@ export type CreateInstanceRequest = {
     evaluationSettings: EvaluationSettings;
 }
 
+type ModelName = Pick<IntentModel, 'modelName'>
+
 export type CreateModelRequest = {
-    model: Pick<IntentModel, 'modelName'>
+    model: ModelName,
+    displayName: string
 }
 
 export type CreateMessageRequest = {

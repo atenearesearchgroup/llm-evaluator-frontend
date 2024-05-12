@@ -1,0 +1,22 @@
+---
+import { getAction, getAvailableLLms, getDecision } from "@/utils/phase";
+import { CreateModelForm } from "@/components/ui/form/CreateModelForm";
+import { Separator } from "@design/ui/separator";
+
+const llms = getAvailableLLms();
+
+---
+
+<!-- bg-slate-700 -->
+<section
+    class="antialiased bg-card text-card-foreground border
+ bg-opacity-70 rounded-lg items-center mx-auto py-3 mt-8"
+>
+    <h2 class="text-2xl font-bold mt-2 mb-4 px-6">
+        Add new Intent Models
+    </h2>
+
+    <Separator className="my-2" />
+
+    <CreateModelForm client:visible />
+</section>
