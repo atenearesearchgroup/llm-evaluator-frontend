@@ -1,0 +1,138 @@
+---
+import { DiagramStatus } from "@/components/ui/job/DiagramStatus";
+import Layout from "@/layouts/Layout.astro";
+import { getInstance } from "@/services/instanceService";
+import { getAction, generateDiagram } from "@/utils/phase";
+import { Button } from "@design/ui/button";
+import { ChevronLeft } from "lucide-react";
+
+const { id, number } = Astro.params;
+
+if (id == null || number == null) {
+    return Astro.redirect("/");
+}
+
+const instance = await getInstance(parseInt(id));
+
+if ("status" in instance) {
+    console.error(instance);
+
+    if (instance.status === 404) {
+        return Astro.redirect("/");
+    }
+
+    return new Response(instance, instance.status);
+}
+
+const draft = instance.drafts.find(
+    (value, idx, _) => value.draftNumber === parseInt(number),
+);
+
+if (draft == null) {
+    return new Response("Not found draft", { status: 400 });
+}
+
+const currentPhase = getAction(draft.currentPhase);
+
+if (currentPhase === undefined) {
+    console.log("x000");
+}
+
+const outputDiagram = generateDiagram(draft.currentPhase);
+
+console.log(outputDiagram);
+---
+
+<Layout title={"Draft evaluation"}>
+    <script src="/libs/raphael-min.js" is:inline></script>
+    <script src="/libs/flowchart.js" is:inline></script>
+    <main>
+        <div class="flex flex-row items-center justify-between">
+            <a href={`/instances/${id}`}>
+                <Button className="gap-1"
+                    ><ChevronLeft size="20" /> Go back</Button
+                >
+            </a>
+
+            <DiagramStatus currentPhase={draft.currentPhase} client:visible />
+        </div>
+    </main>
+    <!-- <div id="diagram" data-diagram={outputDiagram} class="bg-foreground/80 p-2 rounded-lg mt-6"></div> -->
+</Layout>
+
+<script>
+    var text = "";
+    var diagramChannel = new BroadcastChannel("diagram");
+    var diagram = null;
+
+    console.log("text", text);
+
+    const buildDiagram = () => {
+        var $diagram = document.querySelector("#diagram");
+
+        if ($diagram == null) return;
+
+
+        if(diagram) {
+            console.log("cleaning diagram");
+            diagram.clean()
+        }
+        diagram = flowchart.parse(text);
+
+        diagram.drawSVG("diagram", {
+            x: 0,
+            y: 0,
+            "line-width": 2,
+            "line-length": 30,
+            "text-margin": 8,
+            "font-size": 12,
+            "font-color": "black",
+            "line-color": "black",
+            "element-color": "black",
+            fill: "white",
+            "yes-text": "Yes",
+            "no-text": "No",
+            "arrow-end": "block",
+            scale: 0.9,
+            // style symbol types
+            symbols: {
+                start: {
+                    // "font-color": "red",
+                    "element-color": "gold",
+                    fill: "yellow",
+                },
+                condition: {
+                    // "element-color": "gray",
+                    fill: "gray",
+                },
+                end: {
+                    class: "end-element",
+                },
+            },
+            // even flowstate support ;-)
+            flowstate: {
+                current: {
+                    fill: "lime",
+                    // "font-color": "hsl(var(--background))",
+                    "font-weight": "bold",
+                },
+                future: { fill: "#FFFF99" },
+                default: {
+                    fill: "#C45879",
+                },
+            },
+        });
+    };
+
+    buildDiagram();
+
+    diagramChannel.onmessage = (event) => {
+        console.log("event", event);
+        const { action, diagram } = event.data;
+
+        if (action === "update") {
+            text = diagram;
+            buildDiagram();
+        }
+    };
+</script>

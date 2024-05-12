@@ -31,21 +31,6 @@
                     "label": "No"
                 },
                 {
-                    "to": "associations",
-                    "label": "Yes",
-                    "nextDecision": true
-                }
-            ]
-        },
-        {
-            "id": "associations",
-            "title": "Correct associations?",
-            "arrows": [
-                {
-                    "to": "associations_prompt",
-                    "label": "No"
-                },
-                {
                     "to": "inheritance",
                     "label": "Yes",
                     "nextDecision": true
@@ -58,6 +43,21 @@
             "arrows": [
                 {
                     "to": "inheritance_prompt",
+                    "label": "No"
+                },
+                {
+                    "to": "associations",
+                    "label": "Yes",
+                    "nextDecision": true
+                }
+            ]
+        },
+        {
+            "id": "associations",
+            "title": "Correct associations?",
+            "arrows": [
+                {
+                    "to": "associations_prompt",
                     "label": "No"
                 },
                 {
@@ -91,22 +91,22 @@
                     "label": "No"
                 },
                 {
-                    "to": "enums",
+                    "to": "assoc_classes",
                     "label": "Yes",
                     "nextDecision": true
                 }
             ]
         },
         {
-            "id": "enums",
-            "title": "Correct enums?",
+            "id": "assoc_classes",
+            "title": "Correct association classes?",
             "arrows": [
                 {
-                    "to": "enums_prompt",
+                    "to": "assoc_classes_prompt",
                     "label": "No"
                 },
                 {
-                    "to": "operations",
+                    "to": "enums",
                     "label": "Yes",
                     "nextDecision": true
                 }
@@ -122,6 +122,21 @@
                 },
                 {
                     "to": "finish",
+                    "label": "Yes",
+                    "nextDecision": true
+                }
+            ]
+        },
+        {
+            "id": "enums",
+            "title": "Correct enums?",
+            "arrows": [
+                {
+                    "to": "enums_prompt",
+                    "label": "No"
+                },
+                {
+                    "to": "operations",
                     "label": "Yes",
                     "nextDecision": true
                 }
@@ -143,7 +158,21 @@
             "id": "classes_prompt",
             "title": "Run classes prompt",
             "evaluate": false,
-            "to": "attributes",
+            "to": "classes",
+            "prePrompt": "Incorrect classes: There are some problems with the classes in the model.",
+            "postPrompt": "Can you fix the model?",
+            "prompts": [
+                "- The following classes are missing: <List of classes separated by comma>",
+                "- The following classes should not be part of the model: <List of classes separated by comma>",
+                "- <Class 1> should [not] be abstract."
+            ],
+            "fewShot": "An example of a class is...."
+        },
+        {
+            "id": "inheritance_prompt",
+            "title": "Run classes prompt",
+            "evaluate": false,
+            "to": "classes",
             "prePrompt": "Incorrect classes: There are some problems with the classes in the model.",
             "postPrompt": "Can you fix the model?",
             "prompts": [
@@ -157,7 +186,7 @@
             "id": "attributes_prompt",
             "title": "Run attributes prompt",
             "evaluate": false,
-            "to": "associations",
+            "to": "classes",
             "prePrompt": "Incorrect attributes: There are some problems with the attributes in the model:",
             "postPrompt": "Can you fix these problems?",
             "prompts": [
@@ -169,7 +198,7 @@
             "id": "associations_prompt",
             "title": "Run associations prompt",
             "evaluate": false,
-            "to": "inheritance",
+            "to": "classes",
             "prePrompt": "Incorrect associations: There are some problems with the associations in the model:",
             "postPrompt": "Can you fix these problems?",
             "prompts": [
@@ -184,7 +213,56 @@
             "id": "assoc_mult_prompt",
             "title": "Run assoc mult prompt",
             "evaluate": false,
-            "to": "assoc_mult",
+            "to": "classes",
+            "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
+            "postPrompt": "Can you fix these problems?",
+            "prompts": [
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) should expect <cardinality_class 1> <class 1> to be related with <cardinality_class2> <class 2>.",
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) have the multiplicities of each entity in the reverse side."
+            ]
+        },
+        {
+            "id": "assoc_role_prompt",
+            "title": "Run assoc mult prompt",
+            "evaluate": false,
+            "to": "classes",
+            "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
+            "postPrompt": "Can you fix these problems?",
+            "prompts": [
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) should expect <cardinality_class 1> <class 1> to be related with <cardinality_class2> <class 2>.",
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) have the multiplicities of each entity in the reverse side."
+            ]
+        },
+        {
+            "id": "assoc_classes_prompt",
+            "title": "Run assoc mult prompt",
+            "evaluate": false,
+            "to": "classes",
+            "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
+            "postPrompt": "Can you fix these problems?",
+            "prompts": [
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) should expect <cardinality_class 1> <class 1> to be related with <cardinality_class2> <class 2>.",
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) have the multiplicities of each entity in the reverse side."
+            ]
+        },
+        {
+            "id": "operations_prompt",
+            "title": "Run assoc mult prompt",
+            "evaluate": false,
+            "to": "classes",
+            "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
+            "postPrompt": "Can you fix these problems?",
+            "prompts": [
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) should expect <cardinality_class 1> <class 1> to be related with <cardinality_class2> <class 2>.",
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) have the multiplicities of each entity in the reverse side."
+            ]
+        },
+        
+        {
+            "id": "enums_prompt",
+            "title": "Run assoc mult prompt",
+            "evaluate": false,
+            "to": "classes",
             "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
             "postPrompt": "Can you fix these problems?",
             "prompts": [
