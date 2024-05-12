@@ -6,6 +6,7 @@ import { Separator } from "@design/ui/separator";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { DraftTranscript } from "./DraftTranscript";
+import { DraftStatus } from "./DraftStatus";
 
 type DraftInfoProps = {
     intentInstanceId: number;
@@ -40,34 +41,7 @@ export const DraftInfo = ({ intentInstanceId, draft, children }: DraftInfoProps)
                     </Button>
                 </CollapsibleTrigger>
             </legend>
-            <Card>
-                <CardHeader className="py-2">
-                    <CardTitle className="text-lg">Current Status</CardTitle>
-                    {/* <CardDescription>Card Description</CardDescription> */}
-                </CardHeader>
-                <div className="flex flex-row justify-center">
-                    <Separator className="max-w-[95%]" />
-                </div>
-                <CardContent className="py-2 items-center">
-                    <ol className="flex flex-row justify-around text-sm">
-                        <li className="flex flex-col gap-1 justify-center place-items-center">
-                            <p className="font-semibold">Actual Step</p>
-                            <p className="text-xs">{draft.actualNode ?? "Not in action"}</p>
-                        </li>
-                        <li className="flex flex-col gap-1 justify-center place-items-center">
-                            <p className="font-semibold">Prompts</p>
-                            <p className="text-xs">{prompts.length}</p>
-                        </li>
-                        {/* <li className="flex flex-col gap-1 justify-center place-items-center">
-                        <p className="font-semibold">Drafts</p>
-                        <p className="">{instance.drafts.length}</p>
-                    </li> */}
-                    </ol>
-                </CardContent>
-                {/* <!-- <CardFooter>
-      <p>Card Footer</p>
-    </CardFooter> --> */}
-            </Card>
+            <DraftStatus draft={draft} />
 
             {
                 !draft.finalized &&

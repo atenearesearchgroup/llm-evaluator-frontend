@@ -30,7 +30,7 @@ export const DiagramStatus = ({ currentPhase }: DiagramStatusProps) => {
         updateDiagram()
     }, [diagram])
 
-    console.log("outputDiagram", diagram)
+    console.log(actualPhase)
 
     return (<>
         <Sheet

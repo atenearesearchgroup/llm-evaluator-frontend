@@ -37,6 +37,10 @@ export const PromptList = ({ prompts, action }: PromptListProps) => {
 
     const resultText = generateFullPrompt(currentText, action, useFewShot);
 
+    if(prompts.length === 0 && !action.prePrompt && !action.postPrompt && !action.fewShot)
+        return <p className="text-accent bg-accent-foreground p-2 text-center rounded-md mx-auto max-w-fit mt-2">No available prompts or shots for this node</p>
+
+
     return (
         <section className="bg-slate-800 bg-opacity-50 rounded-md p-1">
 

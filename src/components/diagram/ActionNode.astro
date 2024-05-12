@@ -1,6 +1,11 @@
 ---
 import { type Action } from "@/model/diagram";
 import { PromptList } from "./PromptList";
+import { Card, CardContent, CardDescription, CardTitle } from "@design/ui/card";
+import { Separator } from "@design/ui/separator";
+import { Textarea } from "@design/ui/textarea";
+import { Input } from "@design/ui/input";
+import { Button } from "@design/ui/button";
 
 export interface Props {
     draftId: number;
@@ -10,48 +15,56 @@ export interface Props {
 const { draftId, action } = Astro.props;
 ---
 
+<Card className="p-6 gap-2 grid">
+    <CardTitle className="flex flex-row justify-around">
+        <p class="">Accion</p>
+        <p class="text-accent-foreground font-semibold">
+            {action.title}
+        </p>
+    </CardTitle>
+    <CardDescription>
+        <p class="whitespace-pre-line text-sm">{action.description}</p>
+    </CardDescription>
+
+    <Separator />
+
+    <CardContent>
+        <PromptList prompts={action.prompts} action={action} client:visible />
+
+        <h3 class="font-bold mt-6 mb-2">Escriba la respuesta a la acción</h3>
+
+        <form
+            action={`/api/drafts/${draftId}/action`}
+            method="post"
+            class="flex flex-col gap-5 border rounded-lg p-2"
+        >
+            <div class="w-full">
+                <p>Prompt:</p>
+                <Textarea name="prompt" required minLength={4} />
+            </div>
+            <div class="w-full">
+                <p>Response:</p>
+                <Textarea name="response" required minLength={4} />
+            </div>
+
+            {
+                action.evaluate && (
+                    <div class="w-full">
+                        <p>Score:</p>
+                        <Input name="score" required type="number" min="0" />
+                    </div>
+                )
+            }
+            <!-- 
+                className="bg-green-500 hover:bg-green-700 bg-opacity-80 p-2 rounded-lg mx-auto" -->
+            <Button type="submit" className="mx-auto"> Save </Button>
+        </form>
+    </CardContent>
+</Card>
+
 <h2 class="font-bold text-xl mt-6 text-center">ACCION</h2>
 
-<section class="mb-10 bg-slate-600 p-2 rounded-lg">
-    <h2 class="font-bold">{action.title}</h2>
-
-    <p class="whitespace-pre-line">Descripcion: {action.description}</p>
-
-    <PromptList
-        prompts={action.prompts}
-        action={action}
-        client:visible
-    />
-
-
-    <h3 class="font-bold mt-10">Escriba la respuesta a la acción</h3>
-
-    <form
-        action={`/api/drafts/${draftId}/action`}
-        method="post"
-        class="flex flex-col gap-5"
-    >
-        <div class="w-full">
-            <p>Prompt:</p>
-            <textarea class="w-full" name="prompt" required minlength="4"
-            ></textarea>
-        </div>
-        <div class="w-full">
-            <p>Response:</p>
-            <textarea class="w-full" name="response" required minlength="4"
-            ></textarea>
-        </div>
-
-        {action.evaluate && (
-            <div class="w-full">
-                <p>Score:</p>
-                <input class="w-full" name="score" required type="number" min="0" />
-            </div>
-        )}
-
-        <button type="submit" class="bg-green-500 hover:bg-green-700 bg-opacity-80 p-2 rounded-lg mx-auto">Save</button>
-    </form>
-</section>
+<section class="mb-10 bg-slate-600 p-2 rounded-lg"></section>
 
 <!--
 cojo la prompt general generada con los prompts que vaya generando

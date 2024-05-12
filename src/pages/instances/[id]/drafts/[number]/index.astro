@@ -1,8 +1,11 @@
 ---
+import ActionNode from "@/components/diagram/ActionNode.astro";
+import DecisionNode from "@/components/diagram/DecisionNode.astro";
+import { DraftStatus } from "@/components/ui/instance/DraftStatus";
 import { DiagramStatus } from "@/components/ui/job/DiagramStatus";
 import Layout from "@/layouts/Layout.astro";
 import { getInstance } from "@/services/instanceService";
-import { getAction, generateDiagram } from "@/utils/phase";
+import { getAction, getDecision } from "@/utils/phase";
 import { Button } from "@design/ui/button";
 import { ChevronLeft } from "lucide-react";
 
@@ -31,22 +34,24 @@ const draft = instance.drafts.find(
 if (draft == null) {
     return new Response("Not found draft", { status: 400 });
 }
+// "zero"
+const currentPhase : string = draft.currentPhase ?? "decision:classes";
 
-const currentPhase = getAction(draft.currentPhase);
+const isDecision = currentPhase.startsWith("decision:");
 
-if (currentPhase === undefined) {
+
+const phaseId = isDecision ? currentPhase.substring("decision:".length) : currentPhase
+
+if (currentPhase == null) {
     console.log("x000");
 }
-
-const outputDiagram = generateDiagram(draft.currentPhase);
-
-console.log(outputDiagram);
+console.log(currentPhase);
 ---
 
 <Layout title={"Draft evaluation"}>
     <script src="/libs/raphael-min.js" is:inline></script>
     <script src="/libs/flowchart.js" is:inline></script>
-    <main>
+    <main class="grid gap-8">
         <div class="flex flex-row items-center justify-between">
             <a href={`/instances/${id}`}>
                 <Button className="gap-1"
@@ -54,10 +59,20 @@ console.log(outputDiagram);
                 >
             </a>
 
-            <DiagramStatus currentPhase={draft.currentPhase} client:visible />
+            <DiagramStatus currentPhase={phaseId} client:visible />
         </div>
+        
+        <DraftStatus draft={draft} client:visible/>
+
+        {
+            isDecision ? (
+                <DecisionNode draftId={draft.id} decision={getDecision(phaseId)} />
+            ) : (
+                <ActionNode draftId={draft.id} action={getAction(phaseId)} />
+            )
+        }
+
     </main>
-    <!-- <div id="diagram" data-diagram={outputDiagram} class="bg-foreground/80 p-2 rounded-lg mt-6"></div> -->
 </Layout>
 
 <script>
@@ -65,17 +80,14 @@ console.log(outputDiagram);
     var diagramChannel = new BroadcastChannel("diagram");
     var diagram = null;
 
-    console.log("text", text);
-
     const buildDiagram = () => {
         var $diagram = document.querySelector("#diagram");
 
         if ($diagram == null) return;
 
-
-        if(diagram) {
+        if (diagram) {
             console.log("cleaning diagram");
-            diagram.clean()
+            diagram.clean();
         }
         diagram = flowchart.parse(text);
 
@@ -127,7 +139,6 @@ console.log(outputDiagram);
     buildDiagram();
 
     diagramChannel.onmessage = (event) => {
-        console.log("event", event);
         const { action, diagram } = event.data;
 
         if (action === "update") {
