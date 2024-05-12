@@ -49,30 +49,30 @@ const messages = await db
 </PdfLayout>
 
 <script>
-     import { jsPDF } from "jspdf";
-    // window.jsPDF = window.jspdf.jsPDF;
+    //  import { jsPDF } from "jspdf";
+    // // window.jsPDF = window.jspdf.jsPDF;
 
-    const uuid = crypto.randomUUID();
+    // const uuid = crypto.randomUUID();
 
-    window.onload = function () {
-        const doc = new jsPDF();
-        // Source HTMLElement or a string containing HTML.
-        var elementHTML = document.body;
+    // window.onload = function () {
+    //     const doc = new jsPDF();
+    //     // Source HTMLElement or a string containing HTML.
+    //     var elementHTML = document.body;
 
-        console.log(elementHTML);
+    //     console.log(elementHTML);
 
-        doc.html(elementHTML, {
-            callback: function (doc) {
-                // Save the PDF
-                // doc.save(crypto.randomUUID() + "sample-document.pdf");
-            },
-            x: 0,
-            y: 0,
-            autoPaging: "text",
-            width: 220, //target width in the PDF document
-            windowWidth: 700, //window width in CSS pixels
+    //     doc.html(elementHTML, {
+    //         callback: function (doc) {
+    //             // Save the PDF
+    //             // doc.save(crypto.randomUUID() + "sample-document.pdf");
+    //         },
+    //         x: 0,
+    //         y: 0,
+    //         autoPaging: "text",
+    //         width: 220, //target width in the PDF document
+    //         windowWidth: 700, //window width in CSS pixels
             
-        });
-    };
+    //     });
+    // };
  
 </script>

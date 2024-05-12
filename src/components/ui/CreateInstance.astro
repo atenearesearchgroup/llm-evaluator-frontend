@@ -1,0 +1,46 @@
+---
+import { getAction, getAvailableLLms, getDecision } from "@/utils/phase";
+import { CreateInstanceForm } from "@/components/ui/form/CreateInstanceForm";
+import { Separator } from "@design/ui/separator";
+
+const llms = getAvailableLLms();
+
+const printChildren = (act: string) => {
+    let action = getDecision(act)
+
+    if (action == null)
+        return
+
+    console.log(`${action.id} =>`)
+
+    action.arrows.forEach((arrow)=> {
+        console.log(`${arrow.to} - ${arrow.label} [${arrow.nextDecision}]`)
+
+        if(arrow.nextDecision) {
+            console.log()
+            printChildren(arrow.to)
+        }
+
+    })
+
+
+}
+
+printChildren('classes')
+
+
+---
+
+<!-- bg-slate-700 -->
+<section
+    class="antialiased bg-card text-card-foreground border
+ bg-opacity-70 rounded-lg items-center mx-auto py-3"
+>
+    <h2 class="text-2xl font-bold mt-2 mb-4 px-6">
+        Create a new Evaluation Instance
+    </h2>
+
+    <Separator className="my-2" />
+
+    <CreateInstanceForm client:visible />
+</section>

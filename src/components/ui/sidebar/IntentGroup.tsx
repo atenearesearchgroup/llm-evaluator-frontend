@@ -35,7 +35,7 @@ export const IntentGroup = ({ intentModel }: IntentGroupProps) => {
         const fetchApi = async () => {
             const response = await getInstancesFromModel(intentModel.modelName)
 
-            if ('status' in response) {
+            if ('requestError' in response) {
                 console.error(response)
                 return
             }
@@ -77,10 +77,11 @@ export const IntentGroup = ({ intentModel }: IntentGroupProps) => {
                         const [key, value] = instance
                         const componentKey = `${key}-${intentModel.modelName}`
 
-                        const shouldHaveSeparator = idx === 0 || <Separator key={`${componentKey}-separator`} className=" border" />
+                        const shouldHaveSeparator = idx !== 0
 
-                        return (<> {shouldHaveSeparator}
-                            <PlatformGroup instances={value} key={componentKey} platform={key} /></>)
+                        return (
+                            <PlatformGroup separator={shouldHaveSeparator} instances={value} key={componentKey} platform={key} />
+                        )
                     })
                     }
                 </CollapsibleContent>

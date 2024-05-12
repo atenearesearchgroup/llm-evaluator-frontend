@@ -8,7 +8,7 @@ import { getAvailableLLms } from "@/utils/phase";
 import { getModels, getInstancesFromModel } from "@/services/intentService";
 import type { IntentModel } from "@/model/model";
 import { IntentGroup } from "./sidebar/IntentGroup";
-import { CreateDraftForm } from "./form/CreateDraftForm";
+import { CreateDraftForm } from "./form/CreateInstanceForm";
 import {
     ChevronDownIcon,
     ChevronLeftIcon,
@@ -32,15 +32,15 @@ if ((intentModels as RequestError).status !== undefined) {
 <aside
     class="bg-card
      bg-opacity-70 rounded-r-3xl
-pr-2 py-3
-flex flex-col h-dvh"
+pr-3 py-3 
+flex flex-col overflow-y-auto"
 >
     <div class="flex flex-row justify-start space-x-6 items-center">
         <h2
             id="draft-title"
             class="font-bold text-lg ml-8 opacity-100 transition-all duration-300"
         >
-            Drafts
+            Instances
         </h2>
 
         <Button id="toggle" variant="secondary" size="icon" className="size-8">

@@ -1,5 +1,5 @@
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/shadcdn/ui/form"
-import type { FormSchema } from "./CreateDraftForm"
+import type { FormSchema } from "./CreateInstanceForm"
 import type { Control } from "react-hook-form"
 import { z } from "zod"
 import { Input } from "@/components/shadcdn/ui/input"

@@ -1,5 +1,5 @@
 import type { AIMessage, Draft, UserMessage } from "@/model/draft"
-import type { CreateMessageRequest, RequestError, UpdateDraftRequest } from "@/model/request"
+import type { CreateMessageRequest, RequestError, ResponseError, UpdateDraftRequest } from "@/model/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
 
@@ -14,17 +14,21 @@ export const getDraft = async (draftId: Number): Promise<Draft | RequestError> =
                 return await response.json() as Draft
             }
 
+            const responseError = await response.json() as ResponseError
+
             return {
-                message: response.statusText,
-                status: response.status,
-                statusText: response.statusText,
-                url: response.url
+                requestError: true,
+                message: responseError.message,
+                status: responseError.status,
+                statusText: responseError.error,
+                url: responseError.path
             } as RequestError
         })
         .catch((error) => {
             console.log(error)
 
             return {
+                requestError: true,
                 message: error.message,
                 status: 0,
                 statusText: 'Unknown error',
@@ -45,17 +49,21 @@ export const updateDraft = async (draftId: Number, update: UpdateDraftRequest) :
                 return await response.json() as Draft
             }
 
+            const responseError = await response.json() as ResponseError
+
             return {
-                message: response.statusText,
-                status: response.status,
-                statusText: response.statusText,
-                url: response.url
+                requestError: true,
+                message: responseError.message,
+                status: responseError.status,
+                statusText: responseError.error,
+                url: responseError.path
             } as RequestError
         })
         .catch((error) => {
             console.log(error)
 
             return {
+                requestError: true,
                 message: error.message,
                 status: 0,
                 statusText: 'Unknown error',
@@ -76,17 +84,21 @@ export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promis
                 return true
             }
 
+            const responseError = await response.json() as ResponseError
+
             return {
-                message: response.statusText,
-                status: response.status,
-                statusText: response.statusText,
-                url: response.url
+                requestError: true,
+                message: responseError.message,
+                status: responseError.status,
+                statusText: responseError.error,
+                url: responseError.path
             } as RequestError
         })
         .catch((error) => {
             console.log(error)
 
             return {
+                requestError: true,
                 message: error.message,
                 status: 0,
                 statusText: 'Unknown error',
@@ -107,17 +119,21 @@ export const sendMessage = async (draftId: Number, message: CreateMessageRequest
                 return await response.json() as UserMessage | AIMessage
             }
 
+            const responseError = await response.json() as ResponseError
+
             return {
-                message: response.statusText,
-                status: response.status,
-                statusText: response.statusText,
-                url: response.url
+                requestError: true,
+                message: responseError.message,
+                status: responseError.status,
+                statusText: responseError.error,
+                url: responseError.path
             } as RequestError
         })
         .catch((error) => {
             console.log(error)
 
             return {
+                requestError: true,
                 message: error.message,
                 status: 0,
                 statusText: 'Unknown error',
@@ -137,17 +153,21 @@ export const generateMessage = async (draftId: Number): Promise<AIMessage | Requ
                 return await response.json() as AIMessage
             }
 
+            const responseError = await response.json() as ResponseError
+
             return {
-                message: response.statusText,
-                status: response.status,
-                statusText: response.statusText,
-                url: response.url
+                requestError: true,
+                message: responseError.message,
+                status: responseError.status,
+                statusText: responseError.error,
+                url: responseError.path
             } as RequestError
         })
         .catch((error) => {
             console.log(error)
 
             return {
+                requestError: true,
                 message: error.message,
                 status: 0,
                 statusText: 'Unknown error',

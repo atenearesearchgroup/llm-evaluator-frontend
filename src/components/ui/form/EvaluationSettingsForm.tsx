@@ -1,5 +1,5 @@
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/shadcdn/ui/form"
-import type { FormSchema } from "./CreateDraftForm"
+import type { FormSchema } from "./CreateInstanceForm"
 import type { Control } from "react-hook-form"
 import { z } from "zod"
 import { Input } from "@/components/shadcdn/ui/input"
@@ -51,7 +51,7 @@ export const EvaluationSetingsForm = ({ control }: EvaluationSetingsFormProps) =
                                 <Input type="number" {...field} />
                             </FormControl>
                             <FormDescription>
-                                This is your public display name.
+                                How many times syntax errors can be prompted to be fixed
                             </FormDescription>
                             <FormMessage />
                         </FormItem>
@@ -67,7 +67,7 @@ export const EvaluationSetingsForm = ({ control }: EvaluationSetingsFormProps) =
                                 <Input {...field} />
                             </FormControl>
                             <FormDescription>
-                                This is your public display name.
+                                How many drafts are allowed
                             </FormDescription>
                             <FormMessage />
                         </FormItem>
@@ -84,7 +84,7 @@ export const EvaluationSetingsForm = ({ control }: EvaluationSetingsFormProps) =
                                 <Input {...field} />
                             </FormControl>
                             <FormDescription>
-                                This is your public display name.
+                                How many times the same prompt can be used
                             </FormDescription>
                             <FormMessage />
                         </FormItem>

@@ -20,13 +20,13 @@ const getAvailablePlatforms = async (): Promise<[string[], IntentModel[]]> => {
     const platforms = await getPlatforms()
     const intentModels = await getModels()
 
-    if ('status' in platforms) {
+    if ('requestError' in platforms) {
         console.error(platforms)
         return [[], []]
     }
 
 
-    if ('status' in intentModels) {
+    if ('requestError' in intentModels) {
         console.error(intentModels)
         return [[], []]
     }
@@ -84,7 +84,7 @@ const addNonUndefined = (obj: ModelSettings) => {
 
 
 
-export const CreateDraftForm = ({ }) => {
+export const CreateInstanceForm = ({ }) => {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -136,7 +136,7 @@ export const CreateDraftForm = ({ }) => {
         const requestFunc = async () => {
             const response = await createInstance(data.intentModel, request)
 
-            if ('status' in response) {
+            if ('requestError' in response) {
                 toast(
                     {
                         title: "Error",

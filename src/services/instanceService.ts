@@ -1,6 +1,6 @@
 import type { Draft } from "@/model/draft"
 import type { IntentInstance, IntentModel } from "@/model/model"
-import type { CreateInstanceRequest, CreateModelRequest, RequestError, UpdateInstanceRequest } from "@/model/request"
+import type { CreateInstanceRequest, CreateModelRequest, RequestError, ResponseError, UpdateInstanceRequest } from "@/model/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
 
@@ -11,11 +11,14 @@ export const getInstance = async (instanceId: number): Promise<IntentInstance | 
             return await response.json() as IntentInstance
         }
 
+        const responseError = await response.json() as ResponseError
+
         return {
-            message: response.statusText,
-            status: response.status,
-            statusText: response.statusText,
-            url: response.url
+            requestError: true,
+            message: responseError.message,
+            status: responseError.status,
+            statusText: responseError.error,
+            url: responseError.path
         } as RequestError
     })
     .catch((error) => {
@@ -45,11 +48,14 @@ export const updateInstance = async (instanceId: number, update: UpdateInstanceR
             return await response.json() as IntentInstance
         }
 
+        const responseError = await response.json() as ResponseError
+
         return {
-            message: response.statusText,
-            status: response.status,
-            statusText: response.statusText,
-            url: response.url
+            requestError: true,
+            message: responseError.message,
+            status: responseError.status,
+            statusText: responseError.error,
+            url: responseError.path
         } as RequestError
     })
     .catch((error) => {
@@ -106,17 +112,21 @@ export const createDraft = async (instanceId: Number): Promise<Draft | RequestEr
                 return await response.json() as Draft
             }
 
+            const responseError = await response.json() as ResponseError
+
             return {
-                message: response.statusText,
-                status: response.status,
-                statusText: response.statusText,
-                url: response.url
+                requestError: true,
+                message: responseError.message,
+                status: responseError.status,
+                statusText: responseError.error,
+                url: responseError.path
             } as RequestError
         })
         .catch((error) => {
             console.log(error)
 
             return {
+                requestError: true,
                 message: error.message,
                 status: 0,
                 statusText: 'Unknown error',
@@ -134,17 +144,21 @@ export const getInstanceDrafts = async (instanceId: number): Promise<Draft[] | R
                 return await response.json() as Draft[]
             }
 
+            const responseError = await response.json() as ResponseError
+
             return {
-                message: response.statusText,
-                status: response.status,
-                statusText: response.statusText,
-                url: response.url
+                requestError: true,
+                message: responseError.message,
+                status: responseError.status,
+                statusText: responseError.error,
+                url: responseError.path
             } as RequestError
         })
         .catch((error) => {
             console.log(error)
 
             return {
+                requestError: true,
                 message: error.message,
                 status: 0,
                 statusText: 'Unknown error',

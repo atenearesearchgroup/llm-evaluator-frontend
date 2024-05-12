@@ -1,12 +1,19 @@
-import type { RequestError, ResponseError } from "@/model/request"
+import type { AIMessage } from "@/model/draft"
+import type { RequestError, ResponseError, ScoreResponseRequest } from "@/model/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
 
-export const getPlatforms = async (): Promise<string[] | RequestError> => {
-    const platforms = await fetch(`${API_URL}/platform`)
+
+export const setResponseScore = async (messageId: number,request: ScoreResponseRequest): Promise<AIMessage | RequestError> => {
+    const platforms = await fetch(`${API_URL}/message/${messageId}`,
+        {
+            body: JSON.stringify(request),
+            method: "POST"
+        }
+    )
     .then(async (response) => {
         if (response.ok) {
-            return await response.json() as string[]
+            return await response.json() as AIMessage
         }
 
         const responseError = await response.json() as ResponseError

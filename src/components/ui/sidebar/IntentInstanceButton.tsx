@@ -19,7 +19,7 @@ export const IntentInstanceButton = ({ instance }: IntentInstanceProps) => {
         const fetchApi = async () => {
             const response = await getInstance(instance.id)
 
-            if ('status' in response) {
+            if ('requestError' in response) {
                 console.error(response)
                 return
             }
@@ -45,7 +45,7 @@ export const IntentInstanceButton = ({ instance }: IntentInstanceProps) => {
             </a>
             <TooltipProvider>
                 <Tooltip delayDuration={400}>
-                    <TooltipTrigger className="place-self-end">
+                    <TooltipTrigger  className="place-self-end">
                         <Badge variant="default" data-id={instance.id} className="text-primary-foreground w-fit text-xs place-self-end font-normal">
                             {fullInstance.modelSettings.modelName ?? "unknown"}
                         </Badge>
