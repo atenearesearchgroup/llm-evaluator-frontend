@@ -37,9 +37,11 @@ export type PromptIteration = {
     messages: (AIMessage | UserMessage)[];
 }
 
+export type MessageType = 'user' | 'ai'
+
 interface Message {
     id: number;
-    type: 'user' | 'ai';
+    type: MessageType;
     timestamp: Date;
     content: string;
     promptIteration?: PromptIteration;

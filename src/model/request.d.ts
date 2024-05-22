@@ -1,3 +1,4 @@
+import type { Message, MessageType } from "./draft";
 import type { IntentModel } from "./model"
 
 export type UpdateInstanceRequest = {
@@ -16,6 +17,11 @@ export type CreateInstanceRequest = {
     evaluationSettings: EvaluationSettings;
 }
 
+export type CloneInstanceRequest = {
+    modelSettings: ModelSettings;
+    evaluationSettings: EvaluationSettings;
+}
+
 type ModelName = Pick<IntentModel, 'modelName'>
 
 export type CreateModelRequest = {
@@ -23,10 +29,12 @@ export type CreateModelRequest = {
     displayName: string
 }
 
+
 export type CreateMessageRequest = {
     promptType: string;
     content: string;
     score?: number;
+    manual?: boolean;
 }
 
 export type ScoreResponseRequest = {
