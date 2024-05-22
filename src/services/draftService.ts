@@ -7,7 +7,7 @@ const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
 
 export const getDraft = async (draftId: Number): Promise<Draft | RequestError> => {
     const newModel = await fetch(`${API_URL}/draft/${draftId}`, {
-        method: 'POST',
+        method: 'GET',
     })
         .then(async (response) => {
             if (response.ok) {
@@ -43,6 +43,9 @@ export const updateDraft = async (draftId: Number, update: UpdateDraftRequest) :
     const newModel = await fetch(`${API_URL}/draft/${draftId}`, {
         method: 'PUT',
         body: JSON.stringify(update),
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
         .then(async (response) => {
             if (response.ok) {
@@ -74,10 +77,13 @@ export const updateDraft = async (draftId: Number, update: UpdateDraftRequest) :
     return newModel
 }
 
-export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promise<boolean | RequestError> => {
+export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promise<Boolean | RequestError> => {
     const newModel = await fetch(`${API_URL}/draft/${draftId}/finish`, {
         method: 'POST',
         body: JSON.stringify({ finalize }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
         .then(async (response) => {
             if (response.ok) {
@@ -113,6 +119,9 @@ export const sendMessage = async (draftId: Number, message: CreateMessageRequest
     const newModel = await fetch(`${API_URL}/draft/${draftId}/message`, {
         method: 'POST',
         body: JSON.stringify(message),
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
         .then(async (response) => {
             if (response.ok) {
@@ -147,6 +156,9 @@ export const sendMessage = async (draftId: Number, message: CreateMessageRequest
 export const generateMessage = async (draftId: Number): Promise<AIMessage | RequestError> => {
     const newModel = await fetch(`${API_URL}/draft/${draftId}/message/generate`, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
         .then(async (response) => {
             if (response.ok) {

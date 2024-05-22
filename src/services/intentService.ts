@@ -1,5 +1,5 @@
 import type { IntentInstance, IntentModel } from "@/model/model"
-import type { CreateInstanceRequest, CreateModelRequest, RequestError, ResponseError } from "@/model/request"
+import type { CloneInstanceRequest, CreateInstanceRequest, CreateModelRequest, RequestError, ResponseError } from "@/model/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
 

@@ -1,6 +1,6 @@
 import type { Draft } from "@/model/draft"
 import type { IntentInstance, IntentModel } from "@/model/model"
-import type { CreateInstanceRequest, CreateModelRequest, RequestError, ResponseError, UpdateInstanceRequest } from "@/model/request"
+import type { CloneInstanceRequest, CreateInstanceRequest, CreateModelRequest, RequestError, ResponseError, UpdateInstanceRequest } from "@/model/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
 
@@ -31,6 +31,46 @@ export const getInstance = async (instanceId: number): Promise<IntentInstance | 
             url: ''
         } as RequestError
     })
+
+    return instance
+}
+
+
+
+export const cloneInstance = async (instanceId: number, request: CloneInstanceRequest): Promise<IntentInstance | RequestError> => {
+    const instance = await fetch(`${API_URL}/instance/${instanceId}/clone`, {
+        method: 'POST',
+        body: JSON.stringify(request),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(async (response) => {
+            if (response.ok) {
+                return await response.json() as IntentInstance
+            }
+
+            const responseError = await response.json() as ResponseError
+
+            return {
+                requestError: true,
+                message: responseError.message,
+                status: responseError.status,
+                statusText: responseError.error,
+                url: responseError.path
+            } as RequestError
+        })
+        .catch((error) => {
+            console.log(error)
+
+            return {
+                requestError: true,
+                message: error.message,
+                status: 0,
+                statusText: 'Unknown error',
+                url: ''
+            } as RequestError
+        })
 
     return instance
 }
