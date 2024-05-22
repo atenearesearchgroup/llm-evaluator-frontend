@@ -24,8 +24,8 @@ export const InstanceSettings = ({ instance }: InstanceSettingsProps) => {
             <SheetTrigger asChild>
                 <Button variant={"secondary"}>Instance Settings</Button>
             </SheetTrigger>
-            <SheetContent className="grid gap-3">
-                <fieldset id="modelSettings" className="bg-card rounded-lg border p-3 " >
+            <SheetContent className="flex flex-col gap-3">
+                <fieldset id="modelSettings" className="bg-card rounded-lg border p-3" >
                     <legend className="-ml-1 px-1 text-sm font-medium flex items-center justify-start space-x-2 ">
                         <p className="text font-bold">
                             Model Settings

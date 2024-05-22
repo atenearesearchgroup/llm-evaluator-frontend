@@ -1,5 +1,4 @@
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/shadcdn/ui/form"
-import type { FormSchema } from "./CreateInstanceForm"
 import type { Control } from "react-hook-form"
 import { z } from "zod"
 import { Input } from "@/components/shadcdn/ui/input"
@@ -11,9 +10,10 @@ import {
 import { useState } from "react"
 import { Button } from "@/components/shadcdn/ui/button"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
+import type { CloneFormSchema } from "./CloneInstanceForm"
 
 type EvaluationSetingsFormProps = {
-    control: Control<z.infer<typeof FormSchema>>,
+    control: Control<z.infer<typeof CloneFormSchema>>,
 }
 
 export const EvaluationSetingsForm = ({ control }: EvaluationSetingsFormProps) => {

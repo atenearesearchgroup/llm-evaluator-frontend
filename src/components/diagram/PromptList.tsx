@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Prompt } from "./Prompt";
 import type { Action } from "@/model/diagram";
 import { act } from "react-dom/test-utils";
+import { Switch } from "@design/ui/switch";
 
 type PromptListProps = {
     action: Action;
@@ -42,11 +43,11 @@ export const PromptList = ({ prompts, action }: PromptListProps) => {
 
 
     return (
-        <section className="bg-slate-800 bg-opacity-50 rounded-md p-1">
+        <section className="border bg-opacity-50 rounded-md mt-2 p-4">
 
             <div>
 
-                <h3 className="font-bold mt-5 mx-2">Generation prompts:</h3>
+                <h3 className="font-bold mb-2 ">Generation prompts:</h3>
 
                 {prompts.map((prompt, index) => {
                     return (
@@ -56,8 +57,8 @@ export const PromptList = ({ prompts, action }: PromptListProps) => {
 
                 {prompts.length === 0 && <p className="mx-2">No prompts available</p>}
 
-                <div className="mx-auto bg-slate-400 bg-opacity-30 rounded-lg flex gap-2 justify-center items-center ">
-                    <input type="checkbox" id="fewShot" name="fewShot" onChange={() => setFewShot(!useFewShot)} />
+                <div className="mx-auto flex space-x-2 justify-center items-center mt-4 ">
+                    <Switch id="fewShot" defaultChecked={useFewShot}  onCheckedChange={(result) => setFewShot(result)} />
                     <label htmlFor="fewShot">Few Shot</label>
                 </div>
 

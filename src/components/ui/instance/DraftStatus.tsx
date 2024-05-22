@@ -1,16 +1,18 @@
 import type { Draft, Message } from "@/model/draft"
+import { getFirstPhase } from "@/utils/phase"
 import { Card, CardContent, CardHeader, CardTitle } from "@design/ui/card"
 import { Separator } from "@design/ui/separator"
-
 
 type DraftStatusProps = {
     draft: Draft
 }
 
-
 export const DraftStatus = ({ draft }: DraftStatusProps) => {
     const prompts = draft.promptIterations.map((iteration) =>
         iteration.messages.filter((messages: Message) => messages.type === "user"))
+    const currentPhase = draft.actualNode ?? getFirstPhase()
+    const currentPhaseId = currentPhase.startsWith("decision:") ? currentPhase.substring("decision:".length): currentPhase
+    const capitalizedPhaseId = currentPhaseId.charAt(0).toUpperCase() + currentPhaseId.slice(1)
 
     return (<Card>
         <CardHeader className="py-2">
@@ -24,7 +26,7 @@ export const DraftStatus = ({ draft }: DraftStatusProps) => {
             <ol className="flex flex-row justify-around text-sm">
                 <li className="flex flex-col gap-1 justify-center place-items-center">
                     <p className="font-semibold">Actual Step</p>
-                    <p className="text-xs">{draft.actualNode ?? "Not in action"}</p>
+                    <p className="text-xs">{capitalizedPhaseId}</p>
                 </li>
                 <li className="flex flex-col gap-1 justify-center place-items-center">
                     <p className="font-semibold">Prompts</p>

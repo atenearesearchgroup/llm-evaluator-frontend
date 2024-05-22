@@ -1,4 +1,6 @@
 import { getPlaceholders } from "@/utils/placeholder";
+import { Button } from "@design/ui/button";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useRef, useState } from "react";
 
 interface PromptProps {
@@ -41,11 +43,23 @@ export const Prompt = ({ prompt, addPrompt }: PromptProps) => {
     }
 
     return (
-        <section className="m-2 p-2 bg-slate-600 bg-opacity-30 rounded-md gap-2" >
+        <fieldset className="p-4 border rounded-md gap-2" >
+            <legend className="-ml-1 px-1 text-sm font-medium flex items-center justify-between space-x-2 ">
+                    <p className="text-sm font-semibold">
+                        Prompt 
+                    </p>
+                </legend>
 
-            <div className="flex bg-slate-600 bg-opacity-60 p-1 rounded-md flex-row gap-2 items-center ">
+            <div className="flex bg-slate-600 bg-opacity-60 px-2 py-1 rounded-md flex-row gap-2 items-center justify-between mx-1">
                 <p>{prompt}</p>
-                <button onClick={onToggle} className={`${toggle ? 'bg-red-500 hover:bg-red-700 ' : 'bg-green-500 hover:bg-green-700'} bg-opacity-70 rounded-md px-1`}>x</button>
+                <Button variant={"default"} size={"icon"} 
+                className="size-8 min-w-8 min-h-8"
+                onClick={onToggle} 
+                // className={`${toggle ? 'bg-red-500 hover:bg-red-700 ' : 'bg-green-500 hover:bg-green-700'} bg-opacity-70 rounded-md px-1`}
+                >
+
+                    {toggle ? <ChevronUpIcon className="size-4" /> : <ChevronDownIcon className="size-4" />}
+                </Button>
             </div>
 
             <form
@@ -65,5 +79,5 @@ export const Prompt = ({ prompt, addPrompt }: PromptProps) => {
 
                 <input type="submit" className="bg-green-600 bg-opacity-60 text-lg p-1 rounded-md block mt-3" value={"Add"} />
             </form>
-        </section>)
+        </fieldset>)
 }

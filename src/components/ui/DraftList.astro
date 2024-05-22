@@ -1,19 +1,11 @@
 ---
 import { type RequestError } from "@/model/request";
-import type { DraftGroup } from "@/model/draft";
-import DraftGroupList from "./DraftGroupList.astro";
-import { desc } from "astro:db";
-import { db, Draft, Interaction } from "astro:db";
-import { getAvailableLLms } from "@/utils/phase";
-import { getModels, getInstancesFromModel } from "@/services/intentService";
+import { getModels } from "@/services/intentService";
 import type { IntentModel } from "@/model/model";
 import { IntentGroup } from "./sidebar/IntentGroup";
-import { CreateDraftForm } from "./form/CreateInstanceForm";
 import {
-    ChevronDownIcon,
     ChevronLeftIcon,
-    ChevronRightIcon,
-    ChevronUpIcon,
+    ChevronRightIcon
 } from "lucide-react";
 import { Button } from "../shadcdn/ui/button";
 

@@ -1,5 +1,4 @@
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/shadcdn/ui/form"
-import type { FormSchema } from "./CreateInstanceForm"
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/shadcdn/ui/form"
 import type { Control } from "react-hook-form"
 import { z } from "zod"
 import { Input } from "@/components/shadcdn/ui/input"
@@ -12,9 +11,10 @@ import { useState } from "react"
 import { Button } from "@/components/shadcdn/ui/button"
 import { ChevronDown, ChevronDownIcon, ChevronUpIcon, ChevronsUp } from "lucide-react"
 import { Textarea } from "@/components/shadcdn/ui/textarea"
+import type { CloneFormSchema } from "./CloneInstanceForm"
 
 type ModelSetingsFormProps = {
-    control: Control<z.infer<typeof FormSchema>>,
+    control: Control<z.infer<typeof CloneFormSchema>>,
 }
 
 export const ModelSetingsForm = ({ control }: ModelSetingsFormProps) => {
@@ -62,8 +62,8 @@ export const ModelSetingsForm = ({ control }: ModelSetingsFormProps) => {
                     <FormField
                         control={control}
                         name="modelSettings.modelOwner"
-                        render={({ field }) => (
-                            <FormItem>
+                        render={({ field }) => 
+                        (<FormItem>
                                 <FormLabel>Model Owner</FormLabel>
                                 <FormControl>
                                     <Input {...field} />

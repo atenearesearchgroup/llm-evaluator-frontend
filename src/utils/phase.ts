@@ -14,6 +14,10 @@ export const getAvailableLLms = () => {
     return mockData.llms
 }
 
+export const getFirstPhase = () => {
+    return mockData.startingNode ?? "zero"  
+}
+
 const nextLineIfHigherThan = (text: string, chars: number) => {
     let result = ""
 
@@ -33,6 +37,8 @@ const nextLineIfHigherThan = (text: string, chars: number) => {
 
 export const generateDiagram = (currentPhase: string) => {
     let text = `st=>start: Start${currentPhase == null ? "|current" : ""}\ne=>end: End${currentPhase === "end" ? "|current" : ""}\n`
+
+    text+=`im(align-next=no)=>operation: Ignored step\n`
 
     mockData.actions.forEach((action) => {
         text += `${action.id}(align-next=no)=>operation: ${action.title}${currentPhase === action.id ? "|current" : ""}\n`
@@ -56,6 +62,8 @@ export const generateDiagram = (currentPhase: string) => {
     })
 
     mockData.actions.forEach((action) => {
+        if(action.id !== "zero")
+        text += `${action.id}(right)->im(bottom)\n`
         if (action.id !== currentPhase)
             return
 
@@ -63,6 +71,10 @@ export const generateDiagram = (currentPhase: string) => {
         text += `${action.id}@>${action.to}({"stroke":"Red"})\n`
 
     })
+
+    // text+="zero(right)->im\n"
+
+    text+="im(top)->classes\n"
 
     if(currentPhase == null) {
         text+=`st@>zero({"stroke":"Red"})\n`

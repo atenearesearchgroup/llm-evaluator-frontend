@@ -50,7 +50,7 @@ export const DiagramStatus = ({ currentPhase }: DiagramStatusProps) => {
                 <SheetTitle>
                     Diagram Status
                 </SheetTitle>
-                <SheetDescription>
+                <SheetDescription asChild>
                     <ScrollArea className=" h-[90dvh] w-90 rounded-md border bg-foreground ">
                         <div id="diagram" className="p-2 rounded-lg w-max"></div>
 
