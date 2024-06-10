@@ -1,25 +1,6 @@
 import type { IntentInstance } from "./model";
 
-export type DraftGroup = {
-    id: number;
-    title: string;
-    llm: string;
-    currentPhase: string;
-    currentDecision: string | null;
-    lastDate: Date;
-}
-
-export type DraftMessage = {
-    response: string;
-    id: number;
-    date: Date;
-    phaseId: string;
-    draftId: number;
-    prompt: string;
-    score: number | null;
-}
-
-export type Draft = {
+export type Chat = {
     id: number;
     intentInstance?: IntentInstance;
     draftNumber: number;
@@ -33,7 +14,7 @@ export type PromptIteration = {
     id: number;
     type: string;
     iteration: number;
-    draft?: Draft;
+    chat?: Chat;
     messages: (AIMessage | UserMessage)[];
 }
 

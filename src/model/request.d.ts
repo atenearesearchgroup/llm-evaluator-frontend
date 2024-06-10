@@ -1,4 +1,4 @@
-import type { Message, MessageType } from "./draft";
+import type { Message, MessageType } from "./chat";
 import type { IntentModel } from "./model"
 
 export type UpdateInstanceRequest = {
@@ -33,6 +33,7 @@ export type CreateModelRequest = {
 export type CreateMessageRequest = {
     promptType: string;
     content: string;
+    isManual?: boolean;
     score?: number;
     manual?: boolean;
 }

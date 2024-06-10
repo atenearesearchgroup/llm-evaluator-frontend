@@ -3,36 +3,14 @@ export type IntentModel = {
     displayName: string;
 }
 
-
-type PlatformType = string | 'manual'
-
 export interface IntentInstance extends EvaluationSettings {
     id: number;
     platform: string;
     displayName: string;
     intentModel?: IntentModel;
-    drafts: Draft[];
+    chats: Draft[];
     modelSettings: ModelSettings;
 } 
-
-test: IntentInstance = {
-    id: 1,
-    platform: 'test',
-    displayName: 'test',
-    drafts: [],
-    modelSettings: {
-        modelName: 'test',
-        modelOwner: 'test',
-        version: 'test',
-        systemPrompt: 'test',
-        maxTokens: 1,
-        temperature: 1,
-        topP: 1,
-        frequencyPenalty: 1,
-        presencePenalty: 1
-    }
-
-}
 
 export type ModelSettings = {
     modelName?: string;
@@ -47,7 +25,7 @@ export type ModelSettings = {
 }
 
 export type EvaluationSettings = {
-    maxK: number;
-    maxDrafts: number;
+    maxErrors: number;
+    maxChats: number;
     maxRepeatingPrompt: number;
 }

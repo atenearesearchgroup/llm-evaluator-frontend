@@ -1,4 +1,4 @@
-import type { Message } from "./draft";
+import type { Message } from "./chat";
 
 
 export type Arrow = {
