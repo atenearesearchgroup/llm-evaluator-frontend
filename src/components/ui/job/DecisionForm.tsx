@@ -1,5 +1,7 @@
 
 import type { Decision } from "@/model/diagram";
+import { finalizeDraft, updateDraft } from "@/services/chatService";
+import { getAction } from "@/utils/phase";
 import { Button } from "@design/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@design/ui/form";
 import {
@@ -9,6 +11,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@design/ui/select";
+import { useToast } from "@design/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod"
@@ -26,22 +29,68 @@ export const DecisionForm = ({ draftId, decision }: DecisionFormProps) => {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema)
     })
-    console.log({ draftId, decision })
+    const { toast} = useToast()
 
+    async function onSubmit(data: z.infer<typeof FormSchema>) {
+        const arrow = decision.arrows.find(arrow => arrow.to === data.decision)
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
+        if (!arrow) {
+            console.error("Arrow not found")
+            return
+        }
 
+        console.log({ arrow })
+
+        const phaseId = (arrow.nextDecision ? "decision:" : "") + arrow.to
+
+        const response = await updateDraft(draftId, { actualNode: phaseId })
+
+        if ('requestError' in  response) {
+            toast(
+                {
+                    title: "Error",
+                    description: response.message,
+                    variant: "destructive"
+                }
+            )
+        } else {
+            toast(
+                {
+                    title: "Success",
+                    description: "Successfully updated draft",
+                    className: "bg-lime-600"
+                }
+            )
+
+            if (!arrow.nextDecision && getAction(arrow.to).to == null) {
+                const finalizeResponse = await finalizeDraft(draftId, true)
+
+                if ('requestError' in finalizeResponse) {
+                    toast(
+                        {
+                            title: "Error",
+                            description: finalizeResponse.message,
+                            variant: "destructive"
+                        }
+                    )
+                } 
+
+            }
+
+            setTimeout(()=> {
+                window.location.reload()
+            }, 1000)
+        }
     }
 
     return (
         <Form {...form}>
             <form
-                // action={`/api/drafts/${draftId}/decision`}
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="flex flex-col gap-5"
             >
                 {/* <FormLabel> */}
-                <h3 className="font-bold mt-6 mb-2">Escriba la respuesta a la decisión:</h3>
+                <h3 className="font-bold mt-6 mb-2">Step needed data:</h3>
                 {/* </FormLabel> */}
                 <FormField
                     control={form.control}
@@ -49,7 +98,7 @@ export const DecisionForm = ({ draftId, decision }: DecisionFormProps) => {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Decision output</FormLabel>
-                            <Select name="decision" required>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                     <SelectTrigger >
                                         <SelectValue placeholder="Select a Decision" />

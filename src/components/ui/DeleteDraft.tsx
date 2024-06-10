@@ -9,7 +9,7 @@ export const DeleteDraft = ({ draftId }: DeleteDraftProps) => {
     const [modal, setModal] = useState(false)
 
     const deleteDraft = async () => {
-        const response = await fetch(`/api/drafts/${draftId}`, {
+        const response = await fetch(`/api/chats/${draftId}`, {
             method: 'DELETE'
         })
 

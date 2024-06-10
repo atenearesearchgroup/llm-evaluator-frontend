@@ -1,8 +1,6 @@
-import type { Draft, Message } from "@/model/draft"
+import type { Chat, Message } from "@/model/chat"
 import { Button, buttonVariants } from "@design/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@design/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@design/ui/collapsible";
-import { Separator } from "@design/ui/separator";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { DraftTranscript } from "./DraftTranscript";
@@ -10,11 +8,11 @@ import { DraftStatus } from "./DraftStatus";
 
 type DraftInfoProps = {
     intentInstanceId: number;
-    draft: Draft;
+    draft: Chat;
     children?: ReactNode
 }
 
-export const DraftInfo = ({ intentInstanceId, draft, children }: DraftInfoProps) => {
+export const ChatInfo = ({ intentInstanceId, draft, children }: DraftInfoProps) => {
     const [isOpen, setIsOpen] = useState(!draft.finalized)
     const prompts = draft.promptIterations.map((iteration) =>
         iteration.messages.filter((messages: Message) => messages.type === "user"))
@@ -32,7 +30,7 @@ export const DraftInfo = ({ intentInstanceId, draft, children }: DraftInfoProps)
         <fieldset id="sidebar" className={`grid gap-3 bg-primary-foreground rounded-lg border p-3 ${isOpen ? "p-2" : ""}`}>
             <legend className="-ml-1 px-1 text-sm font-medium flex items-center justify-start space-x-2 ">
                 <p className="text font-bold">
-                    Draft #{draft.draftNumber}
+                    Session #{draft.draftNumber}
                 </p>
                 <CollapsibleTrigger asChild>
                     <Button variant="ghost" size="sm" className="size-6 p-0">
@@ -45,7 +43,7 @@ export const DraftInfo = ({ intentInstanceId, draft, children }: DraftInfoProps)
 
             {
                 !draft.finalized &&
-                <a href={`/instances/${intentInstanceId}/drafts/${draft.draftNumber}`}
+                <a href={`/instances/${intentInstanceId}/chats/${draft.draftNumber}`}
                     className={buttonVariants({ variant: "link" }) + " bg-lime-600/60 border mx-auto"} > {draft.actualNode == null ? "Start to evaluate":"Continue evaluation"} </a>
             }
             {children}

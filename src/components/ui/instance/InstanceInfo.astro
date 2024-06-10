@@ -1,13 +1,9 @@
 ---
-import type { Draft, Message } from "@/model/draft";
+import type { Chat, Message } from "@/model/chat;
 import type { IntentInstance } from "@/model/model";
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from "@design/ui/card";
 
 export type Props = {
@@ -16,7 +12,7 @@ export type Props = {
 
 const { instance } = Astro.props;
 
-const prompts = instance.drafts.map((draft: Draft) =>
+const prompts = instance.chats.map((draft: Chat) =>
   draft.promptIterations.forEach((iteration) =>
     iteration.messages.filter((messages: Message) => messages.type === "user"),
   ),
@@ -31,17 +27,17 @@ const prompts = instance.drafts.map((draft: Draft) =>
   <CardContent className="py-3 px-6">
     <ol class="flex flex-row justify-around">
       <li class="flex flex-col gap-1 justify-center place-items-center">
-        <p class="font-semibold">Drafts</p>
-        <p class="">{instance.drafts.length}</p>
+        <p class="font-semibold">Chats</p>
+        <p class="">{instance.chats.length}</p>
       </li>
       <li class="flex flex-col gap-1 justify-center place-items-center">
         <p class="font-semibold">Prompts</p>
         <p class="">{prompts.length}</p>
       </li>
-      <li class="flex flex-col gap-1 justify-center place-items-center">
+      <!-- <li class="flex flex-col gap-1 justify-center place-items-center">
         <p class="font-semibold">Drafts</p>
-        <p class="">{instance.drafts.length}</p>
-      </li>
+        <p class="">{instance.chats.length}</p>
+      </li> -->
     </ol>
   </CardContent>
   <!-- <CardFooter>

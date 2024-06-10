@@ -7,7 +7,7 @@ import { Textarea } from "@design/ui/textarea";
 import { Input } from "@design/ui/input";
 import { Button } from "@design/ui/button";
 import { MessageForm } from "../ui/form/MessageForm";
-import { getDraft } from "@/services/draftService";
+import { getChat } from "@/services/chatService"
 
 export interface Props {
     draftId: number;
@@ -16,11 +16,11 @@ export interface Props {
 
 const { draftId, action } = Astro.props;
 
-const draft = await getDraft(draftId);
+const chat = await getChat(draftId);
 
-if ('requestError' in draft) {
-    console.log(draft)
-    return draft.requestError;
+if ('requestError' in chat) {
+    console.log(chat)
+    return chat.requestError;
 }
 
 ---
@@ -41,46 +41,8 @@ if ('requestError' in draft) {
     <CardContent>
         <PromptList prompts={action.prompts} action={action} client:visible />
 
-        <h3 class="font-bold mt-6 mb-2">Escriba la respuesta a la acción</h3>
+        <h3 class="font-bold mt-6 mb-2">Step needed data:</h3>
 
-        <MessageForm draft={draft} phase={action} client:visible/>
+        <MessageForm draft={chat} phase={action} client:visible/>
     </CardContent>
 </Card>
-
-<h2 class="font-bold text-xl mt-6 text-center">ACCION</h2>
-
-<section class="mb-10 bg-slate-600 p-2 rounded-lg"></section>
-
-<!--
-cojo la prompt general generada con los prompts que vaya generando
-    , saco la response y la guardo, 
-    y el action va a un decision
-
-decision -> Si o No 
-
--> Si, siguiente decision | No, a la accion designada 
-
-
-API Para pasar de accion a la siguiente decision
-
-/api/drafts/[id]/actions/[id]
-
-POST
-{
-    "draftId"
-    "prompt"
-    "response"
-}
-
-
-API para elegir el resultado de la decision
-
-/api/drafts/[id]/decision
-POST
-{
-    "draftId"
-    "decision" : "Y|N"
-}
-
-
--->

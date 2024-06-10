@@ -11,9 +11,10 @@ import { useState } from "react"
 import { Button } from "@/components/shadcdn/ui/button"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import type { CloneFormSchema } from "./CloneInstanceForm"
+import type {FormSchema} from "./CreateInstanceForm"
 
 type EvaluationSetingsFormProps = {
-    control: Control<z.infer<typeof CloneFormSchema>>,
+    control: Control<z.infer<typeof CloneFormSchema | typeof FormSchema>>,
 }
 
 export const EvaluationSetingsForm = ({ control }: EvaluationSetingsFormProps) => {
@@ -43,7 +44,7 @@ export const EvaluationSetingsForm = ({ control }: EvaluationSetingsFormProps) =
 
                 <FormField
                     control={control}
-                    name="maxK"
+                    name="maxErrors"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Max K</FormLabel>
@@ -59,7 +60,7 @@ export const EvaluationSetingsForm = ({ control }: EvaluationSetingsFormProps) =
                 />
                 <FormField
                     control={control}
-                    name="maxDrafts"
+                    name="maxChats"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Max Drafts</FormLabel>

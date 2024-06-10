@@ -32,6 +32,8 @@ export const IntentInstanceButton = ({ instance }: IntentInstanceProps) => {
 
     if (!fullInstance) return null
 
+    console.log(fullInstance)
+
     return (
         <li
             id={`list-${instance.id}`}

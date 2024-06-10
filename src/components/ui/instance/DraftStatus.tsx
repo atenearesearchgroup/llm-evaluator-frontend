@@ -1,10 +1,10 @@
-import type { Draft, Message } from "@/model/draft"
+import type { Chat, Message } from "@/model/chat"
 import { getFirstPhase } from "@/utils/phase"
 import { Card, CardContent, CardHeader, CardTitle } from "@design/ui/card"
 import { Separator } from "@design/ui/separator"
 
 type DraftStatusProps = {
-    draft: Draft
+    draft: Chat
 }
 
 export const DraftStatus = ({ draft }: DraftStatusProps) => {

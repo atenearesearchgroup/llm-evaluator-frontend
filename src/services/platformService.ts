@@ -25,7 +25,7 @@ export const getPlatforms = async (): Promise<string[] | RequestError> => {
         return {
             requestError: true,
             message: error.message,
-            status: 0,
+            status: 500,
             statusText: 'Unknown error',
             url: ''
         } as RequestError

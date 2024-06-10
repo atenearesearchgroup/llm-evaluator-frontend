@@ -1,6 +1,6 @@
 import { getPlatforms } from "@/services/platformService"
 import type { CreateInstanceRequest, RequestError } from "@/model/request"
-import { useEffect, useState, type FormEvent } from "react"
+import { useEffect, useState } from "react"
 import type { EvaluationSettings, IntentModel, ModelSettings } from "@/model/model"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
@@ -13,8 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { EvaluationSetingsForm } from "./EvaluationSettingsForm"
 import { ModelSetingsForm } from "./ModelSettingsForm"
 import { createInstance, getModels } from "@/services/intentService"
-import { SelectIcon } from "@radix-ui/react-select"
-import { ChevronsUpDown } from "lucide-react"
 
 const getAvailablePlatforms = async (): Promise<[string[], IntentModel[]]> => {
     const platforms = await getPlatforms()
@@ -34,11 +32,6 @@ const getAvailablePlatforms = async (): Promise<[string[], IntentModel[]]> => {
     return [platforms, intentModels]
 }
 
-type DraftForm = EvaluationSettings & ModelSettings & {
-    title: string,
-    llm: string
-}
-
 export const FormSchema = z.object({
     title: z.string().min(2, {
         message: "Title must be at least 2 characters.",
@@ -46,11 +39,11 @@ export const FormSchema = z.object({
     llm: z.string(),
     intentModel: z.string(),
 
-    maxK: z.coerce.number().int().min(1, {
-        message: "Max K must be at least 1.",
+    maxErrors: z.coerce.number().int().min(0, {
+        message: "Max errors must be at least 0.",
     }),
-    maxDrafts: z.coerce.number().int().min(1, {
-        message: "Max drafts must be at least 1.",
+    maxChats: z.coerce.number().int().min(1, {
+        message: "Max chats must be at least 1.",
     }),
     maxRepeatingPrompt: z.coerce.number().int().min(1, {
         message: "Max repeating prompt must be at least 1.",
@@ -83,14 +76,13 @@ const addNonUndefined = (obj: ModelSettings) => {
 }
 
 
-
 export const CreateInstanceForm = ({ }) => {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
             title: "New Instance",
-            maxK: 1,
-            maxDrafts: 1,
+            maxErrors: 0,
+            maxChats: 1,
             maxRepeatingPrompt: 1
         },
     })
@@ -124,8 +116,8 @@ export const CreateInstanceForm = ({ }) => {
             platform: data.llm,
             displayName: data.title,
             evaluationSettings: {
-                maxDrafts: data.maxDrafts,
-                maxK: data.maxK,
+                maxChats: data.maxChats,
+                maxErrors: data.maxErrors,
                 maxRepeatingPrompt: data.maxRepeatingPrompt,
             } as EvaluationSettings,
             modelSettings
@@ -191,19 +183,12 @@ export const CreateInstanceForm = ({ }) => {
                                 <FormControl>
                                     <SelectTrigger >
                                         <SelectValue placeholder="Select a Intent Model" />
-                                        
-                                        {/* <SelectIcon asChild>
-                                          <ChevronsUpDown className="h-4 w-4 opacity-50" />
-                                        </SelectIcon> */}
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
                                     {data.intentModels.map((intentModel) => <SelectItem key={intentModel.modelName} value={intentModel.modelName}>{intentModel.displayName}</SelectItem>)}
                                 </SelectContent>
                             </Select>
-                            {/* <FormDescription>
-                                This is the platform to be used
-                            </FormDescription> */}
                             <FormMessage />
                         </FormItem>
                     )}

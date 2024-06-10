@@ -1,13 +1,13 @@
 import type { Action, Phase } from "@/model/diagram"
-import type { Draft } from "@/model/draft"
-import type { CreateMessageRequest } from "@/model/request"
-import { finalizeDraft, sendMessage, updateDraft } from "@/services/draftService"
+import type { Chat } from "@/model/chat"
+import type { CreateMessageRequest, RequestError } from "@/model/request"
+import { finalizeDraft, sendMessage, updateDraft } from "@/services/chatService"
+import { getAction } from "@/utils/phase"
 import { Button } from "@design/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@design/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@design/ui/form"
 import { Input } from "@design/ui/input"
 import { Label } from "@design/ui/label"
 import { Switch } from "@design/ui/switch"
-import { Textarea } from "@design/ui/textarea"
 import { toast } from "@design/ui/use-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
@@ -19,13 +19,84 @@ export const MessageFormSchema = z.object({
     input: z.string().min(1, {
         message: "Input must be at least 1.",
     }),
-    response: z.string().optional(),
-    score: z.coerce.number().optional(),
+    response: z.string(),
+    score: z.coerce.number().optional().and(z.coerce.number().int().min(0).max(100)),
 })
 
 type MessageFormProps = {
-    draft: Draft,
+    draft: Chat,
     phase: Action
+}
+
+const sendRequest = async (phase: Action, draft: Chat, validSyntax: boolean, input: string, response?: string, score?: number) => {
+    const inputRequest: CreateMessageRequest = {
+        content: input,
+        promptType: phase.id
+    }
+
+    const responseRequest: CreateMessageRequest | undefined = response ? {
+        content: response,
+        isManual: true,
+        promptType: phase.id,
+        score: score ?? 0
+    } : undefined
+
+    console.log("Request", inputRequest, responseRequest)
+
+
+    let invalid = await createMessage(draft, inputRequest)
+
+    if (invalid) {
+        return [false, invalid.message]
+    }
+
+    if (responseRequest == null) {
+        return [false, "No response provided"]
+    } else {
+        invalid = await createMessage(draft, responseRequest)
+
+        if (invalid) {
+            return [false, invalid.message]
+        }
+    }
+
+    if(!validSyntax)
+        return [true, "Message has been sent, but the phase has not been updated"]
+
+    const updateRequest = await updateDraft(draft.id, { actualNode: phase.to })
+
+    console.log("Update Request", updateRequest, phase.to)
+
+    if ('requestError' in updateRequest) {
+        return [false, updateRequest.message]
+    }
+
+    const toAction = phase.to == null ? null : getAction(phase.to)
+
+    if (phase.to == null || toAction != null && toAction.to == null)  {
+        const invalidDraft = await finalizeDraft(draft.id, true)
+
+        if ('requestError' in invalidDraft) {
+            return [false, invalidDraft.message]
+        }
+
+        return [true, "Draft has been finalized"]
+    }
+
+    return [true, "Message has been sent"]
+
+}
+
+const createMessage = async (draft: Chat, request: CreateMessageRequest) => {
+    const response = await sendMessage(draft.id, request)
+
+    console.log("Response", response)
+
+    if ('requestError' in response) {
+        return response as RequestError
+    }
+
+    return false
 }
 
 
@@ -33,124 +104,40 @@ export const MessageForm = ({ draft, phase }: MessageFormProps) => {
     const form = useForm<z.infer<typeof MessageFormSchema>>({
         resolver: zodResolver(MessageFormSchema)
     })
-    const [manual, setManual] = useState(false)
+    const [manual, setManual] = useState(true)
+    const [validSyntax, setValidSyntax] = useState(true)
 
 
-    function onSubmit(data: z.infer<typeof MessageFormSchema>) {
+    const onSubmit = async (data: z.infer<typeof MessageFormSchema>) => {
+        const [success, message] = await sendRequest(phase, draft, data.input, data.response, validSyntax ? data.score : undefined)
 
-        const inputRequest: CreateMessageRequest = {
-            content: data.input,
-            promptType: phase.id
+        if (!success) {
+            toast(
+                {
+                    title: "Error",
+                    description: message,
+                    variant: "destructive"
+                }
+            )
+        } else if (message !== "") {
+            toast(
+                {
+                    title: "Success",
+                    description: message,
+                    className: "bg-lime-600"
+                }
+            )
+
+            setTimeout(() => {
+                console.log({...data})
+                window.location.reload()
+            }, 1500)
         }
-
-        const responseRequest: CreateMessageRequest | undefined = manual ? {
-            content: data.response ?? "",
-            promptType: phase.id,
-            score: data.score ?? 0,
-            manual: true
-        } : undefined
-
-        console.log("inputRequest", inputRequest)
-
-        const requestFunc = async () => {
-            let success = true
-            const response = await sendMessage(draft.id, inputRequest)
-
-            if ('requestError' in response) {
-                toast(
-                    {
-                        title: "Error",
-                        description: response.message,
-                        variant: "destructive"
-                    }
-                )
-                success = false
-            } else {
-
-                if (responseRequest) {
-                    const responseResponse = await sendMessage(draft.id, responseRequest)
-                    if ('requestError' in responseResponse) {
-                        toast(
-                            {
-                                title: "Error",
-                                description: responseResponse.message,
-                                variant: "destructive"
-                            }
-                        )
-                        success = false
-                    }
-                }
-
-                toast(
-                    {
-                        title: "Success",
-                        description: "Message has been sent",
-                        className: "bg-lime-600"
-                    }
-                )
-            }
-
-            if(success) {
-
-                if(phase.to === undefined)  {
-                    const finalizeRequest = await finalizeDraft(draft.id, true)
-
-                    if ('requestError' in finalizeRequest) {
-                        toast(
-                            {
-                                title: "Error",
-                                description: finalizeRequest.message,
-                                variant: "destructive"
-                            }
-                        )
-                    } else {
-                        toast(
-                            {
-                                title: "Success",
-                                description: "Draft has been finalized",
-                                className: "bg-lime-600"
-                            }
-                        )
-                    }
-                    return
-                }
-
-                const phaseRequest = await updateDraft(draft.id, { actualNode: phase.to })
-
-                if ('requestError' in phaseRequest) {
-                    toast(
-                        {
-                            title: "Error",
-                            description: phaseRequest.message,
-                            variant: "destructive"
-                        }
-                    )
-                } else {
-                    toast(
-                        {
-                            title: "Success",
-                            description: "Draft has been updated",
-                            className: "bg-lime-600"
-                        }
-                    )
-
-                    window.location.reload()
-                }
-
-            }
-
-        }
-
-        requestFunc()
     }
+
 
     return (
         <Form {...form} >
-            <div className="flex items-center space-x-2 mb-2 justify-end">
-                <Switch id="manual-mode" checked={manual}
-                    onCheckedChange={setManual} />
-                <Label htmlFor="manual-mode">Manual Response</Label>
-            </div>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="flex flex-col gap-5 border rounded-lg p-3"
@@ -165,9 +152,6 @@ export const MessageForm = ({ draft, phase }: MessageFormProps) => {
                             <FormControl>
                                 <Input placeholder="" {...field} />
                             </FormControl>
-                            {/* <FormDescription>
-                                This is the title for the instance
-                            </FormDescription> */}
                             <FormMessage />
                         </FormItem>
                     )}
@@ -183,29 +167,32 @@ export const MessageForm = ({ draft, phase }: MessageFormProps) => {
                                 <FormControl>
                                     <Input placeholder="" {...field} />
                                 </FormControl>
-                                {/* <FormDescription>
-                                This is the title for the instance
-                            </FormDescription> */}
                                 <FormMessage />
                             </FormItem>
                         )}
                     />}
 
-                <FormField
+
+                
+            <div className="flex items-center space-x-2 mb-2 justify-center gap-4">
+            <Label htmlFor="valid-syntax">Does the generated diagram have a valid syntax?</Label>
+                <Switch id="valid-syntax" checked={validSyntax}
+                    onCheckedChange={setValidSyntax} />
+            </div>
+
+            <FormField
                     control={form.control}
                     name="score"
-                    render={({ field }) => (
-                        <FormItem>
+                    render={({ field }) => 
+                        !validSyntax? (<></>): 
+                        (<FormItem>
                             <FormLabel>Score</FormLabel>
                             <FormControl>
-                                <Input type="number" min={0} max={100} placeholder="" {...field} />
+                                <Input type="number" min={0} max={100} placeholder="" {...field}  />
                             </FormControl>
-                            {/* <FormDescription>
-                                This is the title for the instance
-                            </FormDescription> */}
                             <FormMessage />
-                        </FormItem>
-                    )}
+                        </FormItem>)
+                    }
                 />
 
                 {/* {

@@ -1,17 +1,17 @@
-import type { AIMessage, Draft, UserMessage } from "@/model/draft"
+import type { AIMessage, Chat, UserMessage } from "@/model/chat"
 import type { CreateMessageRequest, RequestError, ResponseError, UpdateDraftRequest } from "@/model/request"
 
-const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
+const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL
 
 
 
-export const getDraft = async (draftId: Number): Promise<Draft | RequestError> => {
-    const newModel = await fetch(`${API_URL}/draft/${draftId}`, {
+export const getChat = async (draftId: Number): Promise<Chat | RequestError> => {
+    const newModel = await fetch(`${API_URL}/chat/${draftId}`, {
         method: 'GET',
     })
         .then(async (response) => {
             if (response.ok) {
-                return await response.json() as Draft
+                return await response.json() as Chat
             }
 
             const responseError = await response.json() as ResponseError
@@ -30,7 +30,7 @@ export const getDraft = async (draftId: Number): Promise<Draft | RequestError> =
             return {
                 requestError: true,
                 message: error.message,
-                status: 0,
+                status: 500,
                 statusText: 'Unknown error',
                 url: ''
             } as RequestError
@@ -39,8 +39,8 @@ export const getDraft = async (draftId: Number): Promise<Draft | RequestError> =
     return newModel
 }
 
-export const updateDraft = async (draftId: Number, update: UpdateDraftRequest) : Promise<Draft | RequestError> => {
-    const newModel = await fetch(`${API_URL}/draft/${draftId}`, {
+export const updateDraft = async (draftId: Number, update: UpdateDraftRequest) : Promise<Chat | RequestError> => {
+    const newModel = await fetch(`${API_URL}/chat/${draftId}`, {
         method: 'PUT',
         body: JSON.stringify(update),
         headers: {
@@ -49,7 +49,7 @@ export const updateDraft = async (draftId: Number, update: UpdateDraftRequest) :
     })
         .then(async (response) => {
             if (response.ok) {
-                return await response.json() as Draft
+                return await response.json() as Chat
             }
 
             const responseError = await response.json() as ResponseError
@@ -68,7 +68,7 @@ export const updateDraft = async (draftId: Number, update: UpdateDraftRequest) :
             return {
                 requestError: true,
                 message: error.message,
-                status: 0,
+                status: 500,
                 statusText: 'Unknown error',
                 url: ''
             } as RequestError
@@ -77,17 +77,20 @@ export const updateDraft = async (draftId: Number, update: UpdateDraftRequest) :
     return newModel
 }
 
-export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promise<Boolean | RequestError> => {
-    const newModel = await fetch(`${API_URL}/draft/${draftId}/finish`, {
+export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promise<{result: boolean} | RequestError> => {
+    const newModel = await fetch(`${API_URL}/chat/${draftId}/finish`, {
         method: 'POST',
-        body: JSON.stringify({ finalize }),
+        body: JSON.stringify(finalize),
         headers: {
             'Content-Type': 'application/json'
         }
     })
         .then(async (response) => {
+
+            console.log(response)
+
             if (response.ok) {
-                return true
+                return { result: true}
             }
 
             const responseError = await response.json() as ResponseError
@@ -106,7 +109,7 @@ export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promis
             return {
                 requestError: true,
                 message: error.message,
-                status: 0,
+                status: 500,
                 statusText: 'Unknown error',
                 url: ''
             } as RequestError
@@ -116,7 +119,7 @@ export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promis
 }
 
 export const sendMessage = async (draftId: Number, message: CreateMessageRequest): Promise<UserMessage | AIMessage | RequestError> => {
-    const newModel = await fetch(`${API_URL}/draft/${draftId}/message`, {
+    const newModel = await fetch(`${API_URL}/chat/${draftId}/message`, {
         method: 'POST',
         body: JSON.stringify(message),
         headers: {
@@ -144,7 +147,7 @@ export const sendMessage = async (draftId: Number, message: CreateMessageRequest
             return {
                 requestError: true,
                 message: error.message,
-                status: 0,
+                status: 500,
                 statusText: 'Unknown error',
                 url: ''
             } as RequestError
@@ -154,7 +157,7 @@ export const sendMessage = async (draftId: Number, message: CreateMessageRequest
 }
 
 export const generateMessage = async (draftId: Number): Promise<AIMessage | RequestError> => {
-    const newModel = await fetch(`${API_URL}/draft/${draftId}/message/generate`, {
+    const newModel = await fetch(`${API_URL}/chat/${draftId}/message/generate`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -181,7 +184,7 @@ export const generateMessage = async (draftId: Number): Promise<AIMessage | Requ
             return {
                 requestError: true,
                 message: error.message,
-                status: 0,
+                status: 500,
                 statusText: 'Unknown error',
                 url: ''
             } as RequestError

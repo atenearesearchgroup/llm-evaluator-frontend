@@ -43,7 +43,7 @@ export const createModel = async (request: CreateModelRequest): Promise<IntentMo
 
 export const getModels = async (): Promise<IntentModel[] | RequestError> => {
     const models = await fetch(`${API_URL}/intent`,{
-        method: 'GET',
+        method: 'GET'
     })
         .then(async (response) => {
             if (response.ok) {

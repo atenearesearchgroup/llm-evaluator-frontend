@@ -1,4 +1,5 @@
 ---
+import type { Chat } from "@/model/chat";
 import ActionNode from "@/components/diagram/ActionNode.astro";
 import DecisionNode from "@/components/diagram/DecisionNode.astro";
 import { DraftStatus } from "@/components/ui/instance/DraftStatus";
@@ -8,6 +9,7 @@ import { getInstance } from "@/services/instanceService";
 import { getAction, getDecision, getFirstPhase } from "@/utils/phase";
 import { Button } from "@design/ui/button";
 import { ChevronLeft } from "lucide-react";
+import { Card, CardDescription, CardTitle } from "@design/ui/card";
 
 const { id, number } = Astro.params;
 
@@ -27,27 +29,29 @@ if ("status" in instance) {
     return new Response(instance, instance.status);
 }
 
-const draft = instance.drafts.find(
+const draft: Chat | undefined = instance.chats.find(
     (value, idx, _) => value.draftNumber === parseInt(number),
 );
 
 if (draft == null) {
     return new Response("Not found draft", { status: 400 });
 }
+
 // "zero"
-const currentPhase : string = draft.currentPhase ?? getFirstPhase();
+const currentPhase: string = draft.actualNode ?? getFirstPhase();
 
 const isDecision = currentPhase.startsWith("decision:");
 
-const phaseId = isDecision ? currentPhase.substring("decision:".length) : currentPhase
-const capitalizedPhaseId = phaseId.charAt(0).toUpperCase() + phaseId.slice(1);
+const phaseId = isDecision
+    ? currentPhase.substring("decision:".length)
+    : currentPhase;
 
-if (currentPhase == null) {
-    console.log("x000");
-}
+const isFinalized = draft.finalized;
+
+console.log("currentPhase", currentPhase);
 ---
 
-<Layout title={`Draft #${draft.draftNumber} Evaluation`}>
+<Layout title={`Session #${draft.draftNumber} Evaluation`}>
     <script src="/libs/raphael-min.js" is:inline></script>
     <script src="/libs/flowchart.js" is:inline></script>
     <main class="grid gap-8">
@@ -60,17 +64,32 @@ if (currentPhase == null) {
 
             <DiagramStatus currentPhase={phaseId} client:visible />
         </div>
-        
-        <DraftStatus draft={draft} client:visible/>
+
+        <DraftStatus draft={draft} client:visible />
 
         {
-            isDecision ? (
-                <DecisionNode draftId={draft.id} decision={getDecision(phaseId)} />
+            isFinalized ? (
+                <Card className="p-6 grid ">
+                    <CardTitle className="justify-around">
+                        <p class="text-primary font-semibold">
+                            This draft is finalized
+                        </p>
+                    </CardTitle>
+                    <CardDescription>
+                        <p class="whitespace-pre-line text-sm text-card-foreground">
+                            You can't make any changes to this draft anymore.
+                        </p>
+                    </CardDescription>
+                </Card>
+            ) : isDecision ? (
+                <DecisionNode
+                    draftId={draft.id}
+                    decision={getDecision(phaseId)}
+                />
             ) : (
                 <ActionNode draftId={draft.id} action={getAction(phaseId)} />
             )
         }
-
     </main>
 </Layout>
 
@@ -142,7 +161,6 @@ if (currentPhase == null) {
 
         if (action === "update") {
             text = diagram;
-            console.log("new diagram content", text)
             buildDiagram();
         }
     };

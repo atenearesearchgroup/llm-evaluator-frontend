@@ -17,11 +17,11 @@ import { cloneInstance } from "@/services/instanceService"
 
 
 export const CloneFormSchema = z.object({
-    maxK: z.coerce.number().int().min(1, {
-        message: "Max K must be at least 1.",
+    maxErrors: z.coerce.number().int().min(0, {
+        message: "Max errors must be at least 0.",
     }),
-    maxDrafts: z.coerce.number().int().min(1, {
-        message: "Max drafts must be at least 1.",
+    maxChats: z.coerce.number().int().min(1, {
+        message: "Max chats must be at least 1.",
     }),
     maxRepeatingPrompt: z.coerce.number().int().min(1, {
         message: "Max repeating prompt must be at least 1.",
@@ -80,8 +80,8 @@ export const CloneInstanceForm = ({ instance }: CloneInstanceFormProps) => {
         resolver: zodResolver(CloneFormSchema),
         defaultValues: {
             modelSettings: valueOrUndefined(instance.modelSettings),
-            maxK: instance.maxK,
-            maxDrafts: instance.maxDrafts,
+            maxErrors: instance.maxErrors,
+            maxChats: instance.maxChats,
             maxRepeatingPrompt: instance.maxRepeatingPrompt
         },
     })
@@ -99,8 +99,8 @@ export const CloneInstanceForm = ({ instance }: CloneInstanceFormProps) => {
 
         const request: CloneInstanceRequest = {
             evaluationSettings: {
-                maxDrafts: data.maxDrafts,
-                maxK: data.maxK,
+                maxChats: data.maxChats,
+                maxErrors: data.maxErrors,
                 maxRepeatingPrompt: data.maxRepeatingPrompt,
             } as EvaluationSettings,
             modelSettings

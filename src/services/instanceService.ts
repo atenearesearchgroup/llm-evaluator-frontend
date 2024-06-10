@@ -1,10 +1,13 @@
-import type { Draft } from "@/model/draft"
+import type { Chat } from "@/model/chat"
 import type { IntentInstance, IntentModel } from "@/model/model"
 import type { CloneInstanceRequest, CreateInstanceRequest, CreateModelRequest, RequestError, ResponseError, UpdateInstanceRequest } from "@/model/request"
 
-const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
+const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL
 
 export const getInstance = async (instanceId: number): Promise<IntentInstance | RequestError> => {
+
+    console.log(`${API_URL}/instance/${instanceId}`)
+
     const instance = await fetch(`${API_URL}/instance/${instanceId}`)
     .then(async (response) => {
         if (response.ok) {
@@ -24,9 +27,11 @@ export const getInstance = async (instanceId: number): Promise<IntentInstance | 
     .catch((error) => {
         console.log(error)
 
+        console.log(API_URL)
         return {
+            requestError: true,
             message: error.message,
-            status: 0,
+            status: 500,
             statusText: 'Unknown error',
             url: ''
         } as RequestError
@@ -66,7 +71,7 @@ export const cloneInstance = async (instanceId: number, request: CloneInstanceRe
             return {
                 requestError: true,
                 message: error.message,
-                status: 0,
+                status: 500,
                 statusText: 'Unknown error',
                 url: ''
             } as RequestError
@@ -102,8 +107,9 @@ export const updateInstance = async (instanceId: number, update: UpdateInstanceR
         console.log(error)
 
         return {
+            requestError: true,
             message: error.message,
-            status: 0,
+            status: 500,
             statusText: 'Unknown error',
             url: ''
         } as RequestError
@@ -133,8 +139,9 @@ export const deleteInstance = async (instanceId: number): Promise<Response | Req
         console.log(error)
 
         return {
+            requestError: true,
             message: error.message,
-            status: 0,
+            status: 500,
             statusText: 'Unknown error',
             url: ''
         } as RequestError
@@ -143,13 +150,13 @@ export const deleteInstance = async (instanceId: number): Promise<Response | Req
     return instance
 }
 
-export const createDraft = async (instanceId: Number): Promise<Draft | RequestError> => {
-    const newModel = await fetch(`${API_URL}/instance/${instanceId}/drafts`, {
+export const createDraft = async (instanceId: Number): Promise<Chat | RequestError> => {
+    const newModel = await fetch(`${API_URL}/instance/${instanceId}/chats`, {
         method: 'POST'
     })
         .then(async (response) => {
             if (response.ok) {
-                return await response.json() as Draft
+                return await response.json() as Chat
             }
 
             const responseError = await response.json() as ResponseError
@@ -168,7 +175,7 @@ export const createDraft = async (instanceId: Number): Promise<Draft | RequestEr
             return {
                 requestError: true,
                 message: error.message,
-                status: 0,
+                status: 500,
                 statusText: 'Unknown error',
                 url: ''
             } as RequestError
@@ -177,11 +184,11 @@ export const createDraft = async (instanceId: Number): Promise<Draft | RequestEr
     return newModel
 }
 
-export const getInstanceDrafts = async (instanceId: number): Promise<Draft[] | RequestError> => {
-    const drafts = await fetch(`${API_URL}/instance/${instanceId}/drafts`)
+export const getInstanceDrafts = async (instanceId: number): Promise<Chat[] | RequestError> => {
+    const drafts = await fetch(`${API_URL}/instance/${instanceId}/chats`)
         .then(async (response) => {
             if (response.ok) {
-                return await response.json() as Draft[]
+                return await response.json() as Chat[]
             }
 
             const responseError = await response.json() as ResponseError
@@ -200,7 +207,7 @@ export const getInstanceDrafts = async (instanceId: number): Promise<Draft[] | R
             return {
                 requestError: true,
                 message: error.message,
-                status: 0,
+                status: 500,
                 statusText: 'Unknown error',
                 url: ''
             } as RequestError

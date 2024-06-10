@@ -1,4 +1,4 @@
-import type { AIMessage } from "@/model/draft"
+import type { AIMessage } from "@/model/chat"
 import type { RequestError, ResponseError, ScoreResponseRequest } from "@/model/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
@@ -32,7 +32,7 @@ export const setResponseScore = async (messageId: number,request: ScoreResponseR
         return {
             requestError: true,
             message: error.message,
-            status: 0,
+            status: 500,
             statusText: 'Unknown error',
             url: ''
         } as RequestError

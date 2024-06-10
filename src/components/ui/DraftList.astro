@@ -14,8 +14,8 @@ const intentModels = await getModels();
 let intents: IntentModel[] = [];
 
 // check if intentModels is part of RequestError interface
-if ((intentModels as RequestError).status !== undefined) {
-    console.error(intentModels as RequestError);
+if ('requestError' in intentModels ) {
+    console.error(intentModels);
 } else {
     intents = intentModels as IntentModel[];
 }

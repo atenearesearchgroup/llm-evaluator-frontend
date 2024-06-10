@@ -6,7 +6,7 @@ interface DraftTitleProps {
 }
 
 const updateTitle = async (draftId: number, title: string) => {
-    const response = await fetch(`/api/drafts/${draftId}`, {
+    const response = await fetch(`/api/chats/${draftId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'

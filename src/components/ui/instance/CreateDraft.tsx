@@ -31,6 +31,7 @@ export const CreateDraft = ({ instance }: CreateDraftProps) => {
         })
 
         setTimeout(() => {
+            window.location.reload()
             // window.location.href = `/instances/${instance.id}`
         }, 1000)
     }
