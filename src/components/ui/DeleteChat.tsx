@@ -22,7 +22,7 @@ export const DeleteChat = ({ draftId }: DeleteDraftProps) => {
     return (
         <div>
             <button className="bg-red-500 backdrop-blur-md m-3 px-2 py-1 rounded-md ml-auto flex " onClick={() => setModal(true)}>
-                Delete Draft
+                Delete Instance
             </button>
 
             <div className={`${modal ? '' : "hidden"} bg-slate-900 backdrop-blur-md bg-opacity-50 flex justify-center items-center absolute top-0 right-0 bottom-0 left-0`}>

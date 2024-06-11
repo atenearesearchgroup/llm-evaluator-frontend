@@ -37,6 +37,6 @@ export const CreateDraft = ({ instance }: CreateDraftProps) => {
     }
 
     return (<>
-        <Button onClick={fetchApi} variant={"outline"} className="mx-auto justify-self-center my-2" disabled={instance.chats.length >= instance.maxErrors}>New draft</Button>
+        <Button onClick={fetchApi} variant={"outline"} className="mx-auto justify-self-center my-2" disabled={instance.chats.length >= instance.maxErrors}>New chat</Button>
     </>)
 }

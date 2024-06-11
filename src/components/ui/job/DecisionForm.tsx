@@ -79,7 +79,7 @@ export const DecisionForm = ({ draftId, decision }: DecisionFormProps) => {
 
             setTimeout(()=> {
                 window.location.reload()
-            }, 1000)
+            }, 800)
         }
     }
 

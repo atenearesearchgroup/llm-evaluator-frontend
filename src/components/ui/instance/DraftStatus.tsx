@@ -9,7 +9,7 @@ type DraftStatusProps = {
 
 export const DraftStatus = ({ draft }: DraftStatusProps) => {
     const prompts = draft.promptIterations.map((iteration) =>
-        iteration.messages.filter((messages: Message) => messages.type === "user"))
+        iteration.messages.filter((messages: Message) => messages.type === "user")).reduce((acc, val) => acc.concat(val), [])
     const currentPhase = draft.actualNode ?? getFirstPhase()
     const currentPhaseId = currentPhase.startsWith("decision:") ? currentPhase.substring("decision:".length): currentPhase
     const capitalizedPhaseId = currentPhaseId.charAt(0).toUpperCase() + currentPhaseId.slice(1)

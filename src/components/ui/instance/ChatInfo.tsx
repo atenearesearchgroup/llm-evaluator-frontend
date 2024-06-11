@@ -30,7 +30,7 @@ export const ChatInfo = ({ intentInstanceId, draft, children }: DraftInfoProps) 
         <fieldset id="sidebar" className={`grid gap-3 bg-primary-foreground rounded-lg border p-3 ${isOpen ? "p-2" : ""}`}>
             <legend className="-ml-1 px-1 text-sm font-medium flex items-center justify-start space-x-2 ">
                 <p className="text font-bold">
-                    Session #{draft.draftNumber}
+                    Chat #{draft.draftNumber}
                 </p>
                 <CollapsibleTrigger asChild>
                     <Button variant="ghost" size="sm" className="size-6 p-0">

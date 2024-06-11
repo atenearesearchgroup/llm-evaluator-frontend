@@ -28,7 +28,7 @@ export const AITranscript = ({ message, idx, dateFormat }: AITranscriptProps) =>
                         {message.type}
                     </Badge>
                     <Badge variant={"outline"} className="py-1 px-2 text-xs border-accent-foreground/60 items-center align-middle text-center">
-                        {message.score}
+                        {message.score == -1 ? "Syntax Error" : message.score}
                     </Badge>
                     <Badge variant={"outline"} className="py-1 px-2 text-xs border-accent-foreground/60 items-center align-middle text-center">
                         {formattedDate}

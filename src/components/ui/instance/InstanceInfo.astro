@@ -1,10 +1,7 @@
 ---
-import type { Chat, Message } from "@/model/chat"
+import type { Chat, Message } from "@/model/chat";
 import type { IntentInstance } from "@/model/model";
-import {
-  Card,
-  CardContent
-} from "@design/ui/card";
+import { Card, CardContent } from "@design/ui/card";
 
 export type Props = {
   instance: IntentInstance;
@@ -12,18 +9,39 @@ export type Props = {
 
 const { instance } = Astro.props;
 
-const prompts = instance.chats.map((draft: Chat) =>
-  draft.promptIterations.forEach((iteration) =>
-    iteration.messages.filter((messages: Message) => messages.type === "user"),
-  ),
-);
+const prompts = instance.chats
+  .map((draft: Chat) =>
+    draft.promptIterations
+      .map((iteration) =>
+        iteration.messages.filter(
+          (messages: Message) => messages.type === "user",
+        ),
+      )
+      .reduce((acc, val) => acc.concat(val), []),
+  )
+  .reduce((acc, val) => acc.concat(val), []);
+
+const responses = instance.chats
+  .map((draft: Chat) =>
+    draft.promptIterations
+      .map((iteration) =>
+        iteration.messages.filter(
+          (messages: Message) => messages.type === "ai",
+        ),
+      )
+      .reduce((acc, val) => acc.concat(val), []),
+  )
+  .reduce((acc, val) => acc.concat(val), []);
+
+const maxScore = responses.reduce((acc, val) => {
+  if ("score" in val) {
+    return val.score > acc ? val.score : acc;
+  }
+  return acc;
+}, 0);
 ---
 
 <Card>
-  <!-- <CardHeader>
-      <CardTitle>Card Title</CardTitl>
-      <CardDescription>Card Description</CardDescription>
-    </CardHeader> -->
   <CardContent className="py-3 px-6">
     <ol class="flex flex-row justify-around">
       <li class="flex flex-col gap-1 justify-center place-items-center">
@@ -31,13 +49,13 @@ const prompts = instance.chats.map((draft: Chat) =>
         <p class="">{instance.chats.length}</p>
       </li>
       <li class="flex flex-col gap-1 justify-center place-items-center">
-        <p class="font-semibold">Prompts</p>
+        <p class="font-semibold">Total Prompts</p>
         <p class="">{prompts.length}</p>
       </li>
-      <!-- <li class="flex flex-col gap-1 justify-center place-items-center">
-        <p class="font-semibold">Drafts</p>
-        <p class="">{instance.chats.length}</p>
-      </li> -->
+      <li class="flex flex-col gap-1 justify-center place-items-center">
+        <p class="font-semibold">Max Score</p>
+        <p class="">{maxScore}</p>
+      </li>
     </ol>
   </CardContent>
   <!-- <CardFooter>
