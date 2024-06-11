@@ -33,7 +33,7 @@ export type CreateModelRequest = {
 export type CreateMessageRequest = {
     promptType: string;
     content: string;
-    isManual?: boolean;
+    manual?: boolean;
     score?: number;
     manual?: boolean;
 }

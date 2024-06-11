@@ -40,7 +40,7 @@ const sendRequest = async (phase: Action, draft: Chat, validSyntax: boolean, inp
     // Added just in case response generation is added
     const responseRequest: CreateMessageRequest | undefined = response ? {
         content: response,
-        isManual: true,
+        manual: true,
         promptType: phase.id,
         score: score ?? 0
     } : undefined
@@ -66,7 +66,7 @@ const sendRequest = async (phase: Action, draft: Chat, validSyntax: boolean, inp
     const updatedChat = await getChat(draft.id)
 
     if(!('requestError' in updatedChat)  && updatedChat.finalized) {
-        return [true, "Draft has been finalized"]
+        return [true, "Draft has been finalized, due to maximum errors reached"]
     }
 
     if(!validSyntax)
@@ -143,7 +143,7 @@ export const MessageForm = ({ draft, phase }: MessageFormProps) => {
             setTimeout(() => {
                 console.log({...data})
                 window.location.reload()
-            }, 1500)
+            }, 2500)
         }
     }
 
