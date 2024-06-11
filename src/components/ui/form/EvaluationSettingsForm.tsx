@@ -47,7 +47,7 @@ export const EvaluationSetingsForm = ({ control }: EvaluationSetingsFormProps) =
                     name="maxErrors"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Max K</FormLabel>
+                            <FormLabel>Max Errors</FormLabel>
                             <FormControl>
                                 <Input type="number" {...field} />
                             </FormControl>

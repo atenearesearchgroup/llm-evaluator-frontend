@@ -5,7 +5,7 @@ type DeleteDraftProps = {
     draftId: Number
 }
 
-export const DeleteDraft = ({ draftId }: DeleteDraftProps) => {
+export const DeleteChat = ({ draftId }: DeleteDraftProps) => {
     const [modal, setModal] = useState(false)
 
     const deleteDraft = async () => {

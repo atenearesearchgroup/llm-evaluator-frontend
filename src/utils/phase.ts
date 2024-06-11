@@ -36,11 +36,12 @@ const nextLineIfHigherThan = (text: string, chars: number) => {
 }
 
 export const generateDiagram = (currentPhase: string) => {
-    let text = `st=>start: Start${currentPhase == null ? "|current" : ""}\ne=>end: End${currentPhase === "end" ? "|current" : ""}\n`
+    let text = `st=>start: Start${currentPhase == null ? "|current" : ""}\nend=>end: End${currentPhase === "end" ? "|current" : ""}\n`
 
     text+=`im(align-next=no)=>operation: Ignored step\n`
 
     mockData.actions.forEach((action) => {
+        if(action.id === "end") return
         text += `${action.id}(align-next=no)=>operation: ${action.title}${currentPhase === action.id ? "|current" : ""}\n`
     })
 
@@ -56,20 +57,19 @@ export const generateDiagram = (currentPhase: string) => {
             // ${!arrow.nextDecision ? "(right)->" + getAction(arrow.to).to : ""}
             text += `${decision.id}(${arrow.label.toLowerCase()})->${arrow.to}${!arrow.nextDecision?"(left)":""}\n`
             if (decision.id === currentPhase) {
-                text += `${decision.id}@>${arrow.to}({"stroke":"Red"})\n`
+                text += `${decision.id}@>${arrow.to.replace("decision:", "")}({"stroke":"Red"})\n`
             }
         })
     })
 
     mockData.actions.forEach((action) => {
-        if(action.id !== "zero")
-        text += `${action.id}(right)->im(bottom)\n`
+        if(action.id !== "zero" && action.id !== "end")
+            text += `${action.id}(right)->im(bottom)\n`
+        
         if (action.id !== currentPhase)
             return
 
-
-        text += `${action.id}@>${action.to}({"stroke":"Red"})\n`
-
+        text += `${action.id}@>${action.to?.replace("decision:", "")}({"stroke":"Red"})\n`
     })
 
     // text+="zero(right)->im\n"

@@ -1,8 +1,6 @@
 ---
-import { TestComponent } from "@/components/test";
-import { Button } from "@components/ui/button";
 import "@/styles/globals.css";
-import DraftList from "@/components/ui/DraftList.astro";
+import DraftList from "@/components/ui/InstanceList.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import { ViewTransitions } from "astro:transitions";
@@ -35,17 +33,6 @@ const finalTitle = forceTitle ? title : `Model eval Assistant - ${title}`;
 	</head>
 	<body class="dark font-catamaran
 	 bg-background antialiased">
-		<!-- <div class="fixed left-0 top-0 -z-10 h-full w-full">
-			bg-slate-950 
-			<div class="relative h-full w-full
-			 bg-background
-			 ">
-				<div
-					class="absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
-				>
-				</div>
-			</div>
-		</div> -->
 
 		<main class={`flex flex-row bg-background`}>
 			<DraftList />
@@ -54,16 +41,12 @@ const finalTitle = forceTitle ? title : `Model eval Assistant - ${title}`;
 				<Header />
 
 				<slot />
-
-				<!-- <Button>Test</Button> -->
-
-				<!-- <TestComponent client:visible/> -->
 			</section>
 		</main>
 
 		<Footer />
 
-			<Toaster client:visible />
+		<Toaster client:visible />
 		<style is:global>
 			* {
 				color-scheme: dark;

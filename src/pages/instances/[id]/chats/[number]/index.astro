@@ -20,13 +20,11 @@ if (id == null || number == null) {
 const instance = await getInstance(parseInt(id));
 
 if ("status" in instance) {
-    console.error(instance);
-
     if (instance.status === 404) {
         return Astro.redirect("/");
     }
 
-    return new Response(instance, instance.status);
+    return new Response(JSON.stringify(instance), {status: instance.status});
 }
 
 const draft: Chat | undefined = instance.chats.find(
@@ -107,6 +105,7 @@ console.log("currentPhase", currentPhase);
             console.log("cleaning diagram");
             diagram.clean();
         }
+        console.log(text)
         diagram = flowchart.parse(text);
 
         diagram.drawSVG("diagram", {

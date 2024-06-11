@@ -17,7 +17,6 @@ export const DraftStatus = ({ draft }: DraftStatusProps) => {
     return (<Card>
         <CardHeader className="py-2">
             <CardTitle className="text-lg">Current Status</CardTitle>
-            {/* <CardDescription>Card Description</CardDescription> */}
         </CardHeader>
         <div className="flex flex-row justify-center">
             <Separator className="max-w-[95%]" />
@@ -38,8 +37,5 @@ export const DraftStatus = ({ draft }: DraftStatusProps) => {
         </li> */}
             </ol>
         </CardContent>
-        {/* <!-- <CardFooter>
-<p>Card Footer</p>
-</CardFooter> --> */}
     </Card>)
 }

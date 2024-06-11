@@ -40,14 +40,28 @@ export const DraftTranscript = ({ draft }: DraftTranscriptProps) => {
             </legend>
 
             <CollapsibleContent className="grid gap-2">
-
+                
                 {
+                    draft.promptIterations.map((iteration, idx) => {
+                        const messages = iteration.messages
+                        .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+                        return <div key={`iteration-${iteration.id}`} className="grid gap-2">
+                            <p className="font-semibold ms-1">Iteration #{iteration.type}</p>
+                            {messages.map((message, idx) => {
+                        return message.type === 'user' ?
+                            <UserTranscript key={`message-${message.id}`} message={message} dateFormat={dateFormat} idx={idx} /> :
+                            <AITranscript key={`message-${message.id}`} message={message as AIMessage} dateFormat={dateFormat} idx={idx} />
+                    })}
+                            </div>
+                    })
+                }
+                {/* {
                     messages.map((message, idx) => {
                         return message.type === 'user' ?
                             <UserTranscript key={`message-${message.id}`} message={message} dateFormat={dateFormat} idx={idx} /> :
                             <AITranscript key={`message-${message.id}`} message={message as AIMessage} dateFormat={dateFormat} idx={idx} />
                     })
-                }
+                } */}
 
             </CollapsibleContent>
         </fieldset>

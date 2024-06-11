@@ -1,7 +1,7 @@
 import type { Action, Phase } from "@/model/diagram"
 import type { Chat } from "@/model/chat"
 import type { CreateMessageRequest, RequestError } from "@/model/request"
-import { finalizeDraft, sendMessage, updateDraft } from "@/services/chatService"
+import { finalizeDraft, getChat, sendMessage, updateDraft } from "@/services/chatService"
 import { getAction } from "@/utils/phase"
 import { Button } from "@design/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@design/ui/form"
@@ -20,7 +20,7 @@ export const MessageFormSchema = z.object({
         message: "Input must be at least 1.",
     }),
     response: z.string(),
-    score: z.coerce.number().optional().and(z.coerce.number().int().min(0).max(100)),
+    score: z.coerce.number().optional().or(z.coerce.number().int().min(0).max(100)),
 })
 
 type MessageFormProps = {
@@ -34,6 +34,10 @@ const sendRequest = async (phase: Action, draft: Chat, validSyntax: boolean, inp
         promptType: phase.id
     }
 
+    if (!validSyntax)
+        score = -1
+
+    // Added just in case response generation is added
     const responseRequest: CreateMessageRequest | undefined = response ? {
         content: response,
         isManual: true,
@@ -41,8 +45,7 @@ const sendRequest = async (phase: Action, draft: Chat, validSyntax: boolean, inp
         score: score ?? 0
     } : undefined
 
-    console.log("Request", inputRequest, responseRequest)
-
+    console.log("Request Input/Response", inputRequest, responseRequest)
 
     let invalid = await createMessage(draft, inputRequest)
 
@@ -58,6 +61,12 @@ const sendRequest = async (phase: Action, draft: Chat, validSyntax: boolean, inp
         if (invalid) {
             return [false, invalid.message]
         }
+    }
+
+    const updatedChat = await getChat(draft.id)
+
+    if(!('requestError' in updatedChat)  && updatedChat.finalized) {
+        return [true, "Draft has been finalized"]
     }
 
     if(!validSyntax)
@@ -102,14 +111,17 @@ const createMessage = async (draft: Chat, request: CreateMessageRequest) => {
 
 export const MessageForm = ({ draft, phase }: MessageFormProps) => {
     const form = useForm<z.infer<typeof MessageFormSchema>>({
-        resolver: zodResolver(MessageFormSchema)
+        resolver: zodResolver(MessageFormSchema),
+        defaultValues: {
+            score: undefined
+        }
     })
     const [manual, setManual] = useState(true)
     const [validSyntax, setValidSyntax] = useState(true)
 
 
     const onSubmit = async (data: z.infer<typeof MessageFormSchema>) => {
-        const [success, message] = await sendRequest(phase, draft, data.input, data.response, validSyntax ? data.score : undefined)
+        const [success, message] = await sendRequest(phase, draft, validSyntax, data.input, data.response, validSyntax ? data.score : undefined)
 
         if (!success) {
             toast(
@@ -184,11 +196,10 @@ export const MessageForm = ({ draft, phase }: MessageFormProps) => {
                     control={form.control}
                     name="score"
                     render={({ field }) => 
-                        !validSyntax? (<></>): 
                         (<FormItem>
                             <FormLabel>Score</FormLabel>
                             <FormControl>
-                                <Input type="number" min={0} max={100} placeholder="" {...field}  />
+                                <Input type="number" min={0} max={100} placeholder="" {...field} disabled={!validSyntax}  />
                             </FormControl>
                             <FormMessage />
                         </FormItem>)

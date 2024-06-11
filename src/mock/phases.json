@@ -114,21 +114,6 @@
             ]
         },
         {
-            "id": "operations",
-            "title": "Correct operations?",
-            "arrows": [
-                {
-                    "to": "operations_prompt",
-                    "label": "No"
-                },
-                {
-                    "to": "finish",
-                    "label": "Yes",
-                    "nextDecision": true
-                }
-            ]
-        },
-        {
             "id": "enums",
             "title": "Correct enums?",
             "arrows": [
@@ -142,6 +127,20 @@
                     "nextDecision": true
                 }
             ]
+        },
+        {
+            "id": "operations",
+            "title": "Correct operations?",
+            "arrows": [
+                {
+                    "to": "operations_prompt",
+                    "label": "No"
+                },
+                {
+                    "to": "end",
+                    "label": "Yes"
+                }
+            ]
         }
     ],
     "actions": [
@@ -150,7 +149,7 @@
             "title": "First prompt",
             "description": "Run prompt with the description AND evaluate the model AND get score",
             "evaluate": true,
-            "to": "classes",
+            "to": "decision:classes",
             "prePrompt": "",
             "prompts": [],
             "postPrompt": ""
@@ -159,7 +158,7 @@
             "id": "classes_prompt",
             "title": "Run classes prompt",
             "evaluate": false,
-            "to": "classes",
+            "to": "decision:classes",
             "prePrompt": "Incorrect classes: There are some problems with the classes in the model.",
             "postPrompt": "Can you fix the model?",
             "prompts": [
@@ -173,7 +172,7 @@
             "id": "inheritance_prompt",
             "title": "Run classes prompt",
             "evaluate": false,
-            "to": "classes",
+            "to": "decision:classes",
             "prePrompt": "Incorrect classes: There are some problems with the classes in the model.",
             "postPrompt": "Can you fix the model?",
             "prompts": [
@@ -187,7 +186,7 @@
             "id": "attributes_prompt",
             "title": "Run attributes prompt",
             "evaluate": false,
-            "to": "classes",
+            "to": "decision:classes",
             "prePrompt": "Incorrect attributes: There are some problems with the attributes in the model:",
             "postPrompt": "Can you fix these problems?",
             "prompts": [
@@ -199,7 +198,7 @@
             "id": "associations_prompt",
             "title": "Run associations prompt",
             "evaluate": false,
-            "to": "classes",
+            "to": "decision:classes",
             "prePrompt": "Incorrect associations: There are some problems with the associations in the model:",
             "postPrompt": "Can you fix these problems?",
             "prompts": [
@@ -214,7 +213,7 @@
             "id": "assoc_mult_prompt",
             "title": "Run assoc mult prompt",
             "evaluate": false,
-            "to": "classes",
+            "to": "decision:classes",
             "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
             "postPrompt": "Can you fix these problems?",
             "prompts": [
@@ -224,9 +223,9 @@
         },
         {
             "id": "assoc_role_prompt",
-            "title": "Run assoc mult prompt",
+            "title": "Run assoc role prompt",
             "evaluate": false,
-            "to": "classes",
+            "to": "decision:classes",
             "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
             "postPrompt": "Can you fix these problems?",
             "prompts": [
@@ -236,9 +235,9 @@
         },
         {
             "id": "assoc_classes_prompt",
-            "title": "Run assoc mult prompt",
+            "title": "Run assoc classes prompt",
             "evaluate": false,
-            "to": "classes",
+            "to": "decision:classes",
             "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
             "postPrompt": "Can you fix these problems?",
             "prompts": [
@@ -248,9 +247,9 @@
         },
         {
             "id": "operations_prompt",
-            "title": "Run assoc mult prompt",
+            "title": "Run operations prompt",
             "evaluate": false,
-            "to": "classes",
+            "to": "decision:classes",
             "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
             "postPrompt": "Can you fix these problems?",
             "prompts": [
@@ -261,15 +260,24 @@
         
         {
             "id": "enums_prompt",
-            "title": "Run assoc mult prompt",
+            "title": "Run enums prompt",
             "evaluate": false,
-            "to": "classes",
+            "to": "decision:classes",
             "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
             "postPrompt": "Can you fix these problems?",
             "prompts": [
                 "- The association between classes <class 1, class 2> (with the name of <associationName>) should expect <cardinality_class 1> <class 1> to be related with <cardinality_class2> <class 2>.",
                 "- The association between classes <class 1, class 2> (with the name of <associationName>) have the multiplicities of each entity in the reverse side."
             ]
+        },
+        {
+            "id": "end",
+            "title": "Finalized",
+            "evaluate": true,
+            "to": null,
+            "prePrompt": "",
+            "postPrompt": "",
+            "prompts": [ ]
         }
     ]
 }

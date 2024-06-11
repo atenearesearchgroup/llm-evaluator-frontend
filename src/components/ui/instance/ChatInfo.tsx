@@ -50,17 +50,6 @@ export const ChatInfo = ({ intentInstanceId, draft, children }: DraftInfoProps) 
 
             <CollapsibleContent className="grid gap-2">
 
-
-                {/* {Object.entries(instances).map((instance, idx) => {
-                        const [key, value] = instance
-
-                        const shouldHaveSeparator = idx === 0 || <Separator className=" border" />
-
-                        return (<> {shouldHaveSeparator}
-                            <PlatformGroup instances={value} key={key} platform={key} /></>)
-                    })
-                    } */}
-
                 <DraftTranscript draft={draft} />
 
             </CollapsibleContent>
