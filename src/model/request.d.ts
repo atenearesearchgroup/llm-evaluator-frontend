@@ -22,7 +22,7 @@ export type CloneInstanceRequest = {
     evaluationSettings: EvaluationSettings;
 }
 
-type ModelName = Pick<IntentModel, 'modelName'>
+type ModelName = IntentModel['modelName']
 
 export type CreateModelRequest = {
     model: ModelName,

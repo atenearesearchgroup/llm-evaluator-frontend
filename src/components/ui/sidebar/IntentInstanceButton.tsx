@@ -3,7 +3,7 @@ import { Tooltip, TooltipProvider } from "@/components/shadcdn/ui/tooltip"
 import type { IntentInstance } from "@/model/model"
 import { getInstance } from "@/services/instanceService"
 import { TooltipArrow, TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 
 
 type IntentInstanceProps = {
@@ -31,8 +31,6 @@ export const IntentInstanceButton = ({ instance }: IntentInstanceProps) => {
     }, [])
 
     if (!fullInstance) return null
-
-    console.log(fullInstance)
 
     return (
         <li

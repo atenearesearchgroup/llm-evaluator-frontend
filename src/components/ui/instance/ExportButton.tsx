@@ -23,7 +23,7 @@ export const ExportButton = ({ instance }: ExportButtonProps) => {
             const url = URL.createObjectURL(file)
 
             var a = document.createElement("a");
-            a.style = "display: none";
+            a.classList.add("hidden");
             a.href = url;
             a.download = file.name;
             a.click();

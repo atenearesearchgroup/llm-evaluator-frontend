@@ -106,8 +106,6 @@ export const CloneInstanceForm = ({ instance }: CloneInstanceFormProps) => {
             modelSettings
         }
 
-        console.log("request", request)
-
         const requestFunc = async () => {
             const response = await cloneInstance(instance.id, request)
 

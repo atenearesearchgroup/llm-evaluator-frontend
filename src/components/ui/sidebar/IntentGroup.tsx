@@ -4,8 +4,6 @@ import { getInstancesFromModel } from "@/services/intentService"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { useEffect, useState } from "react"
-import { IntentInstanceButton } from "./IntentInstanceButton"
-import { Separator } from "@radix-ui/react-select"
 import { PlatformGroup } from "./PlatformGroup"
 
 

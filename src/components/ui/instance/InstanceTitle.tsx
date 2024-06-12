@@ -33,13 +33,15 @@ export const InstanceTitle = ({ instanceId, title }: InstanceTitleProps) => {
 
             channel.postMessage({ newTitle: tempTitle, instanceId })
 
-            // if()
+            if(title !== tempTitle)
+                toast({
+                    title: "Name has been updated",
+                    className: "bg-lime-600",
 
-            // toast({
-            //     title: "Name has been updated",
-            //     className: "bg-lime-600",
+                })
 
-            // })
+            title = tempTitle
+
         }, 1000)
 
         return () => clearTimeout(timeout)
@@ -64,8 +66,3 @@ export const InstanceTitle = ({ instanceId, title }: InstanceTitleProps) => {
         </div>
     )
 }
-
-// 
-{/* <input
-className="flex bg-slate-700 bg-opacity-70 p-2 rounded-md text-lg font-bold"
-/> */}

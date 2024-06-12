@@ -3,14 +3,12 @@ import InstanceInfo from "@/components/ui/instance/InstanceInfo.astro";
 import { DeleteInstance } from "@/components/ui/instance/DeleteInstance";
 import { InstanceTitle } from "@/components/ui/instance/InstanceTitle";
 import Layout from "@/layouts/Layout.astro";
-import type { Chat } from "@/model/chat"
 import { getInstance } from "@/services/instanceService";
 import { ChatInfo } from "@/components/ui/instance/ChatInfo"
 import { CreateDraft } from "@/components/ui/instance/CreateDraft";
 import { CloneInstance } from "@/components/ui/instance/CloneInstance";
 import { InstanceSettings } from "@/components/ui/instance/InstanceSettings";
 import {ExportButton} from "@/components/ui/instance/ExportButton";
-import { exportJson } from "@/utils/metrics";
 
 const { id } = Astro.params;
 

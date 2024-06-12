@@ -3,7 +3,7 @@ import type { Decision } from "@/model/diagram";
 import { finalizeDraft, updateDraft } from "@/services/chatService";
 import { getAction } from "@/utils/phase";
 import { Button } from "@design/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@design/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@design/ui/form";
 import {
     Select,
     SelectContent,
@@ -57,7 +57,7 @@ export const DecisionForm = ({ draftId, decision }: DecisionFormProps) => {
             toast(
                 {
                     title: "Success",
-                    description: "Successfully updated draft",
+                    description: "Successfully updated chat",
                     className: "bg-lime-600"
                 }
             )
@@ -114,9 +114,6 @@ export const DecisionForm = ({ draftId, decision }: DecisionFormProps) => {
                                     }
                                 </SelectContent>
                             </Select>
-                            {/* <FormDescription>
-                                This is the title for the instance
-                            </FormDescription> */}
                             <FormMessage />
                         </FormItem>
                     )}

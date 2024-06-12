@@ -14,19 +14,17 @@ export const CreateDraft = ({ instance }: CreateDraftProps) => {
     const fetchApi = async () => {
         const response = await createDraft(instance.id)
 
-        console.log(response)
-
         if ('requestError' in response) {
             toast({
                 variant: "destructive",
-                title: "Couldn't create new draft",
+                title: "Couldn't create new chat",
                 description: `${response.message}`
             })
             return
         }
 
         toast({
-            title: "Created new draft",
+            title: "Created new chat",
             className: "bg-lime-600"
         })
 
@@ -37,6 +35,6 @@ export const CreateDraft = ({ instance }: CreateDraftProps) => {
     }
 
     return (<>
-        <Button onClick={fetchApi} variant={"outline"} className="mx-auto justify-self-center my-2" disabled={instance.chats.length >= instance.maxErrors}>New chat</Button>
+        <Button onClick={fetchApi} variant={"outline"} className="mx-auto justify-self-center my-2" disabled={instance.chats.length >= instance.maxChats}>New chat</Button>
     </>)
 }

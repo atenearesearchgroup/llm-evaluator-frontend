@@ -1,4 +1,4 @@
-import type { Chat, Message, PromptIteration } from "@/model/chat";
+import type { Chat, Message } from "@/model/chat";
 import type { IntentInstance } from "@/model/model";
 
 const dateFormat = new Intl.DateTimeFormat("es", {
@@ -31,7 +31,7 @@ export const exportJson = (instance: IntentInstance) => {
 
     let lastDate = new Date(0)
 
-    instance.chats.forEach((draft: Chat, idx) => {
+    instance.chats.forEach((draft: Chat) => {
         if (!draft.finalized) return
 
         const messages: (Message & { promptType: string })[] = []

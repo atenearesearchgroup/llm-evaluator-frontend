@@ -1,5 +1,5 @@
 import { getPlatforms } from "@/services/platformService"
-import type { CreateInstanceRequest, RequestError } from "@/model/request"
+import type { CreateInstanceRequest } from "@/model/request"
 import { useEffect, useState } from "react"
 import type { EvaluationSettings, IntentModel, ModelSettings } from "@/model/model"
 import { z } from "zod"
@@ -122,8 +122,6 @@ export const CreateInstanceForm = ({ }) => {
             } as EvaluationSettings,
             modelSettings
         }
-
-        console.log("request", request)
 
         const requestFunc = async () => {
             const response = await createInstance(data.intentModel, request)

@@ -9,7 +9,7 @@ import {
 } from "@/components/shadcdn/ui/collapsible"
 import { useState } from "react"
 import { Button } from "@/components/shadcdn/ui/button"
-import { ChevronDown, ChevronDownIcon, ChevronUpIcon, ChevronsUp } from "lucide-react"
+import {  ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { Textarea } from "@/components/shadcdn/ui/textarea"
 import type { CloneFormSchema } from "./CloneInstanceForm"
 

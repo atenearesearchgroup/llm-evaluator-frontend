@@ -63,12 +63,12 @@ export const EvaluationSetingsForm = ({ control }: EvaluationSetingsFormProps) =
                     name="maxChats"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Max Drafts</FormLabel>
+                            <FormLabel>Max Chats</FormLabel>
                             <FormControl>
                                 <Input {...field} />
                             </FormControl>
                             <FormDescription>
-                                How many drafts are allowed
+                                How many chats are allowed
                             </FormDescription>
                             <FormMessage />
                         </FormItem>

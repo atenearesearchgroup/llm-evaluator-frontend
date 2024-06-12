@@ -7,7 +7,7 @@ import { useToast } from "@/components/shadcdn/ui/use-toast"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/shadcdn/ui/form"
 import { Input } from "@/components/shadcdn/ui/input"
 import { Button } from "@/components/shadcdn/ui/button"
-import { createModel, getModels } from "@/services/intentService"
+import { createModel } from "@/services/intentService"
 
 export const FormSchema = z.object({
     id: z.string().min(2, {
@@ -30,8 +30,6 @@ export const CreateModelForm = ({ }) => {
             model: data.id,
             displayName: data.displayName
         }
-
-        console.log("request", request)
 
         const requestFunc = async () => {
             const response = await createModel(request)

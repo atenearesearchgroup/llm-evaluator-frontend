@@ -86,9 +86,6 @@ export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promis
         }
     })
         .then(async (response) => {
-
-            console.log(response)
-
             if (response.ok) {
                 return { result: true}
             }

@@ -1,13 +1,10 @@
 import type { Chat } from "@/model/chat"
-import type { IntentInstance, IntentModel } from "@/model/model"
-import type { CloneInstanceRequest, CreateInstanceRequest, CreateModelRequest, RequestError, ResponseError, UpdateInstanceRequest } from "@/model/request"
+import type { IntentInstance } from "@/model/model"
+import type { CloneInstanceRequest, RequestError, ResponseError, UpdateInstanceRequest } from "@/model/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL
 
 export const getInstance = async (instanceId: number): Promise<IntentInstance | RequestError> => {
-
-    console.log(`${API_URL}/instance/${instanceId}`)
-
     const instance = await fetch(`${API_URL}/instance/${instanceId}`)
     .then(async (response) => {
         if (response.ok) {
@@ -26,8 +23,7 @@ export const getInstance = async (instanceId: number): Promise<IntentInstance | 
     })
     .catch((error) => {
         console.log(error)
-
-        console.log(API_URL)
+        
         return {
             requestError: true,
             message: error.message,

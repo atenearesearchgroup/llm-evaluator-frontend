@@ -1,8 +1,5 @@
 import { Button } from "@/components/shadcdn/ui/button"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from "@/components/shadcdn/ui/dialog"
-import { useToast } from "@/components/shadcdn/ui/use-toast"
-import { deleteInstance } from "@/services/instanceService"
-import { useState } from "react"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/shadcdn/ui/dialog"
 import { CloneInstanceForm } from "../form/CloneInstanceForm"
 import type { IntentInstance } from "@/model/model"
 import { ScrollArea } from "@radix-ui/react-scroll-area"
@@ -32,11 +29,6 @@ export const CloneInstance = ({ instance }: CloneInstanceProps) => {
                     <ScrollBar orientation="horizontal" />
                     <ScrollBar orientation="vertical" />
                 </ScrollArea>
-                {/* <DialogClose asChild>
-                        <Button type="button" variant="secondary" className="">
-                            Close
-                        </Button>
-                    </DialogClose> */}
             </DialogContent>
         </Dialog>
     )
