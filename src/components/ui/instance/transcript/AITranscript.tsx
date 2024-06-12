@@ -1,6 +1,8 @@
 import type { AIMessage } from "@/model/chat"
 import { Badge } from "@design/ui/badge"
+import { ScrollArea, ScrollBar } from "@design/ui/scroll-area"
 import { Separator } from "@design/ui/separator"
+import { useToast } from "@design/ui/use-toast"
 
 
 type AITranscriptProps = {
@@ -10,7 +12,7 @@ type AITranscriptProps = {
 }
 
 export const AITranscript = ({ message, idx, dateFormat }: AITranscriptProps) => {
-
+    const {toast} = useToast()
     const date = Date.parse(message.timestamp as any as string)
     const formattedDate = dateFormat.format(date)
 
@@ -18,7 +20,15 @@ export const AITranscript = ({ message, idx, dateFormat }: AITranscriptProps) =>
         <div key={`message-${message.id}`} className="group border p-2 px-4 mx-1 my-2 rounded-lg 
         hover:border-secondary-foreground
         bg-secondary 
-        hover:scale-105  transition-all duration-300">
+        hover:scale-105  transition-all duration-300 hover:cursor-pointer"
+            onClick={() => {
+                navigator.clipboard.writeText(message.content)
+                toast({
+                    title: "Copied to clipboard",
+                    className: "bg-lime-600"
+                })
+            }}
+        >
             <div className="flex flex-row justify-between items-center py-1">
                 <h4 className=" font-semibold">
                     {"Response #" + (idx + 1)}
@@ -36,9 +46,13 @@ export const AITranscript = ({ message, idx, dateFormat }: AITranscriptProps) =>
                 </div>
             </div>
             <Separator className="bg-accent-foreground/60 group-hover:bg-secondary-foreground my-1" />
-            <p>
-                {message.content}
-            </p>
+            <ScrollArea className="mx-auto h-[60dvh]">
+                <p className="whitespace-pre-line text-pretty break-before-page">
+                    {message.content}
+                </p>
+                <ScrollBar orientation="horizontal" />
+                <ScrollBar orientation="vertical" />
+            </ScrollArea>
         </div>
     )
 }

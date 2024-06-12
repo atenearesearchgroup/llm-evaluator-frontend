@@ -14,8 +14,8 @@ type DraftInfoProps = {
 
 export const ChatInfo = ({ intentInstanceId, draft, children }: DraftInfoProps) => {
     const [isOpen, setIsOpen] = useState(!draft.finalized)
-    const prompts = draft.promptIterations.map((iteration) =>
-        iteration.messages.filter((messages: Message) => messages.type === "user"))
+    // const prompts = draft.promptIterations.map((iteration) =>
+    //     iteration.messages.filter((messages: Message) => messages.type === "user"))
 
     draft.promptIterations.forEach((iteration) => iteration.messages
         .forEach((message) => {
