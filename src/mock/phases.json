@@ -170,15 +170,14 @@
         },
         {
             "id": "inheritance_prompt",
-            "title": "Run classes prompt",
+            "title": "Run inheritance prompt",
             "evaluate": false,
             "to": "decision:classes",
-            "prePrompt": "Incorrect classes: There are some problems with the classes in the model.",
+            "prePrompt": "Incorrect inheritance: There are some problems related to inheritance.",
             "postPrompt": "Can you fix the model?",
             "prompts": [
-                "- The following classes are missing: <List of classes separated by comma>",
-                "- The following classes should not be part of the model: <List of classes separated by comma>",
-                "- <Class 1> should [not] be abstract."
+                "- <class 1> should inherit from <class 2>.",
+                "- There should not be an inheritance relationship between classes <class 1> and <class 2>."
             ],
             "fewShot": "An example of a class is...."
         },
@@ -203,6 +202,7 @@
             "postPrompt": "Can you fix these problems?",
             "prompts": [
                 "- The association between classes <class 1, class 2> is missing.",
+                "- The association between classes <class 1, class 2> is missing. (<description>)",
                 "- There is an association between classes <class 1, class 2> that should not exist.",
                 "- The association type between classes <class 1> and <class 2> is wrong. It should be a composition association.",
                 "- The association type between classes <class 1> and <class 2> is wrong. It should be a aggregation association.",
@@ -226,11 +226,12 @@
             "title": "Run assoc role prompt",
             "evaluate": false,
             "to": "decision:classes",
-            "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
+            "prePrompt": "Incorrect associations identifiers and roles names: There are some problems with the associations and roles names in the model:",
             "postPrompt": "Can you fix these problems?",
             "prompts": [
-                "- The association between classes <class 1, class 2> (with the name of <associationName>) should expect <cardinality_class 1> <class 1> to be related with <cardinality_class2> <class 2>.",
-                "- The association between classes <class 1, class 2> (with the name of <associationName>) have the multiplicities of each entity in the reverse side."
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) have either no relationship identifier or roles names.",
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) have either a generic association identifier or generic roles names.",
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) have the roles names of each entity in the reverse side. "
             ]
         },
         {
@@ -238,11 +239,10 @@
             "title": "Run assoc classes prompt",
             "evaluate": false,
             "to": "decision:classes",
-            "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
+            "prePrompt": "Incorrect association classes: There are some problems with the association classes in the model:",
             "postPrompt": "Can you fix these problems?",
             "prompts": [
-                "- The association between classes <class 1, class 2> (with the name of <associationName>) should expect <cardinality_class 1> <class 1> to be related with <cardinality_class2> <class 2>.",
-                "- The association between classes <class 1, class 2> (with the name of <associationName>) have the multiplicities of each entity in the reverse side."
+                "- The association between classes <class 1, class 2> (with the name of <associationName>) and the class <class 3> itself should be part of an association class represented by <class 3>."
             ]
         },
         {
@@ -250,11 +250,13 @@
             "title": "Run operations prompt",
             "evaluate": false,
             "to": "decision:classes",
-            "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
+            "prePrompt": "Incorrect operations: There are some problems with the operations in the model:",
             "postPrompt": "Can you fix these problems?",
-            "prompts": [
-                "- The association between classes <class 1, class 2> (with the name of <associationName>) should expect <cardinality_class 1> <class 1> to be related with <cardinality_class2> <class 2>.",
-                "- The association between classes <class 1, class 2> (with the name of <associationName>) have the multiplicities of each entity in the reverse side."
+            "prompts": [ 
+                "- The class <class 1> is missing the next operations: <List of operations separated by comma>.",
+                "- The class <class 1> should not have the next operations: <List of operations separated by comma>.",
+                "- The operation <operation> from class <class 1>, does not have the correct parameters: <List of parameters separated by comma>.",
+                "- The operation <operation> from class <class 1>, should return <operation type>."
             ]
         },
         
@@ -263,11 +265,12 @@
             "title": "Run enums prompt",
             "evaluate": false,
             "to": "decision:classes",
-            "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
+            "prePrompt": "Incorrect enums: There are some problems with the enums in the model:",
             "postPrompt": "Can you fix these problems?",
             "prompts": [
-                "- The association between classes <class 1, class 2> (with the name of <associationName>) should expect <cardinality_class 1> <class 1> to be related with <cardinality_class2> <class 2>.",
-                "- The association between classes <class 1, class 2> (with the name of <associationName>) have the multiplicities of each entity in the reverse side."
+                "- The constant values <values…> (, as the values that can be found in the attributes <attr1… from class 1;attr2… from class 2>,) should be part of an enum.",
+                "- The enum <enum 1> should not have the next values: <List of values separated by comma>.",
+                "- The enum <enum 1> is missing the next values: <List of values separated by comma>."
             ]
         },
         {
