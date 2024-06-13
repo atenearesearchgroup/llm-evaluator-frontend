@@ -6,13 +6,15 @@ import { Separator } from "@design/ui/separator";
 import { Textarea } from "@design/ui/textarea";
 import { MessageForm } from "../ui/form/MessageForm";
 import { getChat } from "@/services/chatService"
+import type { IntentInstance } from "@/model/model";
 
 export interface Props {
     draftId: number;
     action: Action;
+    instance: IntentInstance;
 }
 
-const { draftId, action } = Astro.props;
+const {instance, draftId, action } = Astro.props;
 
 const chat = await getChat(draftId);
 
@@ -41,6 +43,6 @@ if ('requestError' in chat) {
 
         <h3 class="font-bold mt-6 mb-2">Step needed data:</h3>
 
-        <MessageForm draft={chat} phase={action} client:visible/>
+        <MessageForm instance={instance} draft={chat} phase={action} client:visible/>
     </CardContent>
 </Card>
