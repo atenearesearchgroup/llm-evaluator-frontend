@@ -1,18 +1,24 @@
 ---
-import Transcript from "@/components/pdf/Transcript.astro";
+
+// Note: This was a draft of a previous version, and is not currently in use.
+
 import PdfLayout from "@/layouts/PdfLayout.astro";
-import { eq } from "astro:db";
-import { Draft, Interaction } from "astro:db";
-import { db } from "astro:db";
 
 const { id } = Astro.params;
 
-const draft = await db
-    .select()
-    .from(Draft)
-    .where(eq(Draft.id, Number(id)))
-    .limit(1)
-    .get();
+const draft = {
+    title: "Draft 1",
+    llm: "LLM 1",
+};
+
+// const draft = await db
+//     .select()
+//     .from(Draft)
+//     .where(eq(Draft.id, Number(id)))
+//     .limit(1)
+//     .get();
+
+return Astro.redirect("/");
 
 if (draft == null) {
     return Astro.redirect("/");
@@ -22,10 +28,10 @@ if (Astro.request.method === "POST") {
     return Astro.redirect(`/chat/${id}`);
 }
 
-const messages = await db
-    .select()
-    .from(Interaction)
-    .where(eq(Interaction.draftId, Number(id)));
+// const messages = await db
+//     .select()
+//     .from(Interaction)
+//     .where(eq(Interaction.draftId, Number(id)));
 
     
 
@@ -40,9 +46,9 @@ const messages = await db
 
         <ul class="flex flex-col gap-5 divide-y-2 divide-slate-700/15">
             {
-                messages.map((message, _) => {
-                    return <Transcript message={message} />;
-                })
+                // messages.map((message, _) => {
+                //     return <Transcript message={message} />;
+                // })
             }
         </ul>
     </section>
