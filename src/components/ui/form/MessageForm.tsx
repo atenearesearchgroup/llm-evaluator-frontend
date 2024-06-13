@@ -13,6 +13,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { Textarea } from "@design/ui/textarea"
+import type { IntentInstance } from "@/model/model"
 
 
 export const MessageFormSchema = z.object({
@@ -20,10 +22,11 @@ export const MessageFormSchema = z.object({
         message: "Input must be at least 1.",
     }),
     response: z.string(),
-    score: z.coerce.number().optional().or(z.coerce.number().int().min(0).max(100)),
+    score: z.coerce.number().optional().or(z.coerce.number().min(0.0)),
 })
 
 type MessageFormProps = {
+    instance: IntentInstance,
     draft: Chat,
     phase: Action
 }
@@ -45,7 +48,6 @@ const sendRequest = async (phase: Action, draft: Chat, validSyntax: boolean, inp
         score: score ?? 0
     } : undefined
 
-    console.log("Request Input/Response", inputRequest, responseRequest)
 
     let invalid = await createMessage(draft, inputRequest)
 
@@ -65,16 +67,15 @@ const sendRequest = async (phase: Action, draft: Chat, validSyntax: boolean, inp
 
     const updatedChat = await getChat(draft.id)
 
-    if(!('requestError' in updatedChat)  && updatedChat.finalized) {
-        return [true, "Draft has been finalized, due to maximum errors reached"]
+    if (!('requestError' in updatedChat) && updatedChat.finalized) {
+        return [true, "Chat has been finalized, due to maximum errors reached"]
     }
 
-    if(!validSyntax)
+    if (!validSyntax) {
         return [true, "Message has been sent, but the phase has not been updated"]
+    }
 
     const updateRequest = await updateDraft(draft.id, { actualNode: phase.to })
-
-    console.log("Update Request", updateRequest, phase.to)
 
     if ('requestError' in updateRequest) {
         return [false, updateRequest.message]
@@ -82,14 +83,14 @@ const sendRequest = async (phase: Action, draft: Chat, validSyntax: boolean, inp
 
     const toAction = phase.to == null ? null : getAction(phase.to)
 
-    if (phase.to == null || toAction != null && toAction.to == null)  {
+    if (phase.to == null || toAction != null && toAction.to == null) {
         const invalidDraft = await finalizeDraft(draft.id, true)
 
         if ('requestError' in invalidDraft) {
             return [false, invalidDraft.message]
         }
 
-        return [true, "Draft has been finalized"]
+        return [true, "Chat has been finalized"]
     }
 
     return [true, "Message has been sent"]
@@ -99,8 +100,6 @@ const sendRequest = async (phase: Action, draft: Chat, validSyntax: boolean, inp
 const createMessage = async (draft: Chat, request: CreateMessageRequest) => {
     const response = await sendMessage(draft.id, request)
 
-    console.log("Response", response)
-
     if ('requestError' in response) {
         return response as RequestError
     }
@@ -109,7 +108,7 @@ const createMessage = async (draft: Chat, request: CreateMessageRequest) => {
 }
 
 
-export const MessageForm = ({ draft, phase }: MessageFormProps) => {
+export const MessageForm = ({  instance,draft, phase }: MessageFormProps) => {
     const form = useForm<z.infer<typeof MessageFormSchema>>({
         resolver: zodResolver(MessageFormSchema),
         defaultValues: {
@@ -119,9 +118,8 @@ export const MessageForm = ({ draft, phase }: MessageFormProps) => {
     const [manual, setManual] = useState(true)
     const [validSyntax, setValidSyntax] = useState(true)
 
-
     const onSubmit = async (data: z.infer<typeof MessageFormSchema>) => {
-        const [success, message] = await sendRequest(phase, draft, validSyntax, data.input, data.response, validSyntax ? data.score : undefined)
+        const [success, message] = await sendRequest(phase,  draft, validSyntax, data.input, data.response, validSyntax ? data.score : undefined)
 
         if (!success) {
             toast(
@@ -141,7 +139,6 @@ export const MessageForm = ({ draft, phase }: MessageFormProps) => {
             )
 
             setTimeout(() => {
-                console.log({...data})
                 window.location.reload()
             }, 2500)
         }
@@ -162,7 +159,7 @@ export const MessageForm = ({ draft, phase }: MessageFormProps) => {
                         <FormItem>
                             <FormLabel>Prompt</FormLabel>
                             <FormControl>
-                                <Input placeholder="" {...field} />
+                                <Textarea placeholder="" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -177,7 +174,7 @@ export const MessageForm = ({ draft, phase }: MessageFormProps) => {
                             <FormItem>
                                 <FormLabel>Response</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="" {...field} />
+                                    <Textarea placeholder="" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -185,24 +182,25 @@ export const MessageForm = ({ draft, phase }: MessageFormProps) => {
                     />}
 
 
-                
-            <div className="flex items-center space-x-2 mb-2 justify-center gap-4">
-            <Label htmlFor="valid-syntax">Does the generated diagram have a valid syntax?</Label>
-                <Switch id="valid-syntax" checked={validSyntax}
-                    onCheckedChange={setValidSyntax} />
-            </div>
 
-            <FormField
+                <div className="flex items-center space-x-2 mb-2 justify-center gap-4">
+                    <Label htmlFor="valid-syntax">Does the generated diagram have a valid syntax?</Label>
+                    <Switch id="valid-syntax" checked={validSyntax}
+                        onCheckedChange={setValidSyntax} />
+                </div>
+
+                <FormField
                     control={form.control}
                     name="score"
-                    render={({ field }) => 
-                        (<FormItem>
-                            <FormLabel>Score</FormLabel>
-                            <FormControl>
-                                <Input type="number" min={0} max={100} placeholder="" {...field} disabled={!validSyntax}  />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>)
+                    render={({ field }) =>
+                    (<FormItem>
+                        <FormLabel>Score</FormLabel>
+                        <FormControl>
+                            <Input type="number" inputMode="decimal" min={0} max={100} placeholder="" {...field}
+                                disabled={!validSyntax} step={"any"} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>)
                     }
                 />
 
