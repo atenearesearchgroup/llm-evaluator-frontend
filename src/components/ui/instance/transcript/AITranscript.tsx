@@ -50,8 +50,7 @@ export const AITranscript = ({ message, idx, dateFormat }: AITranscriptProps) =>
                 <p className="whitespace-pre-line text-pretty break-before-page">
                     {message.content}
                 </p>
-                <ScrollBar orientation="horizontal" />
-                <ScrollBar orientation="vertical" />
+                <ScrollBar orientation="vertical" className="bg-secondary-foreground/10" />
             </ScrollArea>
         </div>
     )
