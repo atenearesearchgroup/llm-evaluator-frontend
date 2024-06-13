@@ -10,6 +10,7 @@ import { getAction, getDecision, getFirstPhase } from "@/utils/phase";
 import { Button } from "@design/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { Card, CardDescription, CardTitle } from "@design/ui/card";
+import { finalizeDraft } from "@/services/chatService";
 
 const { id, number } = Astro.params;
 
@@ -70,31 +71,33 @@ console.log("currentPhase", currentPhase);
                 <Card className="p-6 grid ">
                     <CardTitle className="justify-around">
                         <p class="text-primary font-semibold">
-                            This draft is finalized
+                            This chat is finalized
                         </p>
                     </CardTitle>
                     <CardDescription>
                         <p class="whitespace-pre-line text-sm text-card-foreground">
-                            You can't make any changes to this draft anymore.
+                            You can't make any changes to this chat anymore.
                         </p>
                     </CardDescription>
                 </Card>
             ) : isDecision ? (
                 <DecisionNode
+                instance={instance}
                     draftId={draft.id}
                     decision={getDecision(phaseId)}
                 />
             ) : (
-                <ActionNode draftId={draft.id} action={getAction(phaseId)} />
+                <ActionNode instance={instance} draftId={draft.id} action={getAction(phaseId)} />
             )
         }
     </main>
 </Layout>
 
 <script>
+declare var flowchart: any;
     var text = "";
     var diagramChannel = new BroadcastChannel("diagram");
-    var diagram = null;
+    var diagram : any = null;
 
     const buildDiagram = () => {
         var $diagram = document.querySelector("#diagram");
@@ -106,6 +109,7 @@ console.log("currentPhase", currentPhase);
             diagram.clean();
         }
         console.log(text)
+
         diagram = flowchart.parse(text);
 
         diagram.drawSVG("diagram", {
