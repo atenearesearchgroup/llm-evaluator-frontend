@@ -51,10 +51,10 @@ export const DiagramStatus = ({ currentPhase }: DiagramStatusProps) => {
                     Diagram Status
                 </SheetTitle>
                 <SheetDescription asChild>
-                    <ScrollArea className=" h-[90dvh] w-90 rounded-md border bg-foreground ">
-                        <div id="diagram" className="p-2 rounded-lg w-max"></div>
+                    <ScrollArea className=" h-[90dvh] w-90 rounded-md border bg-foreground  ">
+                        <div id="diagram" className="p-2 rounded-lg w-max "></div>
 
-                        <ScrollBar orientation="horizontal" />
+                        <ScrollBar orientation="vertical" />
                     </ScrollArea>
                 </SheetDescription>
             </SheetContent>
