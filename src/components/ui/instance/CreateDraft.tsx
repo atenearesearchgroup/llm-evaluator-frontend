@@ -34,7 +34,10 @@ export const CreateDraft = ({ instance }: CreateDraftProps) => {
         }, 1000)
     }
 
+    const lastChatSuccess = instance.chats.length > 0 && instance.chats[instance.chats.length - 1].actualNode === "end"
+    const lastChatNotFinalized = instance.chats.length > 0 && !instance.chats[instance.chats.length - 1].finalized
+
     return (<>
-        <Button onClick={fetchApi} variant={"outline"} className="mx-auto justify-self-center my-2" disabled={instance.chats.length >= instance.maxChats}>New chat</Button>
+        <Button onClick={fetchApi} variant={"outline"} className="mx-auto justify-self-center my-2" disabled={instance.chats.length >= instance.maxChats || lastChatSuccess || lastChatNotFinalized}>New chat</Button>
     </>)
 }
