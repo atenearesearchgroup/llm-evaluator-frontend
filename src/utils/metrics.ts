@@ -58,7 +58,7 @@ export const exportJson = (instance: IntentInstance) => {
 
         const serializedDraft = {
             draftNumber: draft.draftNumber,
-            maxScore: iterations.reduce((acc, iteration) => acc + iteration.score, 0),
+            maxScore: iterations.reduce((acc, iteration) => Math.max(acc, iteration.score), 0),
             iterations: iterations
         }
 
