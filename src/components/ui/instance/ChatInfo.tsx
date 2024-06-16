@@ -22,6 +22,8 @@ export const ChatInfo = ({ intentInstanceId, draft, children }: DraftInfoProps) 
             message.timestamp = new Date(Date.parse(message.timestamp as any as string))
         }))
 
+    const buttonText = draft.finalized ? "Finalized" : (draft.actualNode == null ? "Start to evaluate" : "Continue evaluation")
+
     return (<Collapsible
         open={isOpen}
         onOpenChange={setIsOpen}
@@ -41,11 +43,13 @@ export const ChatInfo = ({ intentInstanceId, draft, children }: DraftInfoProps) 
             </legend>
             <DraftStatus draft={draft} />
 
-            {
-                !draft.finalized &&
-                <a href={`/instances/${intentInstanceId}/chats/${draft.draftNumber}`}
-                    className={buttonVariants({ variant: "link" }) + " bg-lime-600/60 border mx-auto"} > {draft.actualNode == null ? "Start to evaluate":"Continue evaluation"} </a>
-            }
+            <a href={`/instances/${intentInstanceId}/chats/${draft.draftNumber}`}
+                className={"mx-auto" + (draft.finalized ? " pointer-events-none" : " ")} >
+                <Button variant="link" size="sm" className="bg-lime-600/60 border mx-auto" disabled={draft.finalized}>
+                    {buttonText}
+                </Button>
+            </a>
+
             {children}
 
             <CollapsibleContent className="grid gap-2">
