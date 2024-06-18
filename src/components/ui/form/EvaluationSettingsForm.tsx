@@ -11,10 +11,29 @@ import { useState } from "react"
 import { Button } from "@/components/shadcdn/ui/button"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import type { CloneFormSchema } from "./CloneInstanceForm"
-import type {FormSchema} from "./CreateInstanceForm"
+import type { FormSchema } from "./CreateInstanceForm"
+
+type FormValues = {
+    maxErrors: number,
+    maxChats: number,
+    maxRepeatingPrompt: number,
+    modelSettings: {
+        modelName: string,
+        modelOwner?: string,
+        version?: string,
+        systemPrompt?: string,
+        maxTokens?: number,
+        temperature?: number,
+        topP?: number,
+        frequencyPenalty?: number,
+        presencePenalty?: number
+    }
+
+}
 
 type EvaluationSetingsFormProps = {
-    control: Control<z.infer<typeof CloneFormSchema | typeof FormSchema>>,
+    control: Control<z.infer<typeof CloneFormSchema>>,
+    // control: Control<FormValues>,
 }
 
 export const EvaluationSetingsForm = ({ control }: EvaluationSetingsFormProps) => {
@@ -40,59 +59,59 @@ export const EvaluationSetingsForm = ({ control }: EvaluationSetingsFormProps) =
                     </CollapsibleTrigger>
                 </legend>
 
-                <CollapsibleContent  className="grid gap-2">
+                <CollapsibleContent className="grid gap-2">
 
-                <FormField
-                    control={control}
-                    name="maxErrors"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Max Errors</FormLabel>
-                            <FormControl>
-                                <Input type="number" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                                How many times syntax errors can be prompted to be fixed
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={control}
-                    name="maxChats"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Max Chats</FormLabel>
-                            <FormControl>
-                                <Input {...field} />
-                            </FormControl>
-                            <FormDescription>
-                                How many chats are allowed
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                    <FormField
+                        control={control}
+                        name="maxErrors"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Max Errors</FormLabel>
+                                <FormControl>
+                                    <Input type="number" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    How many times syntax errors can be prompted to be fixed
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={control}
+                        name="maxChats"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Max Chats</FormLabel>
+                                <FormControl>
+                                    <Input {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    How many chats are allowed
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
-                <FormField
-                    control={control}
-                    name="maxRepeatingPrompt"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Max Repeating prompts</FormLabel>
-                            <FormControl>
-                                <Input {...field} />
-                            </FormControl>
-                            <FormDescription>
-                                How many times the same prompt can be used
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-            </CollapsibleContent>
-        </fieldset>
+                    <FormField
+                        control={control}
+                        name="maxRepeatingPrompt"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Max Repeating prompts</FormLabel>
+                                <FormControl>
+                                    <Input {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    How many times the same prompt can be used
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </CollapsibleContent>
+            </fieldset>
         </Collapsible >
     )
 }

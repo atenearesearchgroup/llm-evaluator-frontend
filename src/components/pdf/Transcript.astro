@@ -1,19 +1,19 @@
 ---
-import { type DraftMessage } from "@/model/chat"
+import { type Message } from "@/model/chat"
 import { getAction } from "@/utils/phase";
 
 export interface Props {
-    message: DraftMessage;
+    message: Message;
 }
 
 const { message } = Astro.props;
 
-const phase = getAction(message.phaseId);
+const phase = getAction("zero");
 
 let [day, month, year] = [
-    message.date.getDate(),
-    message.date.getMonth() + 1,
-    message.date.getFullYear(),
+    message.timestamp.getDate(),
+    message.timestamp.getMonth() + 1,
+    message.timestamp.getFullYear(),
 ];
 ---
 
@@ -23,13 +23,13 @@ let [day, month, year] = [
     <section>
         <h3 class="font-catamaran font-semibold text-lg">Prompt:</h3>
         <p class="whitespace-pre-line text-pretty">
-            {message.prompt}
+            {message.content}
         </p>
     </section>
     <section class="text-pretty">
         <h3 class="font-catamaran font-semibold text-lg">Response:</h3>
         <p class="whitespace-pre-line text-pretty break-before-page">
-            {message.response}
+            {message.content}
         </p>
     </section>
 
@@ -43,15 +43,15 @@ flex flex-row justify-between items-center">
             {`${day}/${month}/${year}`}
         </section>
         {
-            message.score && message.score !== -1 && (
-                <section
-                    class="py-1 px-3 rounded-full
-                bg-yellow-400 bg-opacity-40
-                flex flex-row gap-1"
-                >
-                    <p class="font-medium">Score:</p> {message.score}
-                </section>
-            )
+            // message.score && message.score !== -1 && (
+            //     <section
+            //         class="py-1 px-3 rounded-full
+            //     bg-yellow-400 bg-opacity-40
+            //     flex flex-row gap-1"
+            //     >
+            //         <p class="font-medium">Score:</p> {message.score}
+            //     </section>
+            // )
         }
     </div>
 </article>

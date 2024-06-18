@@ -1,4 +1,4 @@
-import type { AIMessage, UserMessage } from "@/model/chat"
+import type { UserMessage } from "@/model/chat"
 import { Badge } from "@design/ui/badge"
 import { Separator } from "@design/ui/separator"
 import { useToast } from "@design/ui/use-toast"

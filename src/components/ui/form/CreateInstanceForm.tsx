@@ -3,7 +3,7 @@ import type { CreateInstanceRequest } from "@/model/request"
 import { useEffect, useState } from "react"
 import type { EvaluationSettings, IntentModel, ModelSettings } from "@/model/model"
 import { z } from "zod"
-import { useForm } from "react-hook-form"
+import { useForm, type Control } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useToast } from "@/components/shadcdn/ui/use-toast"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/shadcdn/ui/form"
@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { EvaluationSetingsForm } from "./EvaluationSettingsForm"
 import { ModelSetingsForm } from "./ModelSettingsForm"
 import { createInstance, getModels } from "@/services/intentService"
+import { CloneFormSchema } from "./CloneInstanceForm"
 
 const getAvailablePlatforms = async (): Promise<[string[], IntentModel[]]> => {
     const platforms = await getPlatforms()
@@ -32,34 +33,12 @@ const getAvailablePlatforms = async (): Promise<[string[], IntentModel[]]> => {
     return [platforms, intentModels]
 }
 
-export const FormSchema = z.object({
+export const FormSchema = CloneFormSchema.extend({
     title: z.string().min(2, {
         message: "Title must be at least 2 characters.",
     }),
     llm: z.string(),
-    intentModel: z.string(),
-
-    maxErrors: z.coerce.number().int().min(0, {
-        message: "Max errors must be at least 0.",
-    }),
-    maxChats: z.coerce.number().int().min(1, {
-        message: "Max chats must be at least 1.",
-    }),
-    maxRepeatingPrompt: z.coerce.number().int().min(1, {
-        message: "Max repeating prompt must be at least 1.",
-    }),
-
-    modelSettings: z.object({
-        modelName: z.string(),
-        modelOwner: z.string().optional(),
-        version: z.string().optional(),
-        systemPrompt: z.string().optional(),
-        maxTokens: z.coerce.number().int().optional(),
-        temperature: z.coerce.number().optional(),
-        topP: z.coerce.number().optional(),
-        frequencyPenalty: z.coerce.number().optional(),
-        presencePenalty: z.coerce.number().optional()
-    })
+    intentModel: z.string()
 })
 
 
@@ -216,8 +195,8 @@ export const CreateInstanceForm = ({ }) => {
                 />
 
 
-                <EvaluationSetingsForm control={form.control} />
-                <ModelSetingsForm control={form.control} />
+                <EvaluationSetingsForm control={form.control as any as Control<z.infer<typeof CloneFormSchema>>} />
+                <ModelSetingsForm control={form.control as any as Control<z.infer<typeof CloneFormSchema>>} />
                 <Button type="submit">Create</Button>
             </form>
         </Form>
