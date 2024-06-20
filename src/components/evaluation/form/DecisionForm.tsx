@@ -3,7 +3,7 @@ import type { Chat } from "@/model/chat";
 import type { Decision } from "@/model/diagram";
 import type { IntentInstance } from "@/model/model";
 import { finalizeDraft, getChat, updateDraft } from "@/services/chatService";
-import { getAction } from "@/utils/phase";
+import { getAction } from "@/lib/phase";
 import { Button } from "@design/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@design/ui/form";
 import {
@@ -52,8 +52,6 @@ export const DecisionForm = ({ instance, draftId, decision }: DecisionFormProps)
             console.error("Arrow not found")
             return
         }
-
-        console.log({ arrow })
 
         if (!arrow.nextDecision) {
             const chat = await getChat(draftId)

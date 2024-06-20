@@ -6,7 +6,7 @@ export type UpdateInstanceRequest = {
     evaluationSettings?: EvaluationSettings;
 }
 
-export type UpdateDraftRequest = {
+export type UpdateChatRequest = {
     actualNode?: string;
 }
 

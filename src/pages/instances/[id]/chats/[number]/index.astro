@@ -1,16 +1,15 @@
 ---
 import type { Chat } from "@/model/chat";
-import ActionNode from "@/components/diagram/ActionNode.astro";
-import DecisionNode from "@/components/diagram/DecisionNode.astro";
-import { DraftStatus } from "@/components/ui/instance/DraftStatus";
-import { DiagramStatus } from "@/components/ui/job/DiagramStatus";
+import ActionNode from "@/components/evaluation/diagram/ActionNode.astro";
+import DecisionNode from "@/components/evaluation/diagram/DecisionNode.astro";
+import { ChatStatus } from "@/components/instance/sections/ChatStatus";
+import { DiagramStatus } from "@/components/evaluation/diagram/DiagramStatus";
 import Layout from "@/layouts/Layout.astro";
 import { getInstance } from "@/services/instanceService";
-import { getAction, getDecision, getFirstPhase } from "@/utils/phase";
+import { getAction, getDecision, getFirstPhase } from "@/lib/phase";
 import { Button } from "@design/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { Card, CardDescription, CardTitle } from "@design/ui/card";
-import { finalizeDraft } from "@/services/chatService";
 
 const { id, number } = Astro.params;
 
@@ -28,16 +27,16 @@ if ("status" in instance) {
     return new Response(JSON.stringify(instance), { status: instance.status });
 }
 
-const draft: Chat | undefined = instance.chats.find(
+const chat: Chat | undefined = instance.chats.find(
     (value, idx, _) => value.draftNumber === parseInt(number),
 );
 
-if (draft == null) {
+if (chat == null) {
     return new Response("Not found draft", { status: 400 });
 }
 
 // "zero"
-const currentPhase: string = draft.actualNode ?? getFirstPhase();
+const currentPhase: string = chat.actualNode ?? getFirstPhase();
 
 const isDecision = currentPhase.startsWith("decision:");
 
@@ -45,12 +44,10 @@ const phaseId = isDecision
     ? currentPhase.substring("decision:".length)
     : currentPhase;
 
-const isFinalized = draft.finalized;
-
-console.log("currentPhase", currentPhase);
+const isFinalized = chat.finalized;
 ---
 
-<Layout title={`Session #${draft.draftNumber} Evaluation`}>
+<Layout title={`Session #${chat.draftNumber} Evaluation`}>
     <script src="/libs/raphael-min.js" is:inline></script>
     <script src="/libs/flowchart.js" is:inline></script>
     <main class="grid gap-8 mb-8">
@@ -64,7 +61,7 @@ console.log("currentPhase", currentPhase);
             <DiagramStatus currentPhase={phaseId} client:visible />
         </div>
 
-        <DraftStatus draft={draft} client:visible />
+        <ChatStatus chat={chat} client:visible />
 
         {
             isFinalized ? (
@@ -83,13 +80,13 @@ console.log("currentPhase", currentPhase);
             ) : isDecision ? (
                 <DecisionNode
                     instance={instance}
-                    draftId={draft.id}
+                    draftId={chat.id}
                     decision={getDecision(phaseId)}
                 />
             ) : (
                 <ActionNode
                     instance={instance}
-                    draftId={draft.id}
+                    draftId={chat.id}
                     action={getAction(phaseId)}
                 />
             )
@@ -109,10 +106,8 @@ console.log("currentPhase", currentPhase);
         if ($diagram == null) return;
 
         if (diagram) {
-            console.log("cleaning diagram");
             diagram.clean();
         }
-        console.log(text);
 
         diagram = flowchart.parse(text);
 

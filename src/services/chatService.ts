@@ -1,5 +1,5 @@
 import type { AIMessage, Chat, UserMessage } from "@/model/chat"
-import type { CreateMessageRequest, RequestError, ResponseError, UpdateDraftRequest } from "@/model/request"
+import type { CreateMessageRequest, RequestError, ResponseError, UpdateChatRequest } from "@/model/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL
 
@@ -39,7 +39,7 @@ export const getChat = async (draftId: Number): Promise<Chat | RequestError> => 
     return newModel
 }
 
-export const updateDraft = async (draftId: Number, update: UpdateDraftRequest) : Promise<Chat | RequestError> => {
+export const updateDraft = async (draftId: Number, update: UpdateChatRequest) : Promise<Chat | RequestError> => {
     const newModel = await fetch(`${API_URL}/chat/${draftId}`, {
         method: 'PUT',
         body: JSON.stringify(update),

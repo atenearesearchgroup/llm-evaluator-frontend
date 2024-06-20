@@ -26,8 +26,6 @@ export const InstanceTitle = ({ instanceId, title }: InstanceTitleProps) => {
 
     useEffect(() => {
         const timeout = setTimeout(() => {
-            console.log(tempTitle, "value")
-
             if (!updateTitle(instanceId, tempTitle))
                 return
 

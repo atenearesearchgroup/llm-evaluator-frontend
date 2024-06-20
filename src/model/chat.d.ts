@@ -9,7 +9,6 @@ export type Chat = {
     promptIterations: PromptIteration[];
 }
 
-
 export type PromptIteration = {
     id: number;
     type: string;

@@ -1,14 +1,14 @@
 ---
-import InstanceInfo from "@/components/ui/instance/InstanceInfo.astro";
-import { DeleteInstance } from "@/components/ui/instance/DeleteInstance";
-import { InstanceTitle } from "@/components/ui/instance/InstanceTitle";
+import InstanceInfo from "@/components/instance/sections/InstanceInfo.astro";
+import { DeleteInstance } from "@/components/instance/buttons/DeleteInstance";
+import { InstanceTitle } from "@/components/instance/sections/InstanceTitle";
 import Layout from "@/layouts/Layout.astro";
 import { getInstance } from "@/services/instanceService";
-import { ChatInfo } from "@/components/ui/instance/ChatInfo"
-import { CreateDraft } from "@/components/ui/instance/CreateDraft";
-import { CloneInstance } from "@/components/ui/instance/CloneInstance";
-import { InstanceSettings } from "@/components/ui/instance/InstanceSettings";
-import {ExportButton} from "@/components/ui/instance/ExportButton";
+import { ChatInfo } from "@/components/instance/sections/ChatInfo"
+import { CreateChat } from "@/components/instance/buttons/CreateChat";
+import { CloneInstance } from "@/components/instance/buttons/CloneInstance";
+import { InstanceSettings } from "@/components/instance/sections/InstanceSettings";
+import {ExportButton} from "@/components/instance/buttons/ExportButton";
 
 const { id } = Astro.params;
 
@@ -27,8 +27,6 @@ if ("status" in instance) {
 
     return new Response(JSON.stringify(instance), {status: 500});
 }
-
-// console.log(JSON.stringify(exportJson(instance),null,2))
 ---
 
 <Layout title={`Instance ${instance.displayName}`}>
@@ -51,14 +49,14 @@ if ("status" in instance) {
 
         <InstanceInfo instance={instance} />
 
-        <CreateDraft instance={instance} client:visible />
+        <CreateChat instance={instance} client:visible />
 
         <section id="draft-list">
             {
                 instance.chats.map((draft) => {
                     return (
                         <ChatInfo
-                            draft={draft}
+                            chat={draft}
                             intentInstanceId={instance.id}
                             client:visible
                         />

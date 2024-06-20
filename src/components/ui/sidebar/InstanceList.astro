@@ -1,13 +1,12 @@
 ---
-import { type RequestError } from "@/model/request";
 import { getModels } from "@/services/intentService";
 import type { IntentModel } from "@/model/model";
-import { IntentGroup } from "./sidebar/IntentGroup";
+import { IntentGroup } from "./IntentGroup";
 import {
     ChevronLeftIcon,
     ChevronRightIcon
 } from "lucide-react";
-import { Button } from "../shadcdn/ui/button";
+import { Button } from "@design/ui/button";
 
 const intentModels = await getModels();
 
@@ -105,8 +104,6 @@ flex flex-col overflow-y-auto"
     const bc = new BroadcastChannel("title_change");
 
     function checkUpdate(instanceId: Number, newTitle: string) {
-        console.log({ instanceId, newTitle });
-
         const $draftLi = document.querySelectorAll(`.draft-cell`);
 
         $draftLi.forEach((li) => {

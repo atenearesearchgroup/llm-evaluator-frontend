@@ -1,4 +1,4 @@
-import { generateDiagram } from "@/utils/phase"
+import { generateDiagram } from "@/lib/phase"
 import { Button } from "@design/ui/button"
 import { ScrollArea, ScrollBar } from "@design/ui/scroll-area"
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@design/ui/sheet"
@@ -29,8 +29,6 @@ export const DiagramStatus = ({ currentPhase }: DiagramStatusProps) => {
     useEffect(() => {
         updateDiagram()
     }, [diagram])
-
-    console.log(actualPhase)
 
     return (<>
         <Sheet

@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+// NOT USED
 
 type DeleteDraftProps = {
     draftId: Number

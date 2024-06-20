@@ -1,9 +1,8 @@
 ---
 import type { Decision } from "@/model/diagram";
 import { Card, CardContent, CardDescription, CardTitle } from "@design/ui/card";
-import { DecisionForm } from "@/components/ui/job/DecisionForm";
+import { DecisionForm } from "../form/DecisionForm";
 import { Separator } from "@design/ui/separator";
-import { Button } from "@design/ui/button";
 import type { IntentInstance } from "@/model/model";
 
 export interface Props {
@@ -28,9 +27,7 @@ const { instance,draftId, decision } = Astro.props;
     </CardDescription>
 
     <Separator />
-    <!-- 
-    className="mb-10 bg-slate-600 p-2 rounded-lg"
- -->
+
     <CardContent>
         <DecisionForm instance={instance} draftId={draftId} decision={decision} client:visible />
     </CardContent>

@@ -1,0 +1,19 @@
+---
+import { CreateInstanceForm } from "@/components/instance/form/CreateInstanceForm";
+import { Separator } from "@design/ui/separator";
+
+---
+
+<!-- bg-slate-700 -->
+<section
+    class="antialiased bg-card text-card-foreground border
+ bg-opacity-70 rounded-lg items-center mx-auto py-3"
+>
+    <h2 class="text-2xl font-bold mt-2 mb-4 px-6">
+        Create a new Evaluation Instance
+    </h2>
+
+    <Separator className="my-2" />
+
+    <CreateInstanceForm client:visible />
+</section>

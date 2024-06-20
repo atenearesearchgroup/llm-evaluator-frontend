@@ -1,18 +1,18 @@
 import type { IntentInstance } from "@/model/model"
-import { createDraft } from "@/services/instanceService"
+import { createChat as createChat } from "@/services/instanceService"
 import { Button } from "@design/ui/button"
 import { useToast } from "@design/ui/use-toast"
 
 
-type CreateDraftProps = {
+type CreateChatProps = {
     instance: IntentInstance
 }
 
-export const CreateDraft = ({ instance }: CreateDraftProps) => {
+export const CreateChat = ({ instance }: CreateChatProps) => {
     const { toast } = useToast()
 
     const fetchApi = async () => {
-        const response = await createDraft(instance.id)
+        const response = await createChat(instance.id)
 
         if ('requestError' in response) {
             toast({

@@ -3,30 +3,26 @@ import { Button } from "@design/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@design/ui/collapsible";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState } from "react";
-import { AITranscript } from "./transcript/AITranscript"
-import { UserTranscript } from "./transcript/UserTranscript";
+import { AITranscript } from "../transcript/AITranscript"
+import { UserTranscript } from "../transcript/UserTranscript";
 
 const dateFormat = new Intl.DateTimeFormat("es", {
     dateStyle: "short",
     timeStyle: "short"
 });
 
-type DraftTranscriptProps = {
-    draft: Chat;
+type ChatTranscriptProps = {
+    chat: Chat;
 }
 
-export const DraftTranscript = ({ draft }: DraftTranscriptProps) => {
+export const ChatTranscript = ({ chat }: ChatTranscriptProps) => {
     const [isOpen, setIsOpen] = useState(false)
-
-    const messages = draft.promptIterations.map((prompIteration) => prompIteration.messages).reduce((acc, value) => acc.concat(value), [])
-        .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-
 
     return (<Collapsible
         open={isOpen}
         onOpenChange={setIsOpen}
     >
-        <fieldset id={`transcript-${draft.id}`} className={`grid gap-6 bg-card rounded-lg border p-3 ${isOpen ? "p-2" : ""}`}>
+        <fieldset id={`transcript-${chat.id}`} className={`grid gap-6 bg-card rounded-lg border p-3 ${isOpen ? "p-2" : ""}`}>
             <legend className="-ml-1 px-1 text-sm font-medium flex items-center justify-start space-x-2 ">
                 <p className="text font-bold">
                     Transcript
@@ -40,9 +36,8 @@ export const DraftTranscript = ({ draft }: DraftTranscriptProps) => {
             </legend>
 
             <CollapsibleContent className="grid gap-2">
-                
                 {
-                    draft.promptIterations.map((iteration, idx) => {
+                    chat.promptIterations.map((iteration, idx) => {
                         const messages = iteration.messages
                         .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
                         return <div key={`iteration-${iteration.id}`} className="grid gap-2">
@@ -55,13 +50,6 @@ export const DraftTranscript = ({ draft }: DraftTranscriptProps) => {
                             </div>
                     })
                 }
-                {/* {
-                    messages.map((message, idx) => {
-                        return message.type === 'user' ?
-                            <UserTranscript key={`message-${message.id}`} message={message} dateFormat={dateFormat} idx={idx} /> :
-                            <AITranscript key={`message-${message.id}`} message={message as AIMessage} dateFormat={dateFormat} idx={idx} />
-                    })
-                } */}
 
             </CollapsibleContent>
         </fieldset>

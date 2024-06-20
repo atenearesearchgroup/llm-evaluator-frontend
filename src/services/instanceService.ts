@@ -146,7 +146,7 @@ export const deleteInstance = async (instanceId: number): Promise<Response | Req
     return instance
 }
 
-export const createDraft = async (instanceId: Number): Promise<Chat | RequestError> => {
+export const createChat = async (instanceId: Number): Promise<Chat | RequestError> => {
     const newModel = await fetch(`${API_URL}/instance/${instanceId}/chats`, {
         method: 'POST'
     })

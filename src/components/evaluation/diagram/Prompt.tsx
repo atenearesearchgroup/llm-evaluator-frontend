@@ -1,5 +1,4 @@
-import { cn } from "@/lib/utils";
-import { getPlaceholders } from "@/utils/placeholder";
+import { getPlaceholders } from "@/lib/placeholder";
 import { Button } from "@design/ui/button";
 import { Input } from "@design/ui/input";
 import { Label } from "@design/ui/label";
