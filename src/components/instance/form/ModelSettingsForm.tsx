@@ -12,7 +12,6 @@ import { Button } from "@/components/shadcdn/ui/button"
 import {  ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { Textarea } from "@/components/shadcdn/ui/textarea"
 import type { CloneFormSchema } from "./CloneInstanceForm"
-import type { FormSchema } from "./CreateInstanceForm"
 
 type ModelSetingsFormProps = {
     control: Control<z.infer<typeof CloneFormSchema>>,

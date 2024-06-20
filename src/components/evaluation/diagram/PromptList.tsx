@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Prompt } from "./Prompt";
 import type { Action } from "@/model/diagram";
-import { act } from "react-dom/test-utils";
-import { Switch } from "@design/ui/switch";
 import { Button } from "@design/ui/button";
 import { useToast } from "@design/ui/use-toast";
 
@@ -14,8 +12,6 @@ type PromptListProps = {
 
 const generateFullPrompt = (currentText: string, { prePrompt = '', postPrompt = '', fewShot }: Action, useFewShot: boolean) => {
     let result = prePrompt
-
-    // if (result.length > 0) result = result.concat('\n')
 
     result = result.concat(currentText)
 
@@ -88,10 +84,6 @@ export const PromptList = ({ prompts, action }: PromptListProps) => {
 
                             Copy to clipboard
                         </Button>
-                        {/* <button
-                            className="bg-lime-500 hover:bg-lime-700 bg-opacity-80 text-lg p-1 rounded-md block"
-                        >
-                        </button> */}
 
                         <Button variant={"outline"}
                             onClick={() => {
@@ -99,10 +91,6 @@ export const PromptList = ({ prompts, action }: PromptListProps) => {
                             }}>
                             Reset
                         </Button>
-
-                        {/* <button 
-                            className="bg-orange-500 hover:bg-orange-700 bg-opacity-80 text-lg p-1 rounded-md block"
-                        ></button> */}
                     </div>
                 </div>
             </div>

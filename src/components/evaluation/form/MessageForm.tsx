@@ -1,4 +1,4 @@
-import type { Action, Phase } from "@/model/diagram"
+import type { Action } from "@/model/diagram"
 import type { Chat } from "@/model/chat"
 import type { CreateMessageRequest, RequestError } from "@/model/request"
 import { finalizeDraft, getChat, sendMessage, updateDraft } from "@/services/chatService"
@@ -26,7 +26,6 @@ export const MessageFormSchema = z.object({
 })
 
 type MessageFormProps = {
-    instance: IntentInstance,
     draft: Chat,
     phase: Action
 }
@@ -108,7 +107,7 @@ const createMessage = async (draft: Chat, request: CreateMessageRequest) => {
 }
 
 
-export const MessageForm = ({  instance,draft, phase }: MessageFormProps) => {
+export const MessageForm = ({  draft, phase }: MessageFormProps) => {
     const form = useForm<z.infer<typeof MessageFormSchema>>({
         resolver: zodResolver(MessageFormSchema),
         defaultValues: {

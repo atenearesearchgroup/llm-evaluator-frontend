@@ -1,5 +1,5 @@
 import { Button } from "@/components/shadcdn/ui/button"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from "@/components/shadcdn/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "@/components/shadcdn/ui/dialog"
 import { useToast } from "@/components/shadcdn/ui/use-toast"
 import { deleteInstance } from "@/services/instanceService"
 

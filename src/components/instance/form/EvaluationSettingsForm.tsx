@@ -11,25 +11,6 @@ import { useState } from "react"
 import { Button } from "@/components/shadcdn/ui/button"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import type { CloneFormSchema } from "./CloneInstanceForm"
-import type { FormSchema } from "./CreateInstanceForm"
-
-type FormValues = {
-    maxErrors: number,
-    maxChats: number,
-    maxRepeatingPrompt: number,
-    modelSettings: {
-        modelName: string,
-        modelOwner?: string,
-        version?: string,
-        systemPrompt?: string,
-        maxTokens?: number,
-        temperature?: number,
-        topP?: number,
-        frequencyPenalty?: number,
-        presencePenalty?: number
-    }
-
-}
 
 type EvaluationSetingsFormProps = {
     control: Control<z.infer<typeof CloneFormSchema>>,
