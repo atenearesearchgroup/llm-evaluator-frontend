@@ -82,7 +82,7 @@ It will have generated a docker image with the tag `hermesanalyzer/frontend`.
 
 #### Step 2: Run the container
 
-Now, you can run it by using the command (Use -d to detach):
+Now, you can run it by using the command (Use -d to detach and --rm to make the container to be removed after stopping it):
 
 ```
 docker run -p 4321:4321 -t hermesanalyzer/frontend -it
