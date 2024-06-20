@@ -46,7 +46,7 @@ export const AITranscript = ({ message, idx, dateFormat }: AITranscriptProps) =>
                 </div>
             </div>
             <Separator className="bg-accent-foreground/60 group-hover:bg-secondary-foreground my-1" />
-            <ScrollArea className="mx-auto h-[60dvh]">
+            <ScrollArea className="mx-auto h-[min(60dvh,100%)]">
                 <p className="whitespace-pre-line text-pretty break-before-page">
                     {message.content}
                 </p>
