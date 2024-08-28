@@ -27,14 +27,15 @@ export const createModel = async (request: CreateModelRequest): Promise<IntentMo
             } as RequestError
         })
         .catch((error) => {
-            console.log(error)
+            // console.log(error)
+            // console.log(API_URL)
 
             return {
                 requestError: true,
                 message: error.message,
                 status: 0,
                 statusText: 'Unknown error',
-                url: ''
+                url: `${API_URL}`
             } as RequestError
         })
 
@@ -47,9 +48,11 @@ export const getModels = async (): Promise<IntentModel[] | RequestError> => {
     })
         .then(async (response) => {
             if (response.ok) {
+                console.log("x00")
                 return await response.json() as IntentModel[]
             }
 
+            console.log("x01")
             const responseError = await response.json() as ResponseError
 
             return {
@@ -61,14 +64,14 @@ export const getModels = async (): Promise<IntentModel[] | RequestError> => {
             } as RequestError
         })
         .catch((error) => {
-            console.log(error)
+            // console.log(error)
 
             return {
                 requestError: true,
                 message: error.message,
                 status: 0,
                 statusText: 'Unknown error',
-                url: ''
+                url: `${API_URL}`
             } as RequestError
         })
 

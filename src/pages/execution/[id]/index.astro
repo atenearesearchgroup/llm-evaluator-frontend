@@ -1,0 +1,18 @@
+---
+import {ExecutionPage} from "@/components/execution/ExecutionPage"
+import Layout from "@/layouts/Layout.astro";
+
+const { id } = Astro.params;
+
+if (id == null) {
+    return Astro.redirect("/");
+}
+
+// const 
+
+
+---
+
+<Layout title={`Execution ${id}`}>
+  <ExecutionPage id={Number(id)} client:only="react"  />
+</Layout>

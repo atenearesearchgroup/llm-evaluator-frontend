@@ -4,6 +4,39 @@ import type { CloneInstanceRequest, RequestError, ResponseError, UpdateInstanceR
 
 const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL
 
+export const getInstances = async (title: string|null): Promise<IntentInstance[] | RequestError> => {
+    const url = title ? `${API_URL}/instance?title=${title}` : `${API_URL}/instance`
+    const instances = await fetch(url)
+        .then(async (response) => {
+            if (response.ok) {
+                return await response.json() as IntentInstance[]
+            }
+
+            const responseError = await response.json() as ResponseError
+
+            return {
+                requestError: true,
+                message: responseError.message,
+                status: responseError.status,
+                statusText: responseError.error,
+                url: responseError.path
+            } as RequestError
+        })
+        .catch((error) => {
+            console.log(error)
+
+            return {
+                requestError: true,
+                message: error.message,
+                status: 500,
+                statusText: 'Unknown error',
+                url: ''
+            } as RequestError
+        })
+
+    return instances
+}
+
 export const getInstance = async (instanceId: number): Promise<IntentInstance | RequestError> => {
     const instance = await fetch(`${API_URL}/instance/${instanceId}`)
     .then(async (response) => {

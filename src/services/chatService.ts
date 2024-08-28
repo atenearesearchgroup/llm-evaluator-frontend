@@ -1,5 +1,6 @@
 import type { AIMessage, Chat, UserMessage } from "@/model/chat"
 import type { CreateMessageRequest, RequestError, ResponseError, UpdateChatRequest } from "@/model/request"
+import { fetchWrapper } from "@/utils/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL
 
@@ -39,7 +40,7 @@ export const getChat = async (draftId: Number): Promise<Chat | RequestError> => 
     return newModel
 }
 
-export const updateDraft = async (draftId: Number, update: UpdateChatRequest) : Promise<Chat | RequestError> => {
+export const updateDraft = async (draftId: Number, update: UpdateChatRequest): Promise<Chat | RequestError> => {
     const newModel = await fetch(`${API_URL}/chat/${draftId}`, {
         method: 'PUT',
         body: JSON.stringify(update),
@@ -77,7 +78,7 @@ export const updateDraft = async (draftId: Number, update: UpdateChatRequest) : 
     return newModel
 }
 
-export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promise<{result: boolean} | RequestError> => {
+export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promise<{ result: boolean } | RequestError> => {
     const newModel = await fetch(`${API_URL}/chat/${draftId}/finish`, {
         method: 'POST',
         body: JSON.stringify(finalize),
@@ -87,7 +88,7 @@ export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promis
     })
         .then(async (response) => {
             if (response.ok) {
-                return { result: true}
+                return { result: true }
             }
 
             const responseError = await response.json() as ResponseError
@@ -153,39 +154,48 @@ export const sendMessage = async (draftId: Number, message: CreateMessageRequest
     return newModel
 }
 
-export const generateMessage = async (draftId: Number): Promise<AIMessage | RequestError> => {
-    const newModel = await fetch(`${API_URL}/chat/${draftId}/message/generate`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(async (response) => {
-            if (response.ok) {
-                return await response.json() as AIMessage
+export const generateMessage = async (draftId: Number): Promise<string | RequestError> => {
+    const newModel = await fetchWrapper<string>(`${API_URL}/chat/${draftId}/message/generate`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             }
+        },
+       "text" 
+    )
+    // const newModel = await fetch(`${API_URL}/chat/${draftId}/message/generate`, {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     }
+    // })
+    //     .then(async (response) => {
+    //         if (response.ok) {
+    //             return await response.json() as AIMessage
+    //         }
 
-            const responseError = await response.json() as ResponseError
+    //         const responseError = await response.json() as ResponseError
 
-            return {
-                requestError: true,
-                message: responseError.message,
-                status: responseError.status,
-                statusText: responseError.error,
-                url: responseError.path
-            } as RequestError
-        })
-        .catch((error) => {
-            console.log(error)
+    //         return {
+    //             requestError: true,
+    //             message: responseError.message,
+    //             status: responseError.status,
+    //             statusText: responseError.error,
+    //             url: responseError.path
+    //         } as RequestError
+    //     })
+    //     .catch((error) => {
+    //         console.log(error)
 
-            return {
-                requestError: true,
-                message: error.message,
-                status: 500,
-                statusText: 'Unknown error',
-                url: ''
-            } as RequestError
-        })
+    //         return {
+    //             requestError: true,
+    //             message: error.message,
+    //             status: 500,
+    //             statusText: 'Unknown error',
+    //             url: ''
+    //         } as RequestError
+    //     })
 
     return newModel
 }

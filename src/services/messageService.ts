@@ -1,42 +1,23 @@
 import type { AIMessage } from "@/model/chat"
+import type { EvaluationResultResponse } from "@/model/evaluation"
 import type { RequestError, ResponseError, ScoreResponseRequest } from "@/model/request"
+import { fetchWrapper } from "@/utils/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
 
 
-export const setResponseScore = async (messageId: number,request: ScoreResponseRequest): Promise<AIMessage | RequestError> => {
-    const platforms = await fetch(`${API_URL}/message/${messageId}`,
+export const setMessageScore = async (messageId: number,request: ScoreResponseRequest): Promise<AIMessage | RequestError> => {
+    const message = await fetchWrapper<AIMessage>(`${API_URL}/message/${messageId}/score`,
         {
             body: JSON.stringify(request),
             method: "POST"
         }
     )
-    .then(async (response) => {
-        if (response.ok) {
-            return await response.json() as AIMessage
-        }
 
-        const responseError = await response.json() as ResponseError
+    return message
+}
 
-        return {
-            requestError: true,
-            message: responseError.message,
-            status: responseError.status,
-            statusText: responseError.error,
-            url: responseError.path
-        } as RequestError
-    })
-    .catch((error) => {
-        console.log(error)
-
-        return {
-            requestError: true,
-            message: error.message,
-            status: 500,
-            statusText: 'Unknown error',
-            url: ''
-        } as RequestError
-    })
-
-    return platforms
+export const evaluateMessage = async (messageId: number): Promise<EvaluationResultResponse | RequestError> => {
+    const evaluation = await fetchWrapper<EvaluationResultResponse>(`${API_URL}/message/${messageId}/evaluate`)
+    return evaluation
 }

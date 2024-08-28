@@ -1,0 +1,64 @@
+---
+import type { Chat, Message } from "@/model/chat";
+import type { IntentInstance } from "@/model/model";
+import { Card, CardContent } from "@design/ui/card";
+
+export type Props = {
+  instance: IntentInstance;
+};
+
+const { instance } = Astro.props;
+
+const prompts = instance.chats
+  .map((draft: Chat) =>
+    draft.promptIterations
+      .map((iteration) =>
+        iteration.messages.filter(
+          (messages: Message) => messages.type === "user",
+        ),
+      )
+      .reduce((acc, val) => acc.concat(val), []),
+  )
+  .reduce((acc, val) => acc.concat(val), []);
+
+const responses = instance.chats
+  .map((draft: Chat) =>
+    draft.promptIterations
+      .map((iteration) =>
+        iteration.messages.filter(
+          (messages: Message) => messages.type === "ai",
+        ),
+      )
+      .reduce((acc, val) => acc.concat(val), []),
+  )
+  .reduce((acc, val) => acc.concat(val), []);
+
+const maxScore = responses.reduce((acc, val) => {
+  if ("score" in val) {
+    return val.score > acc ? val.score : acc;
+  }
+  return acc;
+}, 0);
+---
+
+<Card>
+  <CardContent className="py-3 px-6">
+    <ol class="flex flex-row justify-around">
+      <li class="flex flex-col gap-1 justify-center place-items-center">
+        <p class="font-semibold">Chats</p>
+        <p class="">{instance.chats.length}</p>
+      </li>
+      <li class="flex flex-col gap-1 justify-center place-items-center">
+        <p class="font-semibold">Total Prompts</p>
+        <p class="">{prompts.length}</p>
+      </li>
+      <li class="flex flex-col gap-1 justify-center place-items-center">
+        <p class="font-semibold">Max Score</p>
+        <p class="">{maxScore}</p>
+      </li>
+    </ol>
+  </CardContent>
+  <!-- <CardFooter>
+      <p>Card Footer</p>
+    </CardFooter> -->
+</Card>

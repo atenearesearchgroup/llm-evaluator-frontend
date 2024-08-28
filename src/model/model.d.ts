@@ -1,3 +1,5 @@
+import type { Chat } from "./chat";
+
 export type IntentModel = {
     modelName: string;
     displayName: string;
@@ -8,7 +10,7 @@ export interface IntentInstance extends EvaluationSettings {
     platform: string;
     displayName: string;
     intentModel?: IntentModel;
-    chats: Draft[];
+    chats: Chat[];
     modelSettings: ModelSettings;
 } 
 

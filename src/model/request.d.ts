@@ -42,6 +42,8 @@ export type ScoreResponseRequest = {
     score: number
 }
 
+
+
 export interface ResponseError {
     error: string;
     message: string;

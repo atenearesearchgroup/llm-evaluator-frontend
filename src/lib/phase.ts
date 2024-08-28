@@ -2,6 +2,13 @@ import mockData from '@/mock/phases.json'
 import type { Action, Decision } from '@/model/diagram'
 
 
+export const getNode = (id: string): (Action | Decision) => {
+    if (id.startsWith("decision:"))
+        return getDecision(id.substring("decision:".length))
+
+    return getAction(id)
+}
+
 export const getAction = (id: string): Action => {
     return mockData.actions.find(action => action.id === id) as Action
 }

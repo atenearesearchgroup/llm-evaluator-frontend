@@ -2,6 +2,8 @@
 import CreateModel from '@/components/mainPage/CreateModel.astro';
 import Layout from '../layouts/Layout.astro';
 import CreateInstance from '@/components/mainPage/CreateInstance.astro';
+import ExampleDiagram from '@/components/ExampleDiagram.astro';
+import CreateExecution from '@/components/mainPage/CreateExecution.astro';
 
 
 ---
@@ -9,9 +11,11 @@ import CreateInstance from '@/components/mainPage/CreateInstance.astro';
 <Layout title="Home">
 	<main>
 
-		<CreateInstance />
-
+		<CreateExecution />
+<!-- 
 		<CreateModel />
+
+		<ExampleDiagram /> -->
 		
 	</main>
 </Layout>
