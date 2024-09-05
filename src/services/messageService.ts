@@ -10,6 +10,9 @@ export const setMessageScore = async (messageId: number,request: ScoreResponseRe
     const message = await fetchWrapper<AIMessage>(`${API_URL}/message/${messageId}/score`,
         {
             body: JSON.stringify(request),
+            headers: {
+                "Content-Type": "application/json"
+            },
             method: "POST"
         }
     )

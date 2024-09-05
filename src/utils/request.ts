@@ -1,13 +1,10 @@
 import type { RequestError, ResponseError } from "@/model/request";
 
-
 export const fetchWrapper = async <T>(
     url: string,
     requestInit?: RequestInit,
     responseType: "json" | "blob" | "text" = "json",
 ): Promise<T | RequestError> => {
-
-    console.log("url", url, responseType)
     try {
         const response = await fetch(url, requestInit);
         if (response.ok) {
