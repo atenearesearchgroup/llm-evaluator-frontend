@@ -3,12 +3,13 @@ import type { AIMessage, Message, PromptIteration } from "@/model/chat"
 import type { IntentInstance } from "@/model/model"
 import { getInstance } from "@/services/instanceService"
 import { Card, CardContent, CardFooter, CardTitle } from "@design/ui/card"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { getAllJSDocTagsOfKind } from "typescript"
 import { executeAction, getStatus, InstanceStatus } from "./execution"
 import { useToast } from "@design/ui/use-toast"
 import type { RequestError } from "@/model/request"
 import { Button } from "@design/ui/button"
+import { Badge } from "@design/ui/badge"
 
 type RunningInstanceProps = {
     instanceData: InstanceInfo,
@@ -36,7 +37,7 @@ const handleStatus = async (instanceData: InstanceInfo, instance: IntentInstance
 
     console.log("status", instance.id, status)
 
-    if(status === InstanceStatus.DONE) {
+    if (status === InstanceStatus.DONE) {
         console.log("DONE")
         return
     }
@@ -68,12 +69,28 @@ const handleStatus = async (instanceData: InstanceInfo, instance: IntentInstance
 
 }
 
-
 export const RunningInstance = ({ instanceData, updateInstance }: RunningInstanceProps) => {
-    const [executionData, setExecutionData] = useState<InstanceInfo>(instanceData)
+    const running = useRef(false)
     const [instance, setInstance] = useState<IntentInstance>()
     const [error, setError] = useState<RequestError>()
     const { toast } = useToast()
+
+
+    const lastChat = instance == null ? null : instance.chats[instance.chats.length - 1] ?? {}
+    // get iteration with higher index
+    const lastIteration = useMemo(() => {
+        return lastChat?.promptIterations?.reduce((prev: PromptIteration | null, curr) => {
+        if (prev != null && prev.iteration < curr.iteration)
+            return prev
+        return curr
+    }, null)}, [lastChat])
+
+    const messages = useMemo(() => {
+        return (lastIteration?.messages ?? []).map(message => ({
+            ...message,
+            timestamp: new Date(Date.parse(message.timestamp as any as string))
+        })).sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+    }, [lastIteration]);
 
     useEffect(() => {
         const loadInstance = async (delay: number = 100) => {
@@ -94,52 +111,69 @@ export const RunningInstance = ({ instanceData, updateInstance }: RunningInstanc
         }
         loadInstance()
     }, [])
+    
+    useEffect(() => {
+        if (instance == null || running.current) return
 
-    if (instance == null) return <></>
-    if (error) {
-        return (<Card className="p-2 rounded-md space-y-2">
-            <CardTitle>
-                {instance.intentModel?.displayName}
-            </CardTitle>
-            <CardContent className="py-3 px-6 bg-secondary rounded-md">
-                ERROR : {error.message}
-                <ol className="flex flex-row justify-around">
-                </ol>
+        running.current = true
+        handleStatus(instanceData, instance, setInstance, setError, updateInstance, toast);
+        running.current = false
+    }, [instance]);
+
+    if (instance == null) return (
+        <Card className="p-2">
+            <CardContent className="py-3 px-6 text-sm">
+                Loading instance {instanceData.id}...
             </CardContent>
+        </Card>
+    )
 
-            <CardFooter className="py-1 justify-end">
-                <Button onClick={() => setError(undefined)}>Retry</Button>
-            </CardFooter>
-        </Card>)
+    const status = getStatus(instance)
+    const colorStatus = instanceData.status === "running" ? "bg-yellow-500" : (instanceData.status === "completed" ? "bg-green-500" : "bg-red-500")
+
+    if (error) {
+        return (
+            <Card className="p-2">
+                <CardTitle className="flex justify-between text-md px-4 py-2 bg-secondary rounded-lg">
+                    {instance.intentModel?.displayName}
+
+                    <Badge variant={"outline"} className={`text-foreground ${colorStatus}`} >{instanceData.status.toUpperCase()}</Badge>
+                </CardTitle>
+                <CardContent className="py-3 px-6 text-sm">
+                    <div className="flex gap-2">
+                        Current action: <p className="font-semibold"> {status}</p>
+                    </div>
+                    <div className="font-semibold">
+                        ERROR : {error.message}
+                    </div>
+                </CardContent>
+                <CardFooter className="py-1 justify-end">
+                    <Button onClick={() => setError(undefined)}>Retry</Button>
+                </CardFooter>
+            </Card>
+        )
     }
 
-    const lastChat = instance.chats[instance.chats.length - 1] ?? {}
-    // get iteration with higher index
-    const lastIteration = lastChat.promptIterations?.reduce((prev: PromptIteration | null, curr) => {
-        if (prev != null && prev.iteration < curr.iteration)
-            return prev
-        return curr
-    }, null)
-
-    const messages = lastIteration?.messages ?? []
-    messages.forEach((a) => a.timestamp = new Date(Date.parse(a.timestamp as any as string)))
-
-    const sortedMessages = messages
-        .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-
-    const lastScore = sortedMessages.length === 0 ? 0 : getLastAiMessage(sortedMessages)?.score
-
-    handleStatus(instanceData, instance, setInstance, setError, updateInstance, toast)
+    const lastScore = messages.length === 0 ? 0 : getLastAiMessage(messages)?.score
 
     return (
-        <Card>
-            <CardContent className="py-3 px-6">
-                {instance.intentModel?.displayName}  - {lastChat?.actualNode || "No active Chat"} - {lastScore}
-                <ol className="flex flex-row justify-around">
-                </ol>
+        <Card className="p-2">
+            <CardTitle className="flex justify-between text-md px-4 py-2 bg-secondary rounded-lg">
+                {instance.intentModel?.displayName}
+                <Badge variant={"outline"} className={`text-foreground ${colorStatus}`} >{instanceData.status.toUpperCase()}</Badge>
+            </CardTitle>
+            <CardContent className="py-3 px-6 text-sm">
+                <div className="flex gap-2">
+                    Current action: <p className="font-semibold"> {status}</p>
+                </div>
+                {status !== InstanceStatus.DONE &&
+                    <div>
+                        Chat status: {lastChat?.actualNode || "No active Chat"}
+                    </div>
+                }
+                <div>
+                    Last Score: {lastScore} / {instanceData.evaluation?.maxScore}
+                </div>
             </CardContent>
-            {/* <!-- <CardFooter>
-              <p>Card Footer</p>
-            </CardFooter> --> */}
         </Card>)
 }

@@ -6,6 +6,7 @@ import type { IntentInstance } from "@/model/model";
 import { Input } from "@design/ui/input";
 import { ExecutionInfo } from "./ExecutionInfo";
 import { RunningInstance } from "./RunningInstance";
+import { ExportListButton } from "./ExportListButton";
 
 
 type ExecutionPageProps = {
@@ -20,7 +21,13 @@ export const ExecutionPage = ({ id }: ExecutionPageProps) => {
 
     useEffect(() => {
         const getInstanceProm = async () => {
-            const result = instance.instances.length > 0 ? await getInstance(instance.instances[0].id) : null
+
+            if (instance.instances.length === 0) {
+                setSampleInstance(null)
+                return
+            }
+
+            const result = await getInstance(instance.instances[0].id)
 
             if (result == null) {
                 setSampleInstance(null)
@@ -56,16 +63,10 @@ export const ExecutionPage = ({ id }: ExecutionPageProps) => {
             <div className="flex flex-row items-center justify-between space-y-2">
                 <h2 className="text-xl font-bold">Execution #{id}</h2>
                 <div className="gap-2 flex items-center">
-                    {/* <CloneInstance instance={instance} client:visible /> */}
                     <InstanceSettings instance={sampleInstance} />
                 </div>
             </div>
             <div className="flex flex-row items-center justify-between space-y-2">
-                {/* <InstanceTitle
-                instanceId={instance.id}
-                title={instance.displayName}
-                client:visible
-            /> */}
                 <div className="w-fit">
                     <Input className="text-2xl py-4 font-bold tracking-tight"
                         defaultValue={instance.title}
@@ -83,12 +84,9 @@ export const ExecutionPage = ({ id }: ExecutionPageProps) => {
                     instance.instances.map((value, idx) => {
                         return <RunningInstance updateInstance={
                             (instanceData) => {
-                                const newInstances = instance.instances.map((instance) => {
-                                    if (instance.id === instanceData.id) {
-                                        return instanceData
-                                    }
-                                    return instance
-                                })
+                                const newInstances = instance.instances.map((inst) =>
+                                    inst.id === instanceData.id ? instanceData : inst
+                                );
 
                                 const newDataInfo: DataInfo = { ...instance, instances: newInstances }
 
@@ -100,23 +98,8 @@ export const ExecutionPage = ({ id }: ExecutionPageProps) => {
 
             </section>
 
-            {/* <CreateChat instance={instance} client:visible /> */}
-            {/* 
-        <section id="draft-list">
-            {
-                instance.chats.map((draft) => {
-                    return (
-                        <ChatInfo
-                            chat={draft}
-                            intentInstanceId={instance.id}
-                            client:visible
-                        />
-                    );
-                })
-            }
-        </section> */}
+            <ExportListButton id={id} />
 
-            {/* <ExportButton instance={instance} client:visible /> */}
         </main>
     )
 }
