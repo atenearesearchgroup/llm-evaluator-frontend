@@ -11,6 +11,7 @@ export type CategoryError = {
 
 export type EvaluationResultResponse = {
     score: number;
+    maxScore: number;
     diagram: string|undefined;
     errors: CategoryError[]
 }

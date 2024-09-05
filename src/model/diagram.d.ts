@@ -17,10 +17,15 @@ export interface Decision extends Phase {
     arrows: Arrow[];
 };
 
+export interface PromptInfo {
+    template: string;
+    group: boolean;
+}
+
 export interface Action extends Phase {
     fewShot?: string;
     prePrompt?: string;
-    prompts: string[];
+    prompts: Record<string,PromptInfo>;
     postPrompt?: string;
 
     evaluate: boolean;

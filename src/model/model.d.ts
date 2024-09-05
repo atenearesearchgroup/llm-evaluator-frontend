@@ -15,6 +15,7 @@ export interface IntentInstance extends EvaluationSettings {
 } 
 
 export type ModelSettings = {
+    id?: number;
     modelName?: string;
     modelOwner?: string;
     version?: string;
