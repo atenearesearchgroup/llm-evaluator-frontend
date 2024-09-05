@@ -6,7 +6,7 @@ type ExecutionInfoProps = {
 }
 
 export const ExecutionInfo = ({instance} : ExecutionInfoProps) => {
-    const runningInstances = instance.instances.filter(info => info.status !== `completed`)
+    const runningInstances = instance.instances.filter(info => info.status === `running`)
     const failedInstances = instance.instances.filter(info => info.status === `failed`)
     const completedInstances = instance.instances.filter(info => info.status === `completed`)
     // const prompts
