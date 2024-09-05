@@ -1,15 +1,14 @@
-import type { DataInfo, InstanceInfo } from '@/hooks/useEvaluationData';
+import type { InstanceInfo } from '@/hooks/useEvaluationData';
 import { getAction, getDecision, getFirstPhase, getNode } from '@/lib/phase';
 import type { AIMessage, Chat } from '@/model/chat';
 import type { Action } from '@/model/diagram';
-import type { EvaluationResultResponse } from '@/model/evaluation';
+import type { EvaluationResultResponse, ModelError } from '@/model/evaluation';
 import type { IntentInstance } from '@/model/model';
-import type { CreateMessageRequest } from '@/model/request';
-import { finalizeDraft, generateMessage, getChat, sendMessage, updateDraft } from '@/services/chatService';
+import type { RequestError } from '@/model/request';
+import { finalizeDraft, generateMessage, sendMessage, updateDraft } from '@/services/chatService';
 import { createChat, getInstance } from '@/services/instanceService';
 import { evaluateMessage, setMessageScore } from '@/services/messageService';
 import { unzip } from 'unzipit';
-import { EMPTY_PATH } from 'zod';
 
 
 export type ModelInfo = {
@@ -76,7 +75,7 @@ export const getStatus = (instance: IntentInstance) => {
     const lastChatSuccess = instance.chats.length > 0 && instance.chats[instance.chats.length - 1].actualNode === "end"
     const lastChatNotFinalized = instance.chats.length > 0 && !instance.chats[instance.chats.length - 1].finalized
 
-    console.log(lastChatSuccess, instance.chats.length, instance.maxChats)
+    // console.log(lastChatSuccess, instance.chats.length, instance.maxChats)
 
     if (instance.chats.length >= instance.maxChats && instance.chats[instance.chats.length - 1].finalized || lastChatSuccess) {
         return InstanceStatus.DONE;
@@ -105,9 +104,7 @@ export const getStatus = (instance: IntentInstance) => {
             return InstanceStatus.PENDING_AI;
         } else {
 
-            console.log(lastMessage)
-
-            if ((lastMessage as AIMessage).score === -1) {
+            if ((lastMessage as AIMessage).score === -2) {
                 return InstanceStatus.PENDING_SCORE;
             }
 
@@ -131,6 +128,8 @@ export const executeAction = async (execution: InstanceInfo, instance: IntentIns
                 throw newChat
             }
 
+            execution.status = "running"
+
             await updateDraft(newChat.id, { actualNode: getFirstPhase() })
 
             break
@@ -153,12 +152,21 @@ export const executeAction = async (execution: InstanceInfo, instance: IntentIns
             break
         case InstanceStatus.PENDING_USER:
             lastChat = instance.chats[instance.chats.length - 1]
+            let action = getAction(lastChat.actualNode)
 
-            content = generateContent(execution.evaluation as EvaluationResultResponse)
+            content = generateContent(execution.evaluation as EvaluationResultResponse, action)
 
-            if(content === "") {
+            if (content === "") {
                 throw new Error("Content generation failed")
             }
+
+            content = generateFullPrompt(content, action, false)
+
+            if (content === "") {
+                throw new Error("Prompt generation failed")
+            }
+
+            console.log("content", content)
 
             createdMessage = await sendMessage(lastChat.id, {
                 content: content,
@@ -167,12 +175,18 @@ export const executeAction = async (execution: InstanceInfo, instance: IntentIns
             })
 
             if (`requestError` in createdMessage) {
-                throw createdMessage
+                createdMessage = createdMessage as RequestError
+
+                if (createdMessage.status !== 400) {
+                    throw createdMessage
+                }
+
+                console.log("response", createdMessage)
+                execution.status = "failed"
+                await finalizeDraft(lastChat.id)
             }
 
-
             break
-
         case InstanceStatus.PENDING_AI:
             lastChat = instance.chats[instance.chats.length - 1]
 
@@ -187,7 +201,7 @@ export const executeAction = async (execution: InstanceInfo, instance: IntentIns
                 content: resultMessage,
                 promptType: lastChat.actualNode,
                 manual: false,
-                score: -1
+                score: -2
             })
 
             if (`requestError` in createdMessage) {
@@ -202,7 +216,11 @@ export const executeAction = async (execution: InstanceInfo, instance: IntentIns
             lastMessage = lastChat.promptIterations.flatMap(iteration => iteration.messages)
                 .filter(message => message.type === "ai")
                 .map(message => message as AIMessage)
-                .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())[0]
+                .map(message => {
+                    message.timestamp = new Date(Date.parse(message.timestamp as any as string))
+                    return message
+                })
+                .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())[0]
 
             console.log("lastMessageS", lastMessage)
 
@@ -217,26 +235,96 @@ export const executeAction = async (execution: InstanceInfo, instance: IntentIns
             execution.evaluation = evaluation as EvaluationResultResponse
 
             const nextPhase = getNextPhase(getAction(lastChat.actualNode), execution.evaluation ?? {} as EvaluationResultResponse)
-            
+
             await updateDraft(lastChat.id, { actualNode: nextPhase.id })
-            await setMessageScore(lastMessage.id, { score: execution.evaluation.score})
+            await setMessageScore(lastMessage.id, { score: execution.evaluation.score })
+
+            if (nextPhase.id === "end") {
+                execution.status = "completed"
+                await finalizeDraft(lastChat.id)
+            }
 
             console.log("nextPhase", nextPhase)
-
-        throw new Error("Not implemented")
+            break
+        // throw new Error("Not implemented")
+        case InstanceStatus.DONE:
+            break
     }
 
     return await getInstance(instance.id) as IntentInstance
 }
 
-const generateContent = (evaluation: EvaluationResultResponse) => {
+const generateFullPrompt = (currentText: string, { prePrompt = '', postPrompt = '', fewShot }: Action, useFewShot: boolean) => {
+    let result = prePrompt
 
-    if (evaluation.errors.length > 0) {
+    result = result.concat(currentText)
 
+    if (currentText.length == 0 || postPrompt.length > 0) result = result.concat('\n')
 
+    result = result.concat(postPrompt)
+
+    if (useFewShot && fewShot) {
+        result = fewShot?.concat('\n').concat(result)
     }
 
-    return ""
+    return result
+}
+
+const generateContent = (evaluation: EvaluationResultResponse, action: Action) => {
+    if (evaluation.errors.length == 0) {
+        throw new Error("No errors found while evaluating and tried to generate new content")
+    }
+
+    let type = action.id.replace("_prompt", "")
+
+    let typeErrors = evaluation.errors.find(error => error.type === type) ?? null
+
+    if (typeErrors == null) {
+        throw new Error("Errors not found with type of " + type + " while evaluating")
+    }
+
+    let promptContent = ""
+
+    const groupedErrors = typeErrors.errors.reduce((acc, error) => {
+        if (!acc.has(error.error)) {
+            acc.set(error.error, [])
+        }
+
+        acc.get(error.error)?.push(error)
+        return acc
+    }, new Map<string, ModelError[]>())
+
+    console.log("groupedErrors", groupedErrors)
+    groupedErrors.forEach((errors, error) => {
+        let content = ""
+        let template = action.prompts[error]
+
+        if (template == null) {
+            throw new Error("Prompt not found with error of " + error)
+        }
+
+        if (template.group) {
+            content = template.template.replace("{0}", errors
+                .flatMap(error => error.values).join(", "))
+        } else {
+            errors.forEach(error => {
+                let lineContent = template.template
+
+                error.values.forEach((value, index) => {
+                    lineContent = lineContent.replace(`{${index}}`, value)
+                })
+
+                content = content.concat(lineContent).concat("\n")
+            })
+        }
+
+        promptContent = promptContent.concat("\n").concat(content)
+    })
+
+    console.log("promptContent", promptContent)
+
+
+    return promptContent
 }
 
 const getNextPhase = (action: Action, evaluation: EvaluationResultResponse) => {
@@ -247,171 +335,31 @@ const getNextPhase = (action: Action, evaluation: EvaluationResultResponse) => {
         throw new Error("Phase not found while evaluating")
     }
 
+    console.log("evaluation", evaluation)
     console.log("firstPhase", phase.id)
 
-    while(!evaluation.errors.find(error => error.type === phase.id)) {
+    while (!evaluation.errors.find(error => error.type === phase.id)) {
         let nextDecision = phase.arrows.find(arrow => arrow.nextDecision)?.to ?? ""
 
-        if(nextDecision == "") {
+        if (nextDecision == "") {
             end = true
             break;
         }
 
         phase = getDecision(nextDecision)
-    
+
         if (phase == null) {
-            throw new Error("Phase not found while evaluating, from "+(action.to?.split(":")[1] ?? "") + " to " + nextDecision)
+            throw new Error("Phase not found while evaluating, from " + (action.to?.split(":")[1] ?? "") + " to " + nextDecision)
         }
+
+        console.log("nextPhase", phase.id)
     }
 
     console.log("endPhase", phase.id)
 
-    if(end) {
+    if (end) {
         return getAction("end")
     }
 
     return getAction(phase.arrows.find(arrow => !arrow.nextDecision)?.to ?? "")
-}
-
-const executeDecision = async (data: any, toast: any) => {
-    const arrow = decision.arrows.find(arrow => arrow.to === data.decision)
-
-    if (!arrow) {
-        console.error("Arrow not found")
-        return
-    }
-
-    if (!arrow.nextDecision) {
-        const chat = await getChat(draftId)
-
-        if ('requestError' in chat) {
-            toast({
-                title: "Error",
-                description: chat.message,
-                variant: "destructive"
-            })
-            return
-        }
-
-        if (checkExceededMaxRepeatingPrompt(chat, instance, arrow.to)) {
-            toast({
-                title: "Error",
-                description: "Chat has been finalized, due to maximum repeating prompts reached",
-                variant: "destructive"
-            })
-
-            setTimeout(() => {
-                window.location.reload()
-            }, 2500)
-            return
-        }
-
-    }
-
-    const phaseId = (arrow.nextDecision ? "decision:" : "") + arrow.to
-
-    const response = await updateDraft(draftId, { actualNode: phaseId })
-
-    if ('requestError' in response) {
-        toast(
-            {
-                title: "Error",
-                description: response.message,
-                variant: "destructive"
-            }
-        )
-    } else {
-        toast(
-            {
-                title: "Success",
-                description: "Successfully updated chat",
-                className: "bg-lime-600"
-            }
-        )
-
-        if (!arrow.nextDecision && getAction(arrow.to).to == null) {
-            const finalizeResponse = await finalizeDraft(draftId, true)
-
-            if ('requestError' in finalizeResponse) {
-                toast(
-                    {
-                        title: "Error",
-                        description: finalizeResponse.message,
-                        variant: "destructive"
-                    }
-                )
-            }
-
-        }
-
-        setTimeout(() => {
-            window.location.reload()
-        }, 800)
-    }
-}
-
-const sendRequest = async (phase: Action, draft: Chat, validSyntax: boolean, input: string, response?: string, score?: number) => {
-    const inputRequest: CreateMessageRequest = {
-        content: input,
-        promptType: phase.id
-    }
-
-    if (!validSyntax)
-        score = -1
-
-    // Added just in case response generation is added
-    const responseRequest: CreateMessageRequest | undefined = response ? {
-        content: response,
-        manual: true,
-        promptType: phase.id,
-        score: score ?? 0
-    } : undefined
-
-
-    let invalid = await createMessage(draft, inputRequest)
-
-    if (invalid) {
-        return [false, invalid.message]
-    }
-
-    if (responseRequest == null) {
-        return [false, "No response provided"]
-    } else {
-        invalid = await createMessage(draft, responseRequest)
-
-        if (invalid) {
-            return [false, invalid.message]
-        }
-    }
-
-    const updatedChat = await getChat(draft.id)
-
-    if (!('requestError' in updatedChat) && updatedChat.finalized) {
-        return [true, "Chat has been finalized, due to maximum errors reached"]
-    }
-
-    if (!validSyntax) {
-        return [true, "Message has been sent, but the phase has not been updated"]
-    }
-
-    const updateRequest = await updateDraft(draft.id, { actualNode: phase.to })
-
-    if ('requestError' in updateRequest) {
-        return [false, updateRequest.message]
-    }
-
-    const toAction = phase.to == null ? null : getAction(phase.to)
-
-    if (phase.to == null || toAction != null && toAction.to == null) {
-        const invalidDraft = await finalizeDraft(draft.id, true)
-
-        if ('requestError' in invalidDraft) {
-            return [false, invalidDraft.message]
-        }
-
-        return [true, "Chat has been finalized"]
-    }
-
-    return [true, "Message has been sent"]
-
 }
