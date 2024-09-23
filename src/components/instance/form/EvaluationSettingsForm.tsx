@@ -12,12 +12,12 @@ import { Button } from "@/components/shadcdn/ui/button"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import type { CloneFormSchema } from "./CloneInstanceForm"
 
-type EvaluationSetingsFormProps = {
+type EvaluationSettingsFormProps = {
     control: Control<z.infer<typeof CloneFormSchema>>,
     // control: Control<FormValues>,
 }
 
-export const EvaluationSetingsForm = ({ control }: EvaluationSetingsFormProps) => {
+export const EvaluationSettingsForm = ({ control }: EvaluationSettingsFormProps) => {
     const [isOpen, setIsOpen] = useState(false)
 
     return (

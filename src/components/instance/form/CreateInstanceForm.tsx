@@ -10,8 +10,8 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/shadcdn/ui/input"
 import { Button } from "@/components/shadcdn/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/shadcdn/ui/select"
-import { EvaluationSetingsForm } from "./EvaluationSettingsForm"
-import { ModelSetingsForm } from "./ModelSettingsForm"
+import { EvaluationSettingsForm } from "./EvaluationSettingsForm"
+import { ModelSettingsForm } from "./ModelSettingsForm"
 import { createInstance, getModels } from "@/services/intentService"
 import { CloneFormSchema } from "./CloneInstanceForm"
 
@@ -195,8 +195,8 @@ export const CreateInstanceForm = ({ }) => {
                 />
 
 
-                <EvaluationSetingsForm control={form.control as any as Control<z.infer<typeof CloneFormSchema>>} />
-                <ModelSetingsForm control={form.control as any as Control<z.infer<typeof CloneFormSchema>>} />
+                <EvaluationSettingsForm control={form.control as any as Control<z.infer<typeof CloneFormSchema>>} />
+                <ModelSettingsForm control={form.control as any as Control<z.infer<typeof CloneFormSchema>>} />
                 <Button type="submit">Create</Button>
             </form>
         </Form>

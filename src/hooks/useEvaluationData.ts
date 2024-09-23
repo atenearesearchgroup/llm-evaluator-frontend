@@ -7,6 +7,7 @@ export interface EvaluationData {
 
 export interface DataInfo {
     title: string;
+    syntax_prompt?: string;
     instances: InstanceInfo[];
 }
 

@@ -12,13 +12,13 @@ import { Button } from "@/components/shadcdn/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/shadcdn/ui/select"
 import { createInstance, createModel, getModels } from "@/services/intentService"
 import { CloneFormSchema } from "../instance/form/CloneInstanceForm"
-import { EvaluationSetingsForm } from "../instance/form/EvaluationSettingsForm"
-import { ModelSetingsForm } from "../instance/form/ModelSettingsForm"
+import { EvaluationSettingsForm } from "../instance/form/EvaluationSettingsForm"
+import { ModelSettingsForm } from "../instance/form/ModelSettingsForm"
 import { loadZipModels } from "./execution"
 import { useEvaluationData } from "@/hooks/useEvaluationData"
 import { deleteInstance, getInstance, getInstances } from "@/services/instanceService"
 import { uploadFile } from "@/services/fileService"
-import InstanceInfo from "../instance/sections/InstanceInfo.astro"
+import { Textarea } from "@design/ui/textarea"
 
 const getAvailablePlatforms = async (): Promise<[string[], IntentModel[]]> => {
     const platforms = await getPlatforms()
@@ -50,7 +50,8 @@ export const FormSchema = CloneFormSchema.extend({
         message: "Title must be at least 2 characters.",
     }),
     zip: ZipSchema,
-    llm: z.string()
+    llm: z.string(),
+    syntax_prompt: z.string().optional(),   
 })
 
 
@@ -194,6 +195,7 @@ export const CreateExecutionForm = ({ }) => {
 
         addEvaluation({
             title: formData.title,
+            syntax_prompt: formData.syntax_prompt,
             instances: createdInstances.map(instance => {
                 console.log(models.find(model => {
                     console.log(model.id, instance.intentModel?.displayName ?? "null")
@@ -279,9 +281,27 @@ export const CreateExecutionForm = ({ }) => {
                         </FormItem>
                     )}
                 />
+                
+                <FormField
+                    control={form.control}
+                    name="syntax_prompt"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Title</FormLabel>
+                            <FormControl>
+                                <Textarea {...field} />
+                            </FormControl>
+                            <FormDescription>
+                                This is the prompt to be used in case there are syntax errors
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
-                <EvaluationSetingsForm control={form.control as any as Control<z.infer<typeof CloneFormSchema>>} />
-                <ModelSetingsForm control={form.control as any as Control<z.infer<typeof CloneFormSchema>>} />
+
+                <EvaluationSettingsForm control={form.control as any as Control<z.infer<typeof CloneFormSchema>>} />
+                <ModelSettingsForm control={form.control as any as Control<z.infer<typeof CloneFormSchema>>} />
                 <Button type="submit">Create</Button>
             </form>
         </Form>

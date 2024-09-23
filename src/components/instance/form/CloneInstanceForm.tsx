@@ -6,8 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useToast } from "@/components/shadcdn/ui/use-toast"
 import { Form } from "@/components/shadcdn/ui/form"
 import { Button } from "@/components/shadcdn/ui/button"
-import { EvaluationSetingsForm } from "./EvaluationSettingsForm"
-import { ModelSetingsForm } from "./ModelSettingsForm"
+import { EvaluationSettingsForm } from "./EvaluationSettingsForm"
+import { ModelSettingsForm } from "./ModelSettingsForm"
 import { cloneInstance } from "@/services/instanceService"
 
 
@@ -133,8 +133,8 @@ export const CloneInstanceForm = ({ instance }: CloneInstanceFormProps) => {
     return (
         <Form {...form} >
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6 mx-auto py-5">
-                <EvaluationSetingsForm control={form.control} />
-                <ModelSetingsForm control={form.control} />
+                <EvaluationSettingsForm control={form.control} />
+                <ModelSettingsForm control={form.control} />
                 <Button type="submit">Create</Button>
             </form>
         </Form>

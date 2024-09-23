@@ -13,11 +13,11 @@ import {  ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { Textarea } from "@/components/shadcdn/ui/textarea"
 import type { CloneFormSchema } from "./CloneInstanceForm"
 
-type ModelSetingsFormProps = {
+type ModelSettingsFormProps = {
     control: Control<z.infer<typeof CloneFormSchema>>,
 }
 
-export const ModelSetingsForm = ({ control }: ModelSetingsFormProps) => {
+export const ModelSettingsForm = ({ control }: ModelSettingsFormProps) => {
     const [isOpen, setIsOpen] = useState(false)
 
     return (
