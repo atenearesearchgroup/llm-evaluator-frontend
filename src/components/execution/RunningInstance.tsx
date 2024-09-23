@@ -10,6 +10,7 @@ import { useToast } from "@design/ui/use-toast"
 import type { RequestError } from "@/model/request"
 import { Button } from "@design/ui/button"
 import { Badge } from "@design/ui/badge"
+import { LastIterationMessage } from "./LastIterationMessage"
 
 type RunningInstanceProps = {
     instanceData: InstanceInfo,
@@ -80,10 +81,11 @@ export const RunningInstance = ({ instanceData, updateInstance }: RunningInstanc
     // get iteration with higher index
     const lastIteration = useMemo(() => {
         return lastChat?.promptIterations?.reduce((prev: PromptIteration | null, curr) => {
-        if (prev != null && prev.iteration < curr.iteration)
-            return prev
-        return curr
-    }, null)}, [lastChat])
+            if (prev != null && prev.iteration < curr.iteration)
+                return prev
+            return curr
+        }, null)
+    }, [lastChat])
 
     const messages = useMemo(() => {
         return (lastIteration?.messages ?? []).map(message => ({
@@ -111,7 +113,7 @@ export const RunningInstance = ({ instanceData, updateInstance }: RunningInstanc
         }
         loadInstance()
     }, [])
-    
+
     useEffect(() => {
         if (instance == null || running.current) return
 
@@ -146,6 +148,7 @@ export const RunningInstance = ({ instanceData, updateInstance }: RunningInstanc
                     <div className="font-semibold">
                         ERROR : {error.message}
                     </div>
+                    <LastIterationMessage iteration={lastIteration} />
                 </CardContent>
                 <CardFooter className="py-1 justify-end">
                     <Button onClick={() => setError(undefined)}>Retry</Button>
@@ -166,7 +169,8 @@ export const RunningInstance = ({ instanceData, updateInstance }: RunningInstanc
                 <div className="flex gap-2">
                     Current action: <p className="font-semibold"> {status}</p>
                 </div>
-                {status !== InstanceStatus.DONE &&
+                {
+                    status !== InstanceStatus.DONE &&
                     <div>
                         Chat status: {lastChat?.actualNode || "No active Chat"}
                     </div>

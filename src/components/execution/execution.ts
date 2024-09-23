@@ -8,6 +8,7 @@ import type { RequestError } from '@/model/request';
 import { finalizeDraft, generateMessage, sendMessage, updateDraft } from '@/services/chatService';
 import { createChat, getInstance } from '@/services/instanceService';
 import { evaluateMessage, setMessageScore } from '@/services/messageService';
+import { MESSAGE_INVALID_SYNTAX_SCORE, MESSAGE_SCORE_MISSING } from '@/utils/constants';
 import { unzip } from 'unzipit';
 
 
@@ -68,6 +69,7 @@ export enum InstanceStatus {
     PENDING_USER = "PENDING_USER",
     PENDING_AI = "PENDING_AI",
     PENDING_SCORE = "PENDING_SCORE",
+    PENDING_VALID_RESPONSE = "PENDING_VALID_RESPONSE",
     DONE = "DONE"
 }
 
@@ -104,8 +106,11 @@ export const getStatus = (instance: IntentInstance) => {
             return InstanceStatus.PENDING_AI;
         } else {
 
-            if ((lastMessage as AIMessage).score === -2) {
+            if (lastMessage.score === MESSAGE_SCORE_MISSING) {
                 return InstanceStatus.PENDING_SCORE;
+            }
+            if(lastMessage.score === MESSAGE_INVALID_SYNTAX_SCORE) {
+                return InstanceStatus.PENDING_VALID_RESPONSE;
             }
 
             return InstanceStatus.PENDING_USER;
@@ -201,7 +206,7 @@ export const executeAction = async (execution: InstanceInfo, instance: IntentIns
                 content: resultMessage,
                 promptType: lastChat.actualNode,
                 manual: false,
-                score: -2
+                score: MESSAGE_SCORE_MISSING
             })
 
             if (`requestError` in createdMessage) {
@@ -210,7 +215,6 @@ export const executeAction = async (execution: InstanceInfo, instance: IntentIns
 
             break
         case InstanceStatus.PENDING_SCORE:
-
             // throw new Error("Not implemented")
             lastChat = instance.chats[instance.chats.length - 1]
             lastMessage = lastChat.promptIterations.flatMap(iteration => iteration.messages)
@@ -246,7 +250,9 @@ export const executeAction = async (execution: InstanceInfo, instance: IntentIns
 
             console.log("nextPhase", nextPhase)
             break
-        // throw new Error("Not implemented")
+        case InstanceStatus.PENDING_VALID_RESPONSE:
+            throw new Error("Not implemented")
+
         case InstanceStatus.DONE:
             break
     }

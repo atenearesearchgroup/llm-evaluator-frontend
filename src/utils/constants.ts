@@ -1,0 +1,4 @@
+
+
+export const MESSAGE_INVALID_SYNTAX_SCORE = -1
+export const MESSAGE_SCORE_MISSING = -2

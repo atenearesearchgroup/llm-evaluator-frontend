@@ -28,9 +28,10 @@ interface Message {
 }
 
 export type UserMessage = {
-
+    type: 'user'
 } & Message
 
 export type AIMessage = {
     score: number
+    type: 'ai'
 } & Message
