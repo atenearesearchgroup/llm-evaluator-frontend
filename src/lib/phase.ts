@@ -1,6 +1,12 @@
 import mockData from '@/mock/phases.json'
 import type { Action, Decision } from '@/model/diagram'
 
+export const getDefaultSyntaxPrompt = () => {
+    // public/assets/files/syntax_prompt.txt
+    const value = "Task: Generate a Class Diagram in PlantUML\n\nBased on the instructions and requirements given in the previous messages, please generate a PlantUML class diagram. Ensure the following:\n\n- The class diagram must accurately reflect the details provided in the previous messages (e.g., class names, methods, properties, relationships such as inheritance, composition, and aggregation).\n- The output must be free of syntax errors and fully compliant with PlantUML syntax. The diagram should be renderable by PlantUML without modifications.\n- Use correct PlantUML symbols, such as `-->`, `<|--`, `+`, `-`, and `#` to denote relationships and access modifiers.\n\nHere is an example of valid PlantUML syntax:\n\n\`\`\`\n@startuml\nclass Person {\n}\n\nclass Animal {\n  + name: String\n  + makeSound(): void\n}\n\nclass Dog extends Animal {\n  + bark(): void\n}\n\nclass Cat extends Animal {\n  + meow(): void\n}\n\nPerson \"0..1\" -- \"*\" Animal: pets\n@enduml\n\`\`\`\n\nEnsure that the output is written in a similar structure and follows all previous instructions. No syntax errors should be present in the generated diagram.";
+
+    return value;
+}
 
 export const getNode = (id: string): (Action | Decision) => {
     if (id.startsWith("decision:"))

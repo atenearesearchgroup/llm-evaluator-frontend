@@ -17,7 +17,7 @@ type IntentInstanceProps = {
 // /bg-slate-600
 export const ExecutionInstanceButton = ({ instance, id }: IntentInstanceProps) => {
 
-    const isRunning= instance.instances.find(info => info.status !== `completed`)
+    const isRunning = instance.instances.every(info => info.status === `running`)
      ? `in progress` : `completed`
 
     return (

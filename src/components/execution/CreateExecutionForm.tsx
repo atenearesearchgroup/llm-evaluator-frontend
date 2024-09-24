@@ -19,6 +19,7 @@ import { useEvaluationData } from "@/hooks/useEvaluationData"
 import { deleteInstance, getInstance, getInstances } from "@/services/instanceService"
 import { uploadFile } from "@/services/fileService"
 import { Textarea } from "@design/ui/textarea"
+import { getDefaultSyntaxPrompt } from "@/lib/phase"
 
 const getAvailablePlatforms = async (): Promise<[string[], IntentModel[]]> => {
     const platforms = await getPlatforms()
@@ -51,7 +52,7 @@ export const FormSchema = CloneFormSchema.extend({
     }),
     zip: ZipSchema,
     llm: z.string(),
-    syntax_prompt: z.string().optional(),   
+    syntaxPrompt: z.string().optional(),   
 })
 
 
@@ -72,7 +73,8 @@ export const CreateExecutionForm = ({ }) => {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            title: "New Instance",
+            title: "New Execution",
+            syntaxPrompt: getDefaultSyntaxPrompt(),
             maxErrors: 0,
             maxChats: 1,
             maxRepeatingPrompt: 1
@@ -193,9 +195,9 @@ export const CreateExecutionForm = ({ }) => {
         console.log("models", models)
         console.log("createdInstances", createdInstances)
 
-        addEvaluation({
+        const index = addEvaluation({
             title: formData.title,
-            syntax_prompt: formData.syntax_prompt,
+            syntax_prompt: formData.syntaxPrompt,
             instances: createdInstances.map(instance => {
                 console.log(models.find(model => {
                     console.log(model.id, instance.intentModel?.displayName ?? "null")
@@ -216,6 +218,10 @@ export const CreateExecutionForm = ({ }) => {
             // className: "bg-lime-600"
         })
 
+        setTimeout(()=> {
+            // open new tab
+            window.open(`/execution/${index}`, "_self")
+        })
 
     }
 
@@ -284,10 +290,10 @@ export const CreateExecutionForm = ({ }) => {
                 
                 <FormField
                     control={form.control}
-                    name="syntax_prompt"
+                    name="syntaxPrompt"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Title</FormLabel>
+                            <FormLabel>Syntax prompt</FormLabel>
                             <FormControl>
                                 <Textarea {...field} />
                             </FormControl>

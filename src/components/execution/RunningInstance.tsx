@@ -1,4 +1,4 @@
-import type { InstanceInfo } from "@/hooks/useEvaluationData"
+import type { DataInfo, InstanceInfo } from "@/hooks/useEvaluationData"
 import type { AIMessage, Message, PromptIteration } from "@/model/chat"
 import type { IntentInstance } from "@/model/model"
 import { getInstance } from "@/services/instanceService"
@@ -11,10 +11,12 @@ import type { RequestError } from "@/model/request"
 import { Button } from "@design/ui/button"
 import { Badge } from "@design/ui/badge"
 import { LastIterationMessage } from "./LastIterationMessage"
+import { MESSAGE_INVALID_SYNTAX_SCORE } from "@/utils/constants"
 
 type RunningInstanceProps = {
     instanceData: InstanceInfo,
-    updateInstance: (instance: InstanceInfo) => void
+    updateInstance: (instance: InstanceInfo) => void,
+    parent: DataInfo
 }
 
 const getLastAiMessage = (messages: (Message | AIMessage)[]): AIMessage | null => {
@@ -29,9 +31,9 @@ const getLastAiMessage = (messages: (Message | AIMessage)[]): AIMessage | null =
     return messages[messages.length - 2] as AIMessage
 }
 
-const handleStatus = async (instanceData: InstanceInfo, instance: IntentInstance,
-    setInstance: React.Dispatch<React.SetStateAction<IntentInstance | undefined>>,
-    setError: React.Dispatch<React.SetStateAction<RequestError | undefined>>,
+const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instance: IntentInstance,
+    setInstance: (instance: IntentInstance | undefined) => void,
+    setError: (error: RequestError | undefined) => void,
     updateInstance: (instance: InstanceInfo) => void,
     toast: any) => {
     const status = getStatus(instance)
@@ -44,7 +46,7 @@ const handleStatus = async (instanceData: InstanceInfo, instance: IntentInstance
     }
 
     try {
-        const newInstance = await executeAction(instanceData, instance, status)
+        const newInstance = await executeAction(instanceData, parent, instance, status)
 
         console.log("newInstance", instance.id, newInstance)
 
@@ -70,7 +72,13 @@ const handleStatus = async (instanceData: InstanceInfo, instance: IntentInstance
 
 }
 
-export const RunningInstance = ({ instanceData, updateInstance }: RunningInstanceProps) => {
+const getScoreRepresentation = (score?: number) => {
+    if(score == null) return "N/A"
+    if(score === MESSAGE_INVALID_SYNTAX_SCORE) return "Invalid Syntax"
+    return score
+}
+
+export const RunningInstance = ({ instanceData, parent, updateInstance }: RunningInstanceProps) => {
     const running = useRef(false)
     const [instance, setInstance] = useState<IntentInstance>()
     const [error, setError] = useState<RequestError>()
@@ -117,10 +125,12 @@ export const RunningInstance = ({ instanceData, updateInstance }: RunningInstanc
     useEffect(() => {
         if (instance == null || running.current) return
 
+        if(error) return
+
         running.current = true
-        handleStatus(instanceData, instance, setInstance, setError, updateInstance, toast);
+        handleStatus(instanceData, parent, instance, setInstance, setError, updateInstance, toast);
         running.current = false
-    }, [instance]);
+    }, [instance, error]);
 
     if (instance == null) return (
         <Card className="p-2">
@@ -176,7 +186,7 @@ export const RunningInstance = ({ instanceData, updateInstance }: RunningInstanc
                     </div>
                 }
                 <div>
-                    Last Score: {lastScore} / {instanceData.evaluation?.maxScore}
+                    Last Score: {getScoreRepresentation(lastScore)} / {instanceData.evaluation?.maxScore}
                 </div>
             </CardContent>
         </Card>)

@@ -43,12 +43,14 @@ export const useEvaluationData = () => {
     const addEvaluation = (data: DataInfo) => {
         const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
         if (localData) {
-            const parsedData = JSON.parse(localData);
+            const parsedData : EvaluationData = JSON.parse(localData);
             const newData = [...parsedData.list, data];
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ list: newData }));
+            return newData.length - 1;
         }
 
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ list: [data] }));
+        return 0;
     }
 
     const listEvaluations = () => {

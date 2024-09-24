@@ -1,15 +1,25 @@
 import type { DataInfo } from "@/hooks/useEvaluationData"
 import { Card, CardContent } from "@design/ui/card"
+import { useState } from "react"
 
 type ExecutionInfoProps = {
-    instance: DataInfo
+    instance: DataInfo,
+    broadcast: BroadcastChannel
 }
 
-export const ExecutionInfo = ({instance} : ExecutionInfoProps) => {
-    const runningInstances = instance.instances.filter(info => info.status === `running`)
-    const failedInstances = instance.instances.filter(info => info.status === `failed`)
-    const completedInstances = instance.instances.filter(info => info.status === `completed`)
+export const ExecutionInfo = ({instance, broadcast} : ExecutionInfoProps) => {
+    const [dataInfo, setDataInfo] = useState(instance);
+    const runningInstances = dataInfo.instances.filter(info => info.status === `running`)
+    const failedInstances = dataInfo.instances.filter(info => info.status === `failed`)
+    const completedInstances = dataInfo.instances.filter(info => info.status === `completed`)
     // const prompts
+
+    // broadcast.postMessage({ type: `update`, data: instanceData })
+    broadcast.onmessage = (ev) => {
+        if (ev.data.type === `update`) {
+          setDataInfo(ev.data.data)
+        }
+    }
     
     return (
         <Card>
@@ -29,8 +39,5 @@ export const ExecutionInfo = ({instance} : ExecutionInfoProps) => {
               </li>
             </ol>
           </CardContent>
-          {/* <!-- <CardFooter>
-              <p>Card Footer</p>
-            </CardFooter> --> */}
         </Card>)
 }

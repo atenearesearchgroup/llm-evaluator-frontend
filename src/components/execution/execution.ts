@@ -1,4 +1,4 @@
-import type { InstanceInfo } from '@/hooks/useEvaluationData';
+import type { DataInfo, InstanceInfo } from '@/hooks/useEvaluationData';
 import { getAction, getDecision, getFirstPhase, getNode } from '@/lib/phase';
 import type { AIMessage, Chat } from '@/model/chat';
 import type { Action } from '@/model/diagram';
@@ -109,7 +109,7 @@ export const getStatus = (instance: IntentInstance) => {
             if (lastMessage.score === MESSAGE_SCORE_MISSING) {
                 return InstanceStatus.PENDING_SCORE;
             }
-            if(lastMessage.score === MESSAGE_INVALID_SYNTAX_SCORE) {
+            if (lastMessage.score === MESSAGE_INVALID_SYNTAX_SCORE) {
                 return InstanceStatus.PENDING_VALID_RESPONSE;
             }
 
@@ -120,7 +120,7 @@ export const getStatus = (instance: IntentInstance) => {
     return InstanceStatus.PENDING_MODEL_DESCRIPTION;
 }
 
-export const executeAction = async (execution: InstanceInfo, instance: IntentInstance, status: InstanceStatus) => {
+export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo, instance: IntentInstance, status: InstanceStatus) => {
     let lastChat: Chat, createdMessage: any, lastMessage: AIMessage
     let content: string
 
@@ -238,10 +238,15 @@ export const executeAction = async (execution: InstanceInfo, instance: IntentIns
 
             execution.evaluation = evaluation as EvaluationResultResponse
 
+            await setMessageScore(lastMessage.id, { score: execution.evaluation.score })
+
+            if (execution.evaluation.score === MESSAGE_INVALID_SYNTAX_SCORE) {
+                break
+            }
+
             const nextPhase = getNextPhase(getAction(lastChat.actualNode), execution.evaluation ?? {} as EvaluationResultResponse)
 
             await updateDraft(lastChat.id, { actualNode: nextPhase.id })
-            await setMessageScore(lastMessage.id, { score: execution.evaluation.score })
 
             if (nextPhase.id === "end") {
                 execution.status = "completed"
@@ -251,7 +256,37 @@ export const executeAction = async (execution: InstanceInfo, instance: IntentIns
             console.log("nextPhase", nextPhase)
             break
         case InstanceStatus.PENDING_VALID_RESPONSE:
-            throw new Error("Not implemented")
+            //throw new Error("Not implemented")
+
+            lastChat = instance.chats[instance.chats.length - 1]
+
+            const lastIteration = lastChat.promptIterations[lastChat.promptIterations.length - 1]
+
+            // count the number of messages with invalid syntax score
+            let invalidSyntaxCount = lastIteration.messages
+                .filter(m => `score` in m)
+                .filter(message => message.score === MESSAGE_INVALID_SYNTAX_SCORE).length
+
+            if(invalidSyntaxCount > instance.maxErrors) {
+                await finalizeDraft(lastChat.id)
+                execution.status = "failed"
+                break
+            }
+
+            const prompt = dataInfo.syntax_prompt ?? "Please provide a valid PlantUML response"
+
+            const response = await sendMessage(lastChat.id, {
+                content: prompt,
+                promptType: lastChat.actualNode,
+                manual: false
+            })
+
+            if (`requestError` in response) {
+                throw response
+            }
+
+            break
+
 
         case InstanceStatus.DONE:
             break
