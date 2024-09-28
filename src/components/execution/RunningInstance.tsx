@@ -12,6 +12,7 @@ import { Button } from "@design/ui/button"
 import { Badge } from "@design/ui/badge"
 import { LastIterationMessage } from "./LastIterationMessage"
 import { MESSAGE_INVALID_SYNTAX_SCORE } from "@/utils/constants"
+import { Star, StarOff } from "lucide-react"
 
 type RunningInstanceProps = {
     instanceData: InstanceInfo,
@@ -41,7 +42,10 @@ const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instan
     console.log("status", instance.id, status)
 
     if (status === InstanceStatus.DONE) {
-        console.log("DONE")
+        if (instanceData.status === "running") {
+            instanceData.status = instanceData?.evaluation?.score ?? -1 >= 0 ? "completed" : "failed"
+            updateInstance(instanceData)
+        }
         return
     }
 
@@ -73,9 +77,9 @@ const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instan
 }
 
 const getScoreRepresentation = (score?: number) => {
-    if(score == null) return "N/A"
-    if(score === MESSAGE_INVALID_SYNTAX_SCORE) return "Invalid Syntax"
-    return score
+    if (score == null) return < ><StarOff className={"size-[0.75rem]"}/> <p>N/A</p></>
+    if (score === MESSAGE_INVALID_SYNTAX_SCORE) return <><StarOff className={"size-[0.75rem]"}/> <p>Invalid Syntax</p></>
+    return <><Star className={"size-[0.75rem]"}/> {score}</>
 }
 
 export const RunningInstance = ({ instanceData, parent, updateInstance }: RunningInstanceProps) => {
@@ -125,11 +129,23 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
     useEffect(() => {
         if (instance == null || running.current) return
 
-        if(error) return
+        if (error) return
+
+        const currentStatus = getStatus(instance)
 
         running.current = true
         handleStatus(instanceData, parent, instance, setInstance, setError, updateInstance, toast);
-        running.current = false
+        
+        if(currentStatus === getStatus(instance)) 
+            setError({
+                message: "No changes on instance",
+                status: 500,
+                statusText: "No changes",
+                requestError: true,
+                url: ""
+            })
+            running.current = false
+            return
     }, [instance, error]);
 
     if (instance == null) return (
@@ -185,8 +201,25 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
                         Chat status: {lastChat?.actualNode || "No active Chat"}
                     </div>
                 }
-                <div>
-                    Last Score: {getScoreRepresentation(lastScore)} / {instanceData.evaluation?.maxScore}
+                <div className="flex gap-2 items-center">
+                    <p>
+                        Score:
+                    </p>
+                    <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
+                    border-transparent bg-lime-700 text-primary hover:bg-lime-700/60 gap-1">
+                        {getScoreRepresentation(lastScore)}
+
+                    </div>
+
+                    <p className="">
+                    /
+                    </p>
+
+                    <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
+                    border-transparent bg-yellow-300 text-primary-foreground hover:text-primary hover:bg-yellow-300/60 gap-1">
+                        
+                        {getScoreRepresentation(instanceData.evaluation?.maxScore)}
+                    </div>
                 </div>
             </CardContent>
         </Card>)

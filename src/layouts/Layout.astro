@@ -22,7 +22,7 @@ const finalTitle = forceTitle ? title : `Model eval Assistant - ${title}`;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="description" content="Main page" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.webp" />
 		<meta name="generator" content={Astro.generator} />
 		<link
@@ -35,11 +35,11 @@ const finalTitle = forceTitle ? title : `Model eval Assistant - ${title}`;
 	<body class="dark font-catamaran
 	 bg-background antialiased">
 
-		<main class={`flex flex-row bg-background`}>
+		<main class={`sm:flex flex-row bg-background`}>
 			<!-- <DraftList /> -->
 			 <ExecutionBar />
 
-			<section class="mx-auto w-[60dvw] max-w-[700px]">
+			<section class="mx-auto md:w-[60dvw] max-w-[700px]">
 				<Header />
 
 				<slot />
