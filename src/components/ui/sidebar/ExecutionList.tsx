@@ -24,6 +24,7 @@ export const ExecutionList = () => {
                         <ExecutionInstanceButton key={`execution-${idx}`} instance={instance} id={idx} />
                     )
                 })
-            }</>
+            }
+        </>
     )
 }

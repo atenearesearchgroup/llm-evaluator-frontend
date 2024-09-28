@@ -13,6 +13,7 @@ import { Badge } from "@design/ui/badge"
 import { LastIterationMessage } from "./LastIterationMessage"
 import { MESSAGE_INVALID_SYNTAX_SCORE } from "@/utils/constants"
 import { Star, StarOff } from "lucide-react"
+import { Separator } from "@design/ui/separator"
 
 type RunningInstanceProps = {
     instanceData: InstanceInfo,
@@ -77,7 +78,7 @@ const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instan
 }
 
 const getScoreRepresentation = (score?: number) => {
-    if (score == null) return < ><StarOff className={"size-[0.75rem]"}/> <p>N/A</p></>
+    if (score == null || score == -2) return < ><StarOff className={"size-[0.75rem]"}/> <p>N/A</p></>
     if (score === MESSAGE_INVALID_SYNTAX_SCORE) return <><StarOff className={"size-[0.75rem]"}/> <p>Invalid Syntax</p></>
     return <><Star className={"size-[0.75rem]"}/> {score}</>
 }
@@ -174,6 +175,7 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
                     <div className="font-semibold">
                         ERROR : {error.message}
                     </div>
+                    <Separator  className="mt-2"/>
                     <LastIterationMessage iteration={lastIteration} />
                 </CardContent>
                 <CardFooter className="py-1 justify-end">

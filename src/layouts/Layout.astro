@@ -1,11 +1,11 @@
 ---
 import "@/styles/globals.css";
-import DraftList from "@/components/ui/sidebar/InstanceList.astro";
 import Header from "@/components/ui/Header.astro";
 import Footer from "@/components/ui/Footer.astro";
 import { ViewTransitions } from "astro:transitions";
 import { Toaster } from "@/components/shadcdn/ui/toaster";
-import ExecutionBar from "@/components/ui/sidebar/ExecutionBar.astro";
+import {ExecutionBar} from "@/components/ui/sidebar/ExecutionBar.tsx";
+// import ExecutionBar from "@/components/ui/sidebar/ExecutionBar.astro";
 
 interface Props {
 	title: string;
@@ -37,7 +37,8 @@ const finalTitle = forceTitle ? title : `Model eval Assistant - ${title}`;
 
 		<main class={`sm:flex flex-row bg-background`}>
 			<!-- <DraftList /> -->
-			 <ExecutionBar />
+			 <ExecutionBar client:only="react" />
+			 <!-- <ExecutionBar/> -->
 
 			<section class="mx-auto md:w-[60dvw] max-w-[700px]">
 				<Header />

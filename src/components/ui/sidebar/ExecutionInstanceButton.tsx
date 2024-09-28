@@ -24,9 +24,9 @@ export const ExecutionInstanceButton = ({ instance, id }: IntentInstanceProps) =
         <li
             id={`list-${id}`}
             data-id={`${id}`}
-            className=" draft-cell mx-2 my-2 flex flex-col
+            className=" draft-cell mx-2 sm:my-2 flex sm:flex-col
               bg-primary-foreground text-primary
-            bg-opacity-30 p-3 text-sm rounded-lg justify-between gap-1"
+            bg-opacity-30 p-3 text-sm rounded-lg sm:justify-between gap-2"
         >
             <a href={`/execution/${id}`} className="font-bold draft-cell">
                 {instance.title ?? "Untitled"}
