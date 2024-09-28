@@ -1,5 +1,5 @@
 import type { EvaluationResultResponse } from "@/model/evaluation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 
 export interface EvaluationData {
     list: DataInfo[];
@@ -24,42 +24,87 @@ const defaultData: EvaluationData = {
 
 const LOCAL_STORAGE_KEY = 'evaluationInfo';
 
+const ACTION_TYPES = {
+    SET: 'set',
+    ADD: 'add',
+    UPDATE: 'update'
+}
+
+interface Action  {
+    type: typeof ACTION_TYPES[keyof typeof ACTION_TYPES];
+}
+
+interface SetAction extends Action {
+    type: 'set';
+    payload: EvaluationData;
+}
+
+interface AddAction extends Action {
+    type: 'add';
+    payload: DataInfo;
+}
+
+interface UpdateAction extends Action {
+    type: 'update';
+    payload: {
+        id: number;
+        instance: DataInfo;
+    }
+}
+
+type ActionType = SetAction | AddAction | UpdateAction;
+
+const useEvalReducer = (state: EvaluationData, action: ActionType) => {
+    switch(action.type) {
+        case 'set':
+            return action.payload;
+        case 'add':
+            state.list.push(action.payload);
+            return state;
+        case 'update':
+            state.list[action.payload.id] = action.payload.instance;
+            // return { list: state.list.map((item, index) => index === action.payload.id ? action.payload.instance : item) };
+            return state;
+        default:
+            return state;
+    }
+}
+
+
+const getStorageData = () => {
+    if(globalThis.localStorage === undefined) return defaultData;
+
+    const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (localData) {
+        return JSON.parse(localData) as EvaluationData;
+    }
+    return defaultData;
+}
+
+
 // save into local storage
 export const useEvaluationData = () => {
-    // const [data, setData] = useState<EvaluationData>({ list: [] });
+    const [state, dispatch] = useReducer(useEvalReducer,getStorageData());
+    const updateBroadcast = useMemo(() => new BroadcastChannel('evaluation'),[]);
 
-    // useEffect(() => {
-    //     const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
-    //     if (localData) {
-    //         setData(JSON.parse(localData));
-    //     }
-    // }, []);
+    useEffect(() => {
+        dispatch({ type: 'set', payload: getStorageData() });
+    },[])
 
-    const saveExecutionData = (list: string[]) => {
-        // setData({ list });
-        // localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ list }));
-    };
+    useEffect(() => {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+        // ?add broadcast 
+    } ,[state])
 
-    const addEvaluation = (data: DataInfo) => {
-        const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (localData) {
-            const parsedData : EvaluationData = JSON.parse(localData);
-            const newData = [...parsedData.list, data];
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ list: newData }));
-            return newData.length - 1;
-        }
+    const addEvaluation = useCallback((data: DataInfo) => {
+        const currentLength = state.list.length;
+        dispatch({ type: 'add', payload: data });
+        return currentLength;
+    }, [state]);
 
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ list: [data] }));
-        return 0;
-    }
-
-    const listEvaluations = () => {
-        const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (localData) {
-            return JSON.parse(localData).list?.map((item: DataInfo) => item.title);
-        }
-        return [];
-    }
+    const listEvaluations = useCallback(() => {
+        return state.list.map((item) => item.title);
+    },[state])
 
     const getExecutionData = () => {
         const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -75,21 +120,40 @@ export const useEvaluationData = () => {
 
     const updateExecutionInstance = (id: number, instance: DataInfo) => {
         const data = getExecutionData();
-        data.list[id] = instance;
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+        const newList = [...data.list];
+        newList[id] = instance;
+        if (!deepEqual(newList, data.list)) {
+            dispatch({ type: 'update', payload: { id, instance } });
+        }
     }
 
 
-    return {getExecutionData, getExecutionInstance, saveExecutionData, addEvaluation, listEvaluations, updateExecutionInstance};
+    return {getExecutionData, getExecutionInstance, addEvaluation, listEvaluations, updateExecutionInstance};
 }
 
-const useEvalReducer = (state: EvaluationData, action: any) => {
-    switch (action.type) {
-        case 'add':
-            return { list: [...state.list, action.payload] };
-        case 'remove':
-            return { list: state.list.filter((item) => item !== action.payload) };
-        default:
-            return state;
+function deepEqual(obj1 : any, obj2: any) {
+
+    if(obj1 === obj2) // it's just the same object. No need to compare.
+        return true;
+
+    if(isPrimitive(obj1) && isPrimitive(obj2)) // compare primitives
+        return obj1 === obj2;
+
+    if(Object.keys(obj1).length !== Object.keys(obj2).length)
+        return false;
+
+    // compare objects with same number of keys
+    for(let key in obj1)
+    {
+        if(!(key in obj2)) return false; //other object doesn't have this prop
+        if(!deepEqual(obj1[key], obj2[key])) return false;
     }
+
+    return true;
+}
+
+//check if value is primitive
+function isPrimitive(obj : any)
+{
+    return (obj !== Object(obj));
 }
