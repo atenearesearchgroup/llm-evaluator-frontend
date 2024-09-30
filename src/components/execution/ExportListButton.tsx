@@ -1,6 +1,7 @@
 import { useEvaluationData } from "@/hooks/useEvaluationData"
 import { exportJson } from "@/lib/metrics"
 import { Button } from "@design/ui/button"
+import { useMemo } from "react"
 
 
 type ExportListButtonProps = {
@@ -10,13 +11,16 @@ type ExportListButtonProps = {
 export const ExportListButton = ({ id }: ExportListButtonProps) => {
 
     const {getExecutionInstance} = useEvaluationData()
-    
-    const instance = getExecutionInstance(id)
+    const instance = useMemo(() => getExecutionInstance(id), [id, getExecutionInstance])
 
     return (
         <Button
-
             onClick={async () => {
+
+                if(instance.instances.find(i => i.status === 'running') !== undefined) {
+                    alert('Exporting data containing running instances...')
+                }
+
                 const result = await exportJson(instance)
 
                 const data = JSON.stringify(result, null, 2)
