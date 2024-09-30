@@ -31,7 +31,6 @@ export const loadZipModels = async (zipFile: Blob): Promise<ModelInfo[]> => {
     // print all entries and their sizes
     for (const [name, entry] of Object.entries(entries)) {
         const fileName = name.split('/').pop() ?? "";
-        console.log(fileName, entry.size);
 
         if (fileName.endsWith('.domain_model.cdm')) {
             const id = fileName.substring(0, fileName.length - '.domain_model.cdm'.length);
@@ -51,8 +50,6 @@ export const loadZipModels = async (zipFile: Blob): Promise<ModelInfo[]> => {
         }
 
     }
-
-    console.log("pairs", pairs);
 
     for (const [id, pair] of Object.entries(pairs)) {
         if (pair.graderModel === undefined || pair.modelDescription === undefined) {
@@ -76,8 +73,6 @@ export enum InstanceStatus {
 export const getStatus = (instance: IntentInstance) => {
     const lastChatSuccess = instance.chats.length > 0 && instance.chats[instance.chats.length - 1].actualNode === "end"
     const lastChatNotFinalized = instance.chats.length > 0 && !instance.chats[instance.chats.length - 1].finalized
-
-    // console.log(lastChatSuccess, instance.chats.length, instance.maxChats)
 
     if (instance.chats.length >= instance.maxChats && instance.chats[instance.chats.length - 1].finalized || lastChatSuccess) {
         return InstanceStatus.DONE;
@@ -121,7 +116,7 @@ export const getStatus = (instance: IntentInstance) => {
 }
 
 export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo, instance: IntentInstance, status: InstanceStatus) => {
-    let lastChat: Chat, createdMessage: any, lastMessage: AIMessage
+    let lastChat: Chat, createdMessage: any, lastMessage: AIMessage, action: Action
     let content: string
 
     switch (status) {
@@ -141,8 +136,6 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
         case InstanceStatus.PENDING_MODEL_DESCRIPTION:
             lastChat = instance.chats[instance.chats.length - 1]
 
-            console.log("description", execution.description)
-
             createdMessage = await sendMessage(lastChat.id, {
                 content: execution.description,
                 promptType: getFirstPhase(),
@@ -157,7 +150,7 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
             break
         case InstanceStatus.PENDING_USER:
             lastChat = instance.chats[instance.chats.length - 1]
-            let action = getAction(lastChat.actualNode)
+            action = getAction(lastChat.actualNode)
 
             content = generateContent(execution.evaluation as EvaluationResultResponse, action)
 
@@ -173,6 +166,8 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
 
             console.log("content", content)
 
+            // TODO: Remove when PENDING_SCORE IS CHECKED
+            // break
             createdMessage = await sendMessage(lastChat.id, {
                 content: content,
                 promptType: lastChat.actualNode,
@@ -186,12 +181,11 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
                     throw createdMessage
                 }
 
-                console.log("response", createdMessage)
                 execution.status = "failed"
                 await finalizeDraft(lastChat.id)
             }
-
             break
+
         case InstanceStatus.PENDING_AI:
             lastChat = instance.chats[instance.chats.length - 1]
 
@@ -226,8 +220,6 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
                 })
                 .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())[0]
 
-            console.log("lastMessageS", lastMessage)
-
             let evaluation = await evaluateMessage(lastMessage.id)
 
             if (`requestError` in evaluation) {
@@ -238,11 +230,46 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
 
             execution.evaluation = evaluation as EvaluationResultResponse
 
+
+            // // START
+            // const checkedTypes: string[] = []
+            // action = getNextPhase(getAction(lastChat.actualNode ?? "zero"), execution.evaluation ?? {} as EvaluationResultResponse)
+            // const evaluationCopy : EvaluationResultResponse = JSON.parse(JSON.stringify(execution.evaluation));
+            
+            // while(action != null && action.id !== "end") {
+            //     console.log("Checking action", action.id)
+            //     checkedTypes.push(action.id.replace("_prompt", ""))
+            //     content = generateContent(evaluationCopy, action)
+
+            //     if (content === "") {
+            //         throw new Error("Content generation failed")
+            //     }
+
+            //     content = generateFullPrompt(content, action, false)
+
+            //     if (content === "") {
+            //         throw new Error("Prompt generation failed")
+            //     }
+
+            //     console.log("content", content)
+                
+            //     evaluationCopy.errors = evaluationCopy.errors.filter(error => error.type !== action.id.replace("_prompt", ""))
+            //     action = getNextPhase(action,evaluationCopy ?? {} as EvaluationResultResponse)
+            // }
+
+            // evaluation.errors.filter(error => !checkedTypes.includes(error.type)).forEach(error => {
+            //     console.log("Error not checked", error.type)
+            //     console.log("Errors:", error.errors)
+            // })
+
+            // // END
+
+            // TODO: Remove when PENDING_SCORE IS CHECKED
+            // break
             await setMessageScore(lastMessage.id, { score: execution.evaluation.score })
 
-            if (execution.evaluation.score === MESSAGE_INVALID_SYNTAX_SCORE) {
+            if (execution.evaluation.score === MESSAGE_INVALID_SYNTAX_SCORE) 
                 break
-            }
 
             const nextPhase = getNextPhase(getAction(lastChat.actualNode), execution.evaluation ?? {} as EvaluationResultResponse)
 
@@ -253,8 +280,8 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
                 await finalizeDraft(lastChat.id)
             }
 
-            console.log("nextPhase", nextPhase)
             break
+
         case InstanceStatus.PENDING_VALID_RESPONSE:
             //throw new Error("Not implemented")
 
@@ -335,13 +362,16 @@ const generateContent = (evaluation: EvaluationResultResponse, action: Action) =
         return acc
     }, new Map<string, ModelError[]>())
 
-    console.log("groupedErrors", groupedErrors)
+    if(groupedErrors.size > 0 && action.prompts == null)
+        throw new Error("Action prompts not found on action " + action.id)
+
     groupedErrors.forEach((errors, error) => {
+
         let content = ""
-        let template = action.prompts[error]
+        let template = action?.prompts[error]
 
         if (template == null) {
-            throw new Error("Prompt not found with error of " + error)
+            throw new Error("Prompt not found for action `"+action.id+"` with error of `" + error +"`. Values given for the prompt: [" + errors[0].values.join(", ")+"]")
         }
 
         if (template.group) {
@@ -355,29 +385,39 @@ const generateContent = (evaluation: EvaluationResultResponse, action: Action) =
                     lineContent = lineContent.replace(`{${index}}`, value)
                 })
 
+                // replace all {index:*} with the rest of the values
+                let match = lineContent.match(/\{(\d+):\*\}/)
+
+                while (match != null) {
+                    let index = parseInt(match[1])
+
+                    let groupedValues = error.values.filter((_, i) => i >= index)
+
+                    lineContent = lineContent.replace(`{${index}:*}`, groupedValues.join(", "))
+
+                    match = lineContent.match(/\{(\d+):\*\}/)
+                }
+
                 content = content.concat(lineContent).concat("\n")
             })
+
         }
 
         promptContent = promptContent.concat("\n").concat(content)
     })
 
-    console.log("promptContent", promptContent)
-
 
     return promptContent
 }
 
-const getNextPhase = (action: Action, evaluation: EvaluationResultResponse) => {
+const getNextPhase = (action: Action,evaluation: EvaluationResultResponse) => {
+    // let action = getAction(getFirstPhase())
     let phase = getDecision(action.to?.split(":")[1] ?? "")
     let end = false
 
     if (phase == null) {
         throw new Error("Phase not found while evaluating")
     }
-
-    console.log("evaluation", evaluation)
-    console.log("firstPhase", phase.id)
 
     while (!evaluation.errors.find(error => error.type === phase.id)) {
         let nextDecision = phase.arrows.find(arrow => arrow.nextDecision)?.to ?? ""
@@ -393,10 +433,7 @@ const getNextPhase = (action: Action, evaluation: EvaluationResultResponse) => {
             throw new Error("Phase not found while evaluating, from " + (action.to?.split(":")[1] ?? "") + " to " + nextDecision)
         }
 
-        console.log("nextPhase", phase.id)
     }
-
-    console.log("endPhase", phase.id)
 
     if (end) {
         return getAction("end")
