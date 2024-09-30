@@ -3,7 +3,7 @@ import type { EvaluationResultResponse } from "@/model/evaluation"
 import type { RequestError, ResponseError, ScoreResponseRequest } from "@/model/request"
 import { fetchWrapper } from "@/utils/request"
 
-const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
+const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL
 
 
 export const setMessageScore = async (messageId: number,request: ScoreResponseRequest): Promise<AIMessage | RequestError> => {

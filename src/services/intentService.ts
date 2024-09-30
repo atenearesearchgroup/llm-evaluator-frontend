@@ -1,7 +1,8 @@
 import type { IntentInstance, IntentModel } from "@/model/model"
 import type { CreateInstanceRequest, CreateModelRequest, RequestError, ResponseError } from "@/model/request"
+import { fetchWrapper } from "@/utils/request"
 
-const API_URL = import.meta.env.BACKEND_API_URL || 'http://localhost:8080'
+const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL
 
 export const createModel = async (request: CreateModelRequest): Promise<IntentModel | RequestError> => {
     const newModel = await fetch(`${API_URL}/intent`, {
@@ -43,37 +44,7 @@ export const createModel = async (request: CreateModelRequest): Promise<IntentMo
 }
 
 export const getModels = async (): Promise<IntentModel[] | RequestError> => {
-    const models = await fetch(`${API_URL}/intent`,{
-        method: 'GET'
-    })
-        .then(async (response) => {
-            if (response.ok) {
-                console.log("x00")
-                return await response.json() as IntentModel[]
-            }
-
-            console.log("x01")
-            const responseError = await response.json() as ResponseError
-
-            return {
-                requestError: true,
-                message: responseError.message,
-                status: responseError.status,
-                statusText: responseError.error,
-                url: responseError.path
-            } as RequestError
-        })
-        .catch((error) => {
-            // console.log(error)
-
-            return {
-                requestError: true,
-                message: error.message,
-                status: 0,
-                statusText: 'Unknown error',
-                url: `${API_URL}`
-            } as RequestError
-        })
+    const models = await fetchWrapper<IntentModel[]>(`${API_URL}/intent`)
 
     return models
 }

@@ -7,149 +7,181 @@ const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEN
 
 
 export const getChat = async (draftId: Number): Promise<Chat | RequestError> => {
-    const newModel = await fetch(`${API_URL}/chat/${draftId}`, {
-        method: 'GET',
-    })
-        .then(async (response) => {
-            if (response.ok) {
-                return await response.json() as Chat
-            }
+    const newModel = await fetchWrapper<Chat>(`${API_URL}/chat/${draftId}`)
+    // const newModel = await fetch(`${API_URL}/chat/${draftId}`, {
+    //     method: 'GET',
+    // })
+    //     .then(async (response) => {
+    //         if (response.ok) {
+    //             return await response.json() as Chat
+    //         }
 
-            const responseError = await response.json() as ResponseError
+    //         const responseError = await response.json() as ResponseError
 
-            return {
-                requestError: true,
-                message: responseError.message,
-                status: responseError.status,
-                statusText: responseError.error,
-                url: responseError.path
-            } as RequestError
-        })
-        .catch((error) => {
-            console.log(error)
+    //         return {
+    //             requestError: true,
+    //             message: responseError.message,
+    //             status: responseError.status,
+    //             statusText: responseError.error,
+    //             url: responseError.path
+    //         } as RequestError
+    //     })
+    //     .catch((error) => {
+    //         console.log(error)
 
-            return {
-                requestError: true,
-                message: error.message,
-                status: 500,
-                statusText: 'Unknown error',
-                url: ''
-            } as RequestError
-        })
+    //         return {
+    //             requestError: true,
+    //             message: error.message,
+    //             status: 500,
+    //             statusText: 'Unknown error',
+    //             url: ''
+    //         } as RequestError
+    //     })
 
     return newModel
 }
 
 export const updateDraft = async (draftId: Number, update: UpdateChatRequest): Promise<Chat | RequestError> => {
-    const newModel = await fetch(`${API_URL}/chat/${draftId}`, {
-        method: 'PUT',
-        body: JSON.stringify(update),
-        headers: {
-            'Content-Type': 'application/json'
+    const newModel = await fetchWrapper<Chat>(`${API_URL}/chat/${draftId}`,
+        {
+            body: JSON.stringify(update),
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: "PUT"
         }
-    })
-        .then(async (response) => {
-            if (response.ok) {
-                return await response.json() as Chat
-            }
+    )
+    // const newModel = await fetch(`${API_URL}/chat/${draftId}`, {
+    //     method: 'PUT',
+    //     body: JSON.stringify(update),
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     }
+    // })
+    //     .then(async (response) => {
+    //         if (response.ok) {
+    //             return await response.json() as Chat
+    //         }
 
-            const responseError = await response.json() as ResponseError
+    //         const responseError = await response.json() as ResponseError
 
-            return {
-                requestError: true,
-                message: responseError.message,
-                status: responseError.status,
-                statusText: responseError.error,
-                url: responseError.path
-            } as RequestError
-        })
-        .catch((error) => {
-            console.log(error)
+    //         return {
+    //             requestError: true,
+    //             message: responseError.message,
+    //             status: responseError.status,
+    //             statusText: responseError.error,
+    //             url: responseError.path
+    //         } as RequestError
+    //     })
+    //     .catch((error) => {
+    //         console.log(error)
 
-            return {
-                requestError: true,
-                message: error.message,
-                status: 500,
-                statusText: 'Unknown error',
-                url: ''
-            } as RequestError
-        })
+    //         return {
+    //             requestError: true,
+    //             message: error.message,
+    //             status: 500,
+    //             statusText: 'Unknown error',
+    //             url: ''
+    //         } as RequestError
+        // })
 
     return newModel
 }
 
 export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promise<{ result: boolean } | RequestError> => {
-    const newModel = await fetch(`${API_URL}/chat/${draftId}/finish`, {
+    const newModel = await fetchWrapper<Response>(`${API_URL}/chat/${draftId}/finish`, {
         method: 'POST',
         body: JSON.stringify(finalize),
         headers: {
             'Content-Type': 'application/json'
         }
-    })
-        .then(async (response) => {
-            if (response.ok) {
-                return { result: true }
-            }
+    }, "response")
 
-            const responseError = await response.json() as ResponseError
+    if ('ok' in newModel) {
+        return { result: true }
+    }
 
-            return {
-                requestError: true,
-                message: responseError.message,
-                status: responseError.status,
-                statusText: responseError.error,
-                url: responseError.path
-            } as RequestError
-        })
-        .catch((error) => {
-            console.log(error)
+    // const newModel = await fetch(`${API_URL}/chat/${draftId}/finish`, {
+    //     method: 'POST',
+    //     body: JSON.stringify(finalize),
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     }
+    // })
+    //     .then(async (response) => {
+    //         if (response.ok) {
+    //             return { result: true }
+    //         }
 
-            return {
-                requestError: true,
-                message: error.message,
-                status: 500,
-                statusText: 'Unknown error',
-                url: ''
-            } as RequestError
-        })
+    //         const responseError = await response.json() as ResponseError
+
+    //         return {
+    //             requestError: true,
+    //             message: responseError.message,
+    //             status: responseError.status,
+    //             statusText: responseError.error,
+    //             url: responseError.path
+    //         } as RequestError
+    //     })
+    //     .catch((error) => {
+    //         console.log(error)
+
+    //         return {
+    //             requestError: true,
+    //             message: error.message,
+    //             status: 500,
+    //             statusText: 'Unknown error',
+    //             url: ''
+    //         } as RequestError
+    //     })
 
     return newModel
 }
 
 export const sendMessage = async (draftId: Number, message: CreateMessageRequest): Promise<UserMessage | AIMessage | RequestError> => {
-    const newModel = await fetch(`${API_URL}/chat/${draftId}/message`, {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(async (response) => {
-            if (response.ok) {
-                return await response.json() as UserMessage | AIMessage
+    const newModel = await fetchWrapper<UserMessage | AIMessage>(`${API_URL}/chat/${draftId}/message`,
+        {
+            method: 'POST',
+            body: JSON.stringify(message),
+            headers: {
+                'Content-Type': 'application/json'
             }
+        }
+    )
 
-            const responseError = await response.json() as ResponseError
+    // const newModel = await fetch(`${API_URL}/chat/${draftId}/message`, {
+    //     method: 'POST',
+    //     body: JSON.stringify(message),
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     }
+    // })
+    //     .then(async (response) => {
+    //         if (response.ok) {
+    //             return await response.json() as UserMessage | AIMessage
+    //         }
 
-            return {
-                requestError: true,
-                message: responseError.message,
-                status: responseError.status,
-                statusText: responseError.error,
-                url: responseError.path
-            } as RequestError
-        })
-        .catch((error) => {
-            console.log(error)
+    //         const responseError = await response.json() as ResponseError
 
-            return {
-                requestError: true,
-                message: error.message,
-                status: 500,
-                statusText: 'Unknown error',
-                url: ''
-            } as RequestError
-        })
+    //         return {
+    //             requestError: true,
+    //             message: responseError.message,
+    //             status: responseError.status,
+    //             statusText: responseError.error,
+    //             url: responseError.path
+    //         } as RequestError
+    //     })
+    //     .catch((error) => {
+    //         console.log(error)
+
+    //         return {
+    //             requestError: true,
+    //             message: error.message,
+    //             status: 500,
+    //             statusText: 'Unknown error',
+    //             url: ''
+    //         } as RequestError
+    //     })
 
     return newModel
 }
