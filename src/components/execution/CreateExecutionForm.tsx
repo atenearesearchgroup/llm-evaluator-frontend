@@ -81,7 +81,7 @@ export const CreateExecutionForm = ({ }) => {
         },
     })
     const [data, setData] = useState<{ llms: string[], intentModels: IntentModel[] }>({ llms: [], intentModels: [] })
-    const { addEvaluation, saveExecutionData } = useEvaluationData()
+    const { addEvaluation } = useEvaluationData()
 
     const { toast } = useToast()
 

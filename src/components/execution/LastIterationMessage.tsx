@@ -14,11 +14,12 @@ export const LastIterationMessage = ({ iteration }: { iteration?: PromptIteratio
     const lastMessage = iteration.messages[iteration.messages.length - 1]
 
     return <Collapsible onOpenChange={setOpen}  >
-        <CollapsibleTrigger >
-            <Button variant={"link"} className="gap-1 p-0">
-                See last message from ({lastMessage.type}) {open ? <ChevronUpIcon className="size-6"/> : <ChevronDownIcon className="size-6"/> }
-            </Button>
-        </CollapsibleTrigger>
+        <Button asChild={true} variant={"link"} className="gap-1 p-0">
+            <CollapsibleTrigger >
+                See last message from ({lastMessage.type}) {open ? <ChevronUpIcon className="size-6" /> : <ChevronDownIcon className="size-6" />}
+
+            </CollapsibleTrigger>
+        </Button>
         <CollapsibleContent>
             <div className="space-y-3">
                 <p className="font-semibold whitespace-break-spaces">{lastMessage.content} </p>

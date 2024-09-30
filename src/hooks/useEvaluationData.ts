@@ -57,12 +57,21 @@ type ActionType = SetAction | AddAction | UpdateAction;
 const useEvalReducer = (state: EvaluationData, action: ActionType) => {
     switch(action.type) {
         case 'set':
+            
+            if(!state)
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(action.payload));
             return action.payload;
         case 'add':
             state.list.push(action.payload);
+            
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
             return state;
         case 'update':
             state.list[action.payload.id] = action.payload.instance;
+            // console.log("Updating instance with id", action.payload.id, "to", action.payload.instance);
+            // console.log("new state", state)
+            
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
             // return { list: state.list.map((item, index) => index === action.payload.id ? action.payload.instance : item) };
             return state;
         default:
@@ -82,6 +91,7 @@ const getStorageData = () => {
 }
 
 
+
 // save into local storage
 export const useEvaluationData = () => {
     const [state, dispatch] = useReducer(useEvalReducer,getStorageData());
@@ -91,10 +101,17 @@ export const useEvaluationData = () => {
         dispatch({ type: 'set', payload: getStorageData() });
     },[])
 
-    useEffect(() => {
+
+    const saveData = () => {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
-        // ?add broadcast 
-    } ,[state])
+        // updateBroadcast.postMessage({ type: 'update', data: state });
+    }
+
+    // useEffect(() => {
+    //     console.log("saving data", state);
+    //     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+    //     // ?add broadcast 
+    // } ,[state])
 
     const addEvaluation = useCallback((data: DataInfo) => {
         const currentLength = state.list.length;
@@ -123,7 +140,10 @@ export const useEvaluationData = () => {
         const newList = [...data.list];
         newList[id] = instance;
         if (!deepEqual(newList, data.list)) {
+            console.log("not equals")
             dispatch({ type: 'update', payload: { id, instance } });
+        } else {
+            console.log("equals")
         }
     }
 

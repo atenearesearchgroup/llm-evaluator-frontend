@@ -18,7 +18,7 @@ export const ExecutionPage = ({ id }: ExecutionPageProps) => {
     const [sampleInstance, setSampleInstance] = useState<IntentInstance | null>(null)
 
     const { getExecutionInstance, updateExecutionInstance } = useEvaluationData()
-    const instance = useMemo(() => getExecutionInstance(id), [id])
+    const instance = useMemo(() => getExecutionInstance(id), [id, getExecutionInstance])
 
     const handleUpdateInstance = useCallback((instanceData: InstanceInfo) => {
         const newInstances = instance.instances.map((inst) =>

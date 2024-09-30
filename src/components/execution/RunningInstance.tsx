@@ -40,20 +40,20 @@ const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instan
     toast: any) => {
     const status = getStatus(instance)
 
-    console.log("status", instance.id, status)
-
     if (status === InstanceStatus.DONE) {
         if (instanceData.status === "running") {
+            console.log("Updating instance status to completed with id", instanceData.id)
             instanceData.status = instanceData?.evaluation?.score ?? -1 >= 0 ? "completed" : "failed"
             updateInstance(instanceData)
         }
-        return
+    } else if (instanceData.status !== "running") {
+        console.log("Updating instance status to running with id", instanceData.id)
+        instanceData.status = "running"
+        updateInstance(instanceData)
     }
 
     try {
         const newInstance = await executeAction(instanceData, parent, instance, status)
-
-        console.log("newInstance", instance.id, newInstance)
 
         if (`requestError` in newInstance) {
             throw newInstance
@@ -62,9 +62,18 @@ const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instan
         updateInstance(instanceData)
 
         setTimeout(() => {
-            console.log("x0000")
             setInstance(newInstance)
         }, 1000)
+
+        if(status === getStatus(newInstance)) 
+            setError({
+                message: "No changes on instance",
+                status: 500,
+                statusText: "No changes",
+                requestError: true,
+                url: ""
+            })
+        
     } catch (e: RequestError | any) {
         setError(e)
         console.error(e)
@@ -137,16 +146,9 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
         running.current = true
         handleStatus(instanceData, parent, instance, setInstance, setError, updateInstance, toast);
         
-        if(currentStatus === getStatus(instance)) 
-            setError({
-                message: "No changes on instance",
-                status: 500,
-                statusText: "No changes",
-                requestError: true,
-                url: ""
-            })
-            running.current = false
-            return
+        
+        running.current = false
+        return
     }, [instance, error]);
 
     if (instance == null) return (
@@ -160,6 +162,8 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
     const status = getStatus(instance)
     const colorStatus = instanceData.status === "running" ? "bg-yellow-500" : (instanceData.status === "completed" ? "bg-green-500" : "bg-red-500")
 
+    const lastScore = messages.length === 0 ? 0 : getLastAiMessage(messages)?.score
+
     if (error) {
         return (
             <Card className="p-2">
@@ -172,6 +176,24 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
                     <div className="flex gap-2">
                         Current action: <p className="font-semibold"> {status}</p>
                     </div>
+                    <div className="flex gap-2 items-center">
+                    <p>
+                        Score:
+                    </p>
+                    <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
+                    border-transparent bg-lime-700 text-primary hover:bg-lime-700/60 gap-1">
+                        {getScoreRepresentation(lastScore)}
+                    </div>
+
+                    <p className="">
+                    /
+                    </p>
+
+                    <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
+                    border-transparent bg-yellow-300 text-primary-foreground hover:text-primary hover:bg-yellow-300/60 gap-1">                     
+                        {getScoreRepresentation(instanceData.evaluation?.maxScore)}
+                    </div>
+                </div>
                     <div className="font-semibold">
                         ERROR : {error.message}
                     </div>
@@ -184,8 +206,6 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
             </Card>
         )
     }
-
-    const lastScore = messages.length === 0 ? 0 : getLastAiMessage(messages)?.score
 
     return (
         <Card className="p-2">
@@ -210,7 +230,6 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
                     <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
                     border-transparent bg-lime-700 text-primary hover:bg-lime-700/60 gap-1">
                         {getScoreRepresentation(lastScore)}
-
                     </div>
 
                     <p className="">
@@ -218,8 +237,7 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
                     </p>
 
                     <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
-                    border-transparent bg-yellow-300 text-primary-foreground hover:text-primary hover:bg-yellow-300/60 gap-1">
-                        
+                    border-transparent bg-yellow-300 text-primary-foreground hover:text-primary hover:bg-yellow-300/60 gap-1">                     
                         {getScoreRepresentation(instanceData.evaluation?.maxScore)}
                     </div>
                 </div>
