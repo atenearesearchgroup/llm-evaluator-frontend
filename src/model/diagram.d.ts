@@ -28,7 +28,6 @@ export interface Action extends Phase {
     prompts: Record<string,PromptInfo>;
     postPrompt?: string;
 
-    evaluate: boolean;
     to?: string;
 };
 

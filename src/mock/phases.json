@@ -1,11 +1,4 @@
 {
-    "llms": [
-        "ChatGPT 3.5",
-        "LLaMa 70B",
-        "Mistral 7B",
-        "GPT-4",
-        "Gemini"
-    ],
     "startingNode": "zero",
     "decisions": [
         {
@@ -29,6 +22,21 @@
             "arrows": [
                 {
                     "to": "attributes_prompt",
+                    "label": "No"
+                },
+                {
+                    "to": "data_types",
+                    "label": "Yes",
+                    "nextDecision": true
+                }
+            ]
+        },
+        {
+            "id": "data_types",
+            "title": "Correct data types?",
+            "arrows": [
+                {
+                    "to": "data_types_prompt",
                     "label": "No"
                 },
                 {
@@ -62,63 +70,33 @@
                     "label": "No"
                 },
                 {
-                    "to": "assoc_mult",
+                    "to": "association_ends",
                     "label": "Yes",
                     "nextDecision": true
                 }
             ]
         },
         {
-            "id": "assoc_mult",
-            "title": "Correct association multiplicities?",
+            "id": "association_ends",
+            "title": "Correct associations ends?",
             "arrows": [
                 {
-                    "to": "assoc_mult_prompt",
+                    "to": "association_ends_prompt",
                     "label": "No"
                 },
                 {
-                    "to": "assoc_role_names",
+                    "to": "enumeration_types",
                     "label": "Yes",
                     "nextDecision": true
                 }
             ]
         },
         {
-            "id": "assoc_role_names",
-            "title": "Correct association and role names?",
-            "arrows": [
-                {
-                    "to": "assoc_role_prompt",
-                    "label": "No"
-                },
-                {
-                    "to": "assoc_classes",
-                    "label": "Yes",
-                    "nextDecision": true
-                }
-            ]
-        },
-        {
-            "id": "assoc_classes",
-            "title": "Correct association classes?",
-            "arrows": [
-                {
-                    "to": "assoc_classes_prompt",
-                    "label": "No"
-                },
-                {
-                    "to": "enums",
-                    "label": "Yes",
-                    "nextDecision": true
-                }
-            ]
-        },
-        {
-            "id": "enums",
+            "id": "enumeration_types",
             "title": "Correct enums?",
             "arrows": [
                 {
-                    "to": "enums_prompt",
+                    "to": "enumeration_types_prompt",
                     "label": "No"
                 },
                 {
@@ -148,7 +126,6 @@
             "id": "zero",
             "title": "First prompt",
             "description": "Run prompt with the description AND evaluate the model AND get score",
-            "evaluate": true,
             "to": "decision:classes",
             "prePrompt": "",
             "prompts2": [],
@@ -157,7 +134,6 @@
         {
             "id": "classes_prompt",
             "title": "Run classes prompt",
-            "evaluate": false,
             "to": "decision:classes",
             "prePrompt": "Incorrect classes: There are some problems with the classes in the model.",
             "postPrompt": "Can you fix the model?",
@@ -175,12 +151,31 @@
             "fewShot": "An example of a class is...."
         },
         {
+            "id": "data_types_prompt",
+            "title": "Run data types prompt",
+            "to": "decision:classes",
+            "prePrompt": "Incorrect data types: There are some problems with the data types in the model.",
+            "postPrompt": "Can you fix the model?",
+            "prompts": {
+                "missing": {
+                    "template" : "- The following data types are missing: {0}",
+                    "group" : true
+                }
+            },
+            "fewShot": "An example of a class is...."
+        },
+        {
             "id": "inheritance_prompt",
             "title": "Run inheritance prompt",
-            "evaluate": false,
             "to": "decision:classes",
             "prePrompt": "Incorrect inheritance: There are some problems related to inheritance.",
             "postPrompt": "Can you fix the model?",
+            "prompts": {
+                "missing": {
+                    "template" : "- {0} should inherit from {1}.",
+                    "group" : false
+                }
+            },
             "prompts2": [
                 "- <class 1> should inherit from <class 2>.",
                 "- There should not be an inheritance relationship between classes <class 1> and <class 2>."
@@ -190,10 +185,15 @@
         {
             "id": "attributes_prompt",
             "title": "Run attributes prompt",
-            "evaluate": false,
             "to": "decision:classes",
             "prePrompt": "Incorrect attributes: There are some problems with the attributes in the model:",
             "postPrompt": "Can you fix these problems?",
+            "prompts": {
+                "missing": {
+                    "template" : "- Class {0} is missing attribute/s: {1}",
+                    "group" : false
+                }
+            },
             "prompts2": [
                 "- Class <class name> is missing attribute/s: <list of attribute names>",
                 "- Class <class name> has the following extra attribute/s: <list of attribute names>"
@@ -202,10 +202,34 @@
         {
             "id": "associations_prompt",
             "title": "Run associations prompt",
-            "evaluate": false,
             "to": "decision:classes",
             "prePrompt": "Incorrect associations: There are some problems with the associations in the model:",
             "postPrompt": "Can you fix these problems?",
+            "prompts": {
+                "missing": {
+                    "template": "- The association between classes {0} (with role {3}) and {2} (with role {1}) is missing."
+                }
+            },
+            "prompts2": [
+                "- The association between classes <class 1, class 2> is missing.",
+                "- The association between classes <class 1, class 2> is missing. (<description>)",
+                "- There is an association between classes <class 1, class 2> that should not exist.",
+                "- The association type between classes <class 1> and <class 2> is wrong. It should be a composition association.",
+                "- The association type between classes <class 1> and <class 2> is wrong. It should be a aggregation association.",
+                "- The association type between classes <class 1> and <class 2> is wrong. It should be a standard association."
+            ]
+        },
+        {
+            "id": "association_ends_prompt",
+            "title": "Run association ends prompt",
+            "to": "decision:classes",
+            "prePrompt": "Incorrect association ends: There are some problems with the association ends in the model:",
+            "postPrompt": "Can you fix these problems?",
+            "prompts": {
+                "missing": {
+                    "template": "- The association end from class {0} with name {1} is missing."
+                }
+            },
             "prompts2": [
                 "- The association between classes <class 1, class 2> is missing.",
                 "- The association between classes <class 1, class 2> is missing. (<description>)",
@@ -218,7 +242,6 @@
         {
             "id": "assoc_mult_prompt",
             "title": "Run assoc mult prompt",
-            "evaluate": false,
             "to": "decision:classes",
             "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
             "postPrompt": "Can you fix these problems?",
@@ -230,7 +253,6 @@
         {
             "id": "assoc_role_prompt",
             "title": "Run assoc role prompt",
-            "evaluate": false,
             "to": "decision:classes",
             "prePrompt": "Incorrect associations identifiers and roles names: There are some problems with the associations and roles names in the model:",
             "postPrompt": "Can you fix these problems?",
@@ -243,7 +265,6 @@
         {
             "id": "assoc_classes_prompt",
             "title": "Run assoc classes prompt",
-            "evaluate": false,
             "to": "decision:classes",
             "prePrompt": "Incorrect association classes: There are some problems with the association classes in the model:",
             "postPrompt": "Can you fix these problems?",
@@ -254,7 +275,6 @@
         {
             "id": "operations_prompt",
             "title": "Run operations prompt",
-            "evaluate": false,
             "to": "decision:classes",
             "prePrompt": "Incorrect operations: There are some problems with the operations in the model:",
             "postPrompt": "Can you fix these problems?",
@@ -267,12 +287,17 @@
         },
         
         {
-            "id": "enums_prompt",
+            "id": "enumeration_types_prompt",
             "title": "Run enums prompt",
-            "evaluate": false,
             "to": "decision:classes",
             "prePrompt": "Incorrect enums: There are some problems with the enums in the model:",
             "postPrompt": "Can you fix these problems?",
+            "prompts": {
+                "missing": {
+                    "template": "- The enum {0} is missing the next values: {1:*}",
+                    "group": false
+                }
+            },
             "prompts2": [
                 "- The constant values <values…> (, as the values that can be found in the attributes <attr1… from class 1;attr2… from class 2>,) should be part of an enum.",
                 "- The enum <enum 1> should not have the next values: <List of values separated by comma>.",
@@ -282,7 +307,6 @@
         {
             "id": "end",
             "title": "Finalized",
-            "evaluate": true,
             "to": null,
             "prePrompt": "",
             "postPrompt": "",
