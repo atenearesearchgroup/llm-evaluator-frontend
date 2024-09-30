@@ -26,7 +26,8 @@ export const ExecutionInstanceButton = ({ instance, id }: IntentInstanceProps) =
             data-id={`${id}`}
             className=" draft-cell mx-2 sm:my-2 flex sm:flex-col
               bg-primary-foreground text-primary
-            bg-opacity-30 p-3 text-sm rounded-lg sm:justify-between gap-2"
+
+            bg-opacity-30 pl-5 p-3 sm:pl-3 sm:text-sm rounded-lg sm:justify-between gap-4 sm:gap-2"
         >
             <a href={`/execution/${id}`} className="font-bold draft-cell">
                 {instance.title ?? "Untitled"}
@@ -34,7 +35,7 @@ export const ExecutionInstanceButton = ({ instance, id }: IntentInstanceProps) =
             <TooltipProvider>
                 <Tooltip delayDuration={400}>
                     <TooltipTrigger  className="place-self-end">
-                        <Badge variant="default" data-id={id} className="text-primary-foreground w-fit text-xs place-self-end font-normal">
+                        <Badge variant="default" data-id={id} className="text-primary-foreground w-fit sm:text-xs place-self-end font-normal">
                             {isRunning}
                         </Badge>
                     </TooltipTrigger>
