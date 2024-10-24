@@ -13,5 +13,6 @@ export type EvaluationResultResponse = {
     score: number;
     maxScore: number;
     diagram: string|undefined;
-    errors: CategoryError[]
+    errors: CategoryError[];
+    syntaxErrors: string[]|undefined;
 }

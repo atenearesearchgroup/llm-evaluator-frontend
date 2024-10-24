@@ -10,11 +10,13 @@ import { createChat, getInstance } from '@/services/instanceService';
 import { evaluateMessage, setMessageScore } from '@/services/messageService';
 import { MESSAGE_INVALID_SYNTAX_SCORE, MESSAGE_SCORE_MISSING } from '@/utils/constants';
 import { unzip } from 'unzipit';
+import { ExecutionInfo } from './ExecutionInfo';
 
 
 export type ModelInfo = {
     id: string,
     graderModel: File,
+    isCDM: boolean,
     modelDescription: string
 }
 
@@ -38,6 +40,16 @@ export const loadZipModels = async (zipFile: Blob): Promise<ModelInfo[]> => {
                 id,
                 graderModel:
                     new File([await entry.blob()], fileName),
+                isCDM: true,
+                modelDescription: pairs[id]?.modelDescription ?? undefined
+            }
+        } else if (fileName.endsWith('.puml')) {
+            const id = fileName.substring(0, fileName.length - '.puml'.length);
+            pairs[id] = {
+                id,
+                graderModel:
+                    new File([await entry.blob()], fileName),
+                isCDM: false,
                 modelDescription: pairs[id]?.modelDescription ?? undefined
             }
         } else if (fileName.endsWith('.txt')) {
@@ -45,6 +57,7 @@ export const loadZipModels = async (zipFile: Blob): Promise<ModelInfo[]> => {
             pairs[id] = {
                 id,
                 graderModel: pairs[id]?.graderModel ?? undefined,
+                isCDM: pairs[id]?.isCDM ?? undefined,
                 modelDescription: await entry.text()
             }
         }
@@ -300,7 +313,26 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
                 break
             }
 
-            const prompt = dataInfo.syntax_prompt ?? "Please provide a valid PlantUML response"
+            
+            if (!execution.evaluation?.syntaxErrors) {
+                throw new Error("Couldnt find syntax errors list")
+            }
+
+            console.log(execution.evaluation.syntaxErrors)
+
+            let prompt = "There have been detected some syntax errors:"
+
+            execution.evaluation.syntaxErrors.forEach((v)=> {
+                prompt = prompt + "\n- "+v;
+            })
+
+            prompt = prompt + "\nCan you fix it?"
+
+            console.log("generated prompt", prompt)
+
+            //throw new Error("Found syntax error, WIP")
+
+            // const prompt = dataInfo.syntax_prompt ?? "Please provide a valid PlantUML response"
 
             const response = await sendMessage(lastChat.id, {
                 content: prompt,
@@ -339,7 +371,7 @@ const generateFullPrompt = (currentText: string, { prePrompt = '', postPrompt = 
 }
 
 const generateContent = (evaluation: EvaluationResultResponse, action: Action) => {
-    if (evaluation.errors.length == 0) {
+    if (evaluation.errors?.length == 0) {
         throw new Error("No errors found while evaluating and tried to generate new content")
     }
 

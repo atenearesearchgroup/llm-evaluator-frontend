@@ -1,14 +1,15 @@
 import type { DataInfo } from "@/hooks/useEvaluationData"
 import { Card, CardContent } from "@design/ui/card"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 type ExecutionInfoProps = {
     instance: DataInfo,
-    broadcast: BroadcastChannel
+    id: number
 }
 
-export const ExecutionInfo = ({instance, broadcast} : ExecutionInfoProps) => {
+export const ExecutionInfo = ({instance, id} : ExecutionInfoProps) => {
     const [dataInfo, setDataInfo] = useState(instance);
+    const broadcast = useMemo(() => new BroadcastChannel(`execution-${id}`), [id]);
     const runningInstances = dataInfo.instances.filter(info => info.status === `running`)
     const failedInstances = dataInfo.instances.filter(info => info.status === `failed`)
     const completedInstances = dataInfo.instances.filter(info => info.status === `completed`)
@@ -16,6 +17,7 @@ export const ExecutionInfo = ({instance, broadcast} : ExecutionInfoProps) => {
 
     // broadcast.postMessage({ type: `update`, data: instanceData })
     broadcast.onmessage = (ev) => {
+      //console.log("Received message", ev.data)
         if (ev.data.type === `update`) {
           setDataInfo(ev.data.data)
         }

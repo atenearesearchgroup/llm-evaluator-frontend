@@ -44,6 +44,11 @@ interface AddAction extends Action {
     payload: DataInfo;
 }
 
+interface DeleteAction extends Action {
+    type: 'delete';
+    payload: number;
+}
+
 interface UpdateAction extends Action {
     type: 'update';
     payload: {
@@ -52,7 +57,7 @@ interface UpdateAction extends Action {
     }
 }
 
-type ActionType = SetAction | AddAction | UpdateAction;
+type ActionType = SetAction | AddAction | UpdateAction | DeleteAction;
 
 const useEvalReducer = (state: EvaluationData, action: ActionType) => {
     switch(action.type) {
@@ -64,6 +69,10 @@ const useEvalReducer = (state: EvaluationData, action: ActionType) => {
         case 'add':
             state.list.push(action.payload);
             
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+            return state;
+        case 'delete':
+            state.list = state.list.filter((_, index) => index !== action.payload);
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
             return state;
         case 'update':
@@ -119,6 +128,10 @@ export const useEvaluationData = () => {
         return currentLength;
     }, [state]);
 
+    const delEvaluation = useCallback((id: number) => {
+        dispatch({ type: 'delete', payload: id });
+    }, [state])
+
     const listEvaluations = useCallback(() => {
         return state.list.map((item) => item.title);
     },[state])
@@ -140,15 +153,12 @@ export const useEvaluationData = () => {
         const newList = [...data.list];
         newList[id] = instance;
         if (!deepEqual(newList, data.list)) {
-            console.log("not equals")
             dispatch({ type: 'update', payload: { id, instance } });
-        } else {
-            console.log("equals")
-        }
+        } 
     }
 
 
-    return {getExecutionData, getExecutionInstance, addEvaluation, listEvaluations, updateExecutionInstance};
+    return {getExecutionData, getExecutionInstance, addEvaluation, delEvaluation, listEvaluations, updateExecutionInstance};
 }
 
 function deepEqual(obj1 : any, obj2: any) {

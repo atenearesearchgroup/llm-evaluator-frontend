@@ -7,6 +7,7 @@ import { Input } from "@design/ui/input";
 import { ExecutionInfo } from "./ExecutionInfo";
 import { RunningInstance } from "./RunningInstance";
 import { ExportListButton } from "./ExportListButton";
+import { DeleteExecution } from "./DeleteExecution";
 
 
 type ExecutionPageProps = {
@@ -89,7 +90,7 @@ export const ExecutionPage = ({ id }: ExecutionPageProps) => {
                 {/* <DeleteInstance instanceId={instance.id} client:visible /> */}
             </div>
 
-            <ExecutionInfo instance={instance} broadcast={broadcast} />
+            <ExecutionInfo instance={instance} id={id}/>
 
             <section id="instance-list" className="mt-32">
 
@@ -105,8 +106,11 @@ export const ExecutionPage = ({ id }: ExecutionPageProps) => {
                 }
             </section>
 
-            <ExportListButton id={id} />
+            <section className="flex justify-between">
+                <ExportListButton id={id} />
 
+                <DeleteExecution id={id} />
+            </section>
         </main>
     )
 }
