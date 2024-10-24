@@ -1,5 +1,6 @@
 import type { EvaluationSettings, IntentInstance } from "@/model/model"
 import { Button } from "@design/ui/button"
+import { ScrollArea } from "@design/ui/scroll-area"
 import { Separator } from "@design/ui/separator"
 import { Sheet, SheetContent, SheetTrigger } from "@design/ui/sheet"
 
@@ -24,8 +25,9 @@ export const InstanceSettings = ({ instance }: InstanceSettingsProps) => {
             <SheetTrigger asChild>
                 <Button variant={"secondary"}>Instance Settings</Button>
             </SheetTrigger>
-            <SheetContent className="flex flex-col gap-3">
-                <fieldset id="modelSettings" className="bg-card rounded-lg border p-3" >
+            <SheetContent className="flex ">
+                <ScrollArea>
+                <fieldset id="modelSettings" className="bg-card rounded-lg border p-3 mb-3" >
                     <legend className="-ml-1 px-1 text-sm font-medium flex items-center justify-start space-x-2 ">
                         <p className="text font-bold">
                             Model Settings
@@ -125,6 +127,7 @@ export const InstanceSettings = ({ instance }: InstanceSettingsProps) => {
 
                     </div>
                 </fieldset>
+                </ScrollArea>
             </SheetContent>
         </Sheet>
     )

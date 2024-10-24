@@ -30,7 +30,7 @@ export const PromptList = ({ prompts, action }: PromptListProps) => {
     const [currentText, setCurrentText] = useState('');
     const [useFewShot, setFewShot] = useState(false)
     const {toast, dismiss} = useToast()
-    const [actualToast, setActualToast] = useState<string|null>(null)
+    const [actualToast, setActualToast] = useState<string|undefined>(undefined)
 
     const addPrompt = (prompt: string) => {
         setCurrentText((prev) => prev.concat('\n').concat(prompt))
@@ -69,17 +69,19 @@ export const PromptList = ({ prompts, action }: PromptListProps) => {
 
                     <div className="flex flex-row justify-evenly">
                         <Button variant={"secondary"}
-                            onClick={async () => {
+                            onClick={ async () => {
                                 console.log("resultText", resultText)
                                 await navigator.clipboard.writeText(resultText);
                                 
                                 if(actualToast) dismiss(actualToast)
 
-                                setActualToast(toast({
+                                const toastId =toast({
                                     variant: "default",
                                     title: "Copied to clipboard",
                                     description: "The text has been copied to the clipboard"
-                                }).id)
+                                }).id
+
+                                setActualToast(toastId)
                             }}>
 
                             Copy to clipboard

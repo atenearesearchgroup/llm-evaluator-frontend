@@ -46,6 +46,8 @@ const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instan
             instanceData.status = instanceData?.evaluation?.score ?? -1 >= 0 ? "completed" : "failed"
             updateInstance(instanceData)
         }
+
+        return
     } else if (instanceData.status !== "running") {
         console.log("Updating instance status to running with id", instanceData.id)
         instanceData.status = "running"
@@ -65,7 +67,7 @@ const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instan
             setInstance(newInstance)
         }, 1000)
 
-        if(status === getStatus(newInstance)) 
+        if (status === getStatus(newInstance))
             setError({
                 message: "No changes on instance",
                 status: 500,
@@ -73,7 +75,7 @@ const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instan
                 requestError: true,
                 url: ""
             })
-        
+
     } catch (e: RequestError | any) {
         setError(e)
         console.error(e)
@@ -87,9 +89,9 @@ const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instan
 }
 
 const getScoreRepresentation = (score?: number) => {
-    if (score == null || score == -2) return < ><StarOff className={"size-[0.75rem]"}/> <p>N/A</p></>
-    if (score === MESSAGE_INVALID_SYNTAX_SCORE) return <><StarOff className={"size-[0.75rem]"}/> <p>Invalid Syntax</p></>
-    return <><Star className={"size-[0.75rem]"}/> {score}</>
+    if (score == null || score == -2) return < ><StarOff className={"size-[0.75rem]"} /> <p>N/A</p></>
+    if (score === MESSAGE_INVALID_SYNTAX_SCORE) return <><StarOff className={"size-[0.75rem]"} /> <p>Invalid Syntax</p></>
+    return <><Star className={"size-[0.75rem]"} /> {score}</>
 }
 
 export const RunningInstance = ({ instanceData, parent, updateInstance }: RunningInstanceProps) => {
@@ -103,7 +105,7 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
     // get iteration with higher index
     const lastIteration = useMemo(() => {
         return lastChat?.promptIterations?.reduce((prev: PromptIteration | null, curr) => {
-            if (prev != null && prev.iteration < curr.iteration)
+            if (prev != null && prev.iteration > curr.iteration)
                 return prev
             return curr
         }, null)
@@ -141,12 +143,12 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
 
         if (error) return
 
-        const currentStatus = getStatus(instance)
+        //const currentStatus = getStatus(instance)
 
         running.current = true
         handleStatus(instanceData, parent, instance, setInstance, setError, updateInstance, toast);
-        
-        
+
+
         running.current = false
         return
     }, [instance, error]);
@@ -177,27 +179,27 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
                         Current action: <p className="font-semibold"> {status}</p>
                     </div>
                     <div className="flex gap-2 items-center">
-                    <p>
-                        Score:
-                    </p>
-                    <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
+                        <p>
+                            Score:
+                        </p>
+                        <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
                     border-transparent bg-lime-700 text-primary hover:bg-lime-700/60 gap-1">
-                        {getScoreRepresentation(lastScore)}
-                    </div>
+                            {getScoreRepresentation(lastScore)}
+                        </div>
 
-                    <p className="">
-                    /
-                    </p>
+                        <p className="">
+                            /
+                        </p>
 
-                    <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
-                    border-transparent bg-yellow-300 text-primary-foreground hover:text-primary hover:bg-yellow-300/60 gap-1">                     
-                        {getScoreRepresentation(instanceData.evaluation?.maxScore)}
+                        <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
+                    border-transparent bg-yellow-300 text-primary-foreground hover:text-primary hover:bg-yellow-300/60 gap-1">
+                            {getScoreRepresentation(instanceData.evaluation?.maxScore)}
+                        </div>
                     </div>
-                </div>
                     <div className="font-semibold">
                         ERROR : {error.message}
                     </div>
-                    <Separator  className="mt-2"/>
+                    <Separator className="mt-2" />
                     <LastIterationMessage iteration={lastIteration} />
                 </CardContent>
                 <CardFooter className="py-1 justify-end">
@@ -233,14 +235,20 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
                     </div>
 
                     <p className="">
-                    /
+                        /
                     </p>
 
                     <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
-                    border-transparent bg-yellow-300 text-primary-foreground hover:text-primary hover:bg-yellow-300/60 gap-1">                     
+                    border-transparent bg-yellow-300 text-primary-foreground hover:text-primary hover:bg-yellow-300/60 gap-1">
                         {getScoreRepresentation(instanceData.evaluation?.maxScore)}
                     </div>
                 </div>
+
+                {status === InstanceStatus.DONE ?
+                    <>
+                        <Separator className="mt-2" />
+                        <LastIterationMessage iteration={lastIteration} />
+                    </> : null}
             </CardContent>
         </Card>)
 }

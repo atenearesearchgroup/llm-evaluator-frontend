@@ -12,7 +12,7 @@ type AITranscriptProps = {
 }
 
 export const AITranscript = ({ message, idx, dateFormat }: AITranscriptProps) => {
-    const {toast} = useToast()
+    const { toast } = useToast()
     const date = Date.parse(message.timestamp as any as string)
     const formattedDate = dateFormat.format(date)
 
@@ -46,8 +46,10 @@ export const AITranscript = ({ message, idx, dateFormat }: AITranscriptProps) =>
                 </div>
             </div>
             <Separator className="bg-accent-foreground/60 group-hover:bg-secondary-foreground my-1" />
-            <ScrollArea className="mx-auto h-[min(60dvh,100%)]">
-                <p className="whitespace-pre-line text-pretty break-before-page">
+
+            <ScrollArea className="mx-auto">
+                <p className="whitespace-pre-line text-pretty break-before-page 
+                    h-full max-h-[60dvh]">
                     {message.content}
                 </p>
                 <ScrollBar orientation="vertical" className="bg-secondary-foreground/10" />

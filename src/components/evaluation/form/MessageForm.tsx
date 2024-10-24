@@ -107,7 +107,7 @@ const createMessage = async (draft: Chat, request: CreateMessageRequest) => {
 }
 
 
-export const MessageForm = ({  draft, phase }: MessageFormProps) => {
+export const MessageForm = ({ draft, phase }: MessageFormProps) => {
     const form = useForm<z.infer<typeof MessageFormSchema>>({
         resolver: zodResolver(MessageFormSchema),
         defaultValues: {
@@ -118,7 +118,7 @@ export const MessageForm = ({  draft, phase }: MessageFormProps) => {
     const [validSyntax, setValidSyntax] = useState(true)
 
     const onSubmit = async (data: z.infer<typeof MessageFormSchema>) => {
-        const [success, message] = await sendRequest(phase,  draft, validSyntax, data.input, data.response, validSyntax ? data.score : undefined)
+        const [success, message] = await sendRequest(phase, draft, validSyntax, data.input, data.response, validSyntax ? data.score : undefined)
 
         if (!success) {
             toast(
