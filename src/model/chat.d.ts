@@ -27,6 +27,8 @@ interface Message {
     promptIteration?: PromptIteration;
 }
 
+export type AllMessage = AIMessage | UserMessage
+
 export type UserMessage = {
     type: 'user'
 } & Message
