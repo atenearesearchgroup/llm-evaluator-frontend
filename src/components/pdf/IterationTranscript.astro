@@ -1,0 +1,54 @@
+---
+import { getAction } from "@/lib/phase";
+import type { PromptIteration } from "@/model/chat";
+import MessageTranscript from "./MessageTranscript.astro";
+import { Separator } from "@design/ui/separator";
+
+export interface Props {
+    iteration: PromptIteration;
+}
+
+const { iteration } = Astro.props;
+
+const messages = iteration.messages;
+messages.forEach(
+    (a) => (a.timestamp = new Date(Date.parse(a.timestamp as any as string))),
+);
+
+const sortedMessages = messages.sort(
+    (a, b) => a.timestamp.getTime() - b.timestamp.getTime(),
+);
+
+const phase = getAction(iteration.type);
+---
+
+<article id={`iteration-${iteration.id}`} class="flex flex-col gap-2">
+    <div>
+        <h2
+            class="font-catamaran font-semibold text-xl
+            flex-shrink
+            ms-2 my-2 rounded-full"
+        >
+            - {phase.title}
+        </h2>
+    </div>
+
+    <!-- <Separator className="" /> -->
+
+    <ul class="flex flex-col gap-5 divide-y-2 divide-slate-700/15 mx-4">
+        {
+            sortedMessages.map((message, _) => {
+                return <MessageTranscript message={message} />;
+            })
+        }
+    </ul>
+    {
+        /* <!-- <section class="text-pretty">
+        <h3 class="font-catamaran font-semibold text-lg">Response:</h3>
+
+        <p class="whitespace-pre-line text-pretty break-before-page">
+            {message.content}
+        </p>
+    </section> --> */
+    }
+</article>

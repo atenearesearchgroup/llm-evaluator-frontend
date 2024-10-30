@@ -38,7 +38,7 @@ export const ExportListButton = ({ id }: ExportListButtonProps) => {
                 window.URL.revokeObjectURL(url)
             }}
             variant={"link"}>
-            Export data
+            Export execution data
         </Button>
     )
 }

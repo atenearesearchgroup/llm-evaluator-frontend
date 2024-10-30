@@ -1,0 +1,37 @@
+---
+import PdfLayout from "@/layouts/PdfLayout.astro";
+import MessageTranscript from "@/components/pdf/MessageTranscript.astro";
+import { getInstance } from "@/services/instanceService";
+import type { AllMessage } from "@/model/chat";
+import ChatTranscript from "@/components/pdf/ChatTranscript.astro";
+
+const { id } = Astro.params;
+
+const instance = await getInstance(parseInt(id || ""));
+
+if ("status" in instance) {
+    return new Response(JSON.stringify(instance), { status: 500 });
+}
+
+---
+
+<PdfLayout title={"Instance transcript - " + id}>
+    <section>
+        <div
+            class="my-10 font-catamaran flex flex-row items-center justify-between"
+        >
+            <h1 class="font-bold text-3xl">
+                {"#" + instance.id + " " + instance.displayName}
+            </h1>
+            <p class="text-end font-bold">{instance.modelSettings.modelName}</p>
+        </div>
+
+        <ul class="flex flex-col gap-5 divide-y-2 divide-primary">
+            {
+                instance.chats.map((chat, _) => {
+                    return <ChatTranscript chat={chat} />;
+                })
+            }
+        </ul>
+    </section>
+</PdfLayout>

@@ -14,6 +14,8 @@ import { LastIterationMessage } from "./LastIterationMessage"
 import { MESSAGE_INVALID_SYNTAX_SCORE } from "@/utils/constants"
 import { Star, StarOff } from "lucide-react"
 import { Separator } from "@design/ui/separator"
+import { TranscriptInstance } from "./TranscriptButton"
+import { ScoreRepresentation } from "./ScoreRepresentation"
 
 type RunningInstanceProps = {
     instanceData: InstanceInfo,
@@ -88,7 +90,7 @@ const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instan
 
 }
 
-const getScoreRepresentation = (score?: number) => {
+export const getScoreRepresentation = (score?: number) => {
     if (score == null || score == -2) return < ><StarOff className={"size-[0.75rem]"} /> <p>N/A</p></>
     if (score === MESSAGE_INVALID_SYNTAX_SCORE) return <><StarOff className={"size-[0.75rem]"} /> <p>Invalid Syntax</p></>
     return <><Star className={"size-[0.75rem]"} /> {score}</>
@@ -184,7 +186,7 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
                         </p>
                         <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
                     border-transparent bg-lime-700 text-primary hover:bg-lime-700/60 gap-1">
-                            {getScoreRepresentation(lastScore)}
+                            <ScoreRepresentation score={lastScore} />
                         </div>
 
                         <p className="">
@@ -193,7 +195,7 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
 
                         <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
                     border-transparent bg-yellow-300 text-primary-foreground hover:text-primary hover:bg-yellow-300/60 gap-1">
-                            {getScoreRepresentation(instanceData.evaluation?.maxScore)}
+                            <ScoreRepresentation score={instanceData.evaluation?.maxScore} />
                         </div>
                     </div>
                     <div className="font-semibold">
@@ -202,7 +204,8 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
                     <Separator className="mt-2" />
                     <LastIterationMessage iteration={lastIteration} />
                 </CardContent>
-                <CardFooter className="py-1 justify-end">
+                <CardFooter className="py-1 justify-end gap-3">
+                    <TranscriptInstance id={instance.id} />
                     <Button onClick={() => setError(undefined)}>Retry</Button>
                 </CardFooter>
             </Card>
@@ -231,7 +234,7 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
                     </p>
                     <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
                     border-transparent bg-lime-700 text-primary hover:bg-lime-700/60 gap-1">
-                        {getScoreRepresentation(lastScore)}
+                        <ScoreRepresentation score={lastScore}/>
                     </div>
 
                     <p className="">
@@ -240,7 +243,7 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
 
                     <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
                     border-transparent bg-yellow-300 text-primary-foreground hover:text-primary hover:bg-yellow-300/60 gap-1">
-                        {getScoreRepresentation(instanceData.evaluation?.maxScore)}
+                        <ScoreRepresentation score={instanceData.evaluation?.maxScore} />
                     </div>
                 </div>
 
@@ -250,5 +253,8 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
                         <LastIterationMessage iteration={lastIteration} />
                     </> : null}
             </CardContent>
+            <CardFooter className="py-1 justify-end">
+                <TranscriptInstance id={instance.id} />
+            </CardFooter>
         </Card>)
 }
