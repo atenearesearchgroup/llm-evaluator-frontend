@@ -40,8 +40,10 @@ const messageType = isUserMessage ? "Prompt" : "Response";
         </div>
     </section>
     <p
-        class={`whitespace-pre-line text-pretty break-before-page` +
+        class={`whitespace-pre-line text-pretty break-before-page cursor-pointer` +
             (isUserMessage ? " text-sm" : " text-sm")}
+            data-clipboard-text={message.content}
+            onclick="window.navigator.clipboard.writeText(this.dataset.clipboardText); alert('Copied to clipboard!');"
     >
         {message.content}
     </p>
