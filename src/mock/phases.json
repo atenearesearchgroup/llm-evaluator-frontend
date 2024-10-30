@@ -1,5 +1,10 @@
 {
     "startingNode": "zero",
+    "syntaxPrompt": {
+        "pre": "There have been detected some syntax errors:",
+        "error": "\n- {0}",
+        "post": "\nCan you fix it?"
+    },
     "decisions": [
         {
             "id": "classes",

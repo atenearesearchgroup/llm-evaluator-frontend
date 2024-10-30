@@ -52,7 +52,7 @@ export const EvaluationSettingsForm = ({ control }: EvaluationSettingsFormProps)
                                     <Input type="number" {...field} />
                                 </FormControl>
                                 <FormDescription>
-                                    How many times syntax errors can be prompted to be fixed
+                                    How many times syntax errors will trigger a prompt to fix the error
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>
@@ -68,7 +68,7 @@ export const EvaluationSettingsForm = ({ control }: EvaluationSettingsFormProps)
                                     <Input {...field} />
                                 </FormControl>
                                 <FormDescription>
-                                    How many chats are allowed
+                                    How many chats are allowed to be executed
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>
@@ -85,7 +85,7 @@ export const EvaluationSettingsForm = ({ control }: EvaluationSettingsFormProps)
                                     <Input {...field} />
                                 </FormControl>
                                 <FormDescription>
-                                    How many times the same prompt can be used
+                                    How many times the same prompt can be used to fix a certain element type
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>

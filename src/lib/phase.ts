@@ -8,6 +8,16 @@ export const getDefaultSyntaxPrompt = () => {
     return value;
 }
 
+export const getSyntaxPrompt = (content: string[]) => {
+    let result = mockData.syntaxPrompt.pre
+    
+    content.forEach((line) => {
+        result += mockData.syntaxPrompt.error.replace("{0}", line)
+    })
+
+    return result + mockData.syntaxPrompt.post
+}
+
 export const getNode = (id: string): (Action | Decision) => {
     if (id.startsWith("decision:"))
         return getDecision(id.substring("decision:".length))

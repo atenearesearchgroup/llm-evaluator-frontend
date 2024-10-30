@@ -1,5 +1,5 @@
 import type { DataInfo, InstanceInfo } from '@/hooks/useEvaluationData';
-import { getAction, getDecision, getFirstPhase, getNode } from '@/lib/phase';
+import { getAction, getDecision, getFirstPhase, getNode, getSyntaxPrompt } from '@/lib/phase';
 import type { AIMessage, Chat } from '@/model/chat';
 import type { Action } from '@/model/diagram';
 import type { EvaluationResultResponse, ModelError } from '@/model/evaluation';
@@ -321,13 +321,13 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
 
             console.log(execution.evaluation.syntaxErrors)
 
-            let prompt = "There have been detected some syntax errors:"
+            // let prompt = ""
 
-            execution.evaluation.syntaxErrors.forEach((v)=> {
-                prompt = prompt + "\n- "+v;
-            })
+            // execution.evaluation.syntaxErrors.forEach((v)=> {
+            //     prompt = prompt + "\n- " + v;
+            // })
 
-            prompt = prompt + "\nCan you fix it?"
+            let prompt = getSyntaxPrompt(execution.evaluation.syntaxErrors)
 
             console.log("generated prompt", prompt)
 
@@ -443,7 +443,7 @@ const generateContent = (evaluation: EvaluationResultResponse, action: Action) =
     return promptContent
 }
 
-const getNextPhase = (action: Action,evaluation: EvaluationResultResponse) => {
+const getNextPhase = (action: Action, evaluation: EvaluationResultResponse) => {
     // let action = getAction(getFirstPhase())
     let phase = getDecision(action.to?.split(":")[1] ?? "")
     let end = false
