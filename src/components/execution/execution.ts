@@ -305,6 +305,7 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
             // count the number of messages with invalid syntax score
             let invalidSyntaxCount = lastIteration.messages
                 .filter(m => `score` in m)
+                .map(m => m as AIMessage)
                 .filter(message => message.score === MESSAGE_INVALID_SYNTAX_SCORE).length
 
             if(invalidSyntaxCount > instance.maxErrors) {

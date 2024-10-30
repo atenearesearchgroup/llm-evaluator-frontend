@@ -1,6 +1,6 @@
 import type { Chat } from "@/model/chat"
 import type { IntentInstance } from "@/model/model"
-import type { CloneInstanceRequest, RequestError, ResponseError, UpdateInstanceRequest } from "@/model/request"
+import type { CloneInstanceRequest, RequestError, UpdateInstanceRequest } from "@/model/request"
 import { fetchWrapper } from "@/utils/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL

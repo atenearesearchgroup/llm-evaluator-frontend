@@ -14,7 +14,7 @@ export type PromptIteration = {
     type: string;
     iteration: number;
     chat?: Chat;
-    messages: (AIMessage | UserMessage)[];
+    messages: (AllMessage)[];
 }
 
 export type MessageType = 'user' | 'ai'

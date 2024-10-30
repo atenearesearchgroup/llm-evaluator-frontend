@@ -28,7 +28,7 @@ if ("status" in instance) {
 }
 
 const chat: Chat | undefined = instance.chats.find(
-    (value, idx, _) => value.draftNumber === parseInt(number),
+    (value, __, _) => value.draftNumber === parseInt(number),
 );
 
 if (chat == null) {

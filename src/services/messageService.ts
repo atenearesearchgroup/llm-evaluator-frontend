@@ -1,6 +1,6 @@
 import type { AIMessage } from "@/model/chat"
 import type { EvaluationResultResponse } from "@/model/evaluation"
-import type { RequestError, ResponseError, ScoreResponseRequest } from "@/model/request"
+import type { RequestError, ScoreResponseRequest } from "@/model/request"
 import { fetchWrapper } from "@/utils/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL

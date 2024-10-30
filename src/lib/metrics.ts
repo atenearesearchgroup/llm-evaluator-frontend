@@ -1,5 +1,5 @@
 import type { DataInfo, InstanceInfo } from "@/hooks/useEvaluationData";
-import type { Chat, Message } from "@/model/chat";
+import type { Chat } from "@/model/chat";
 import type { CategoryError } from "@/model/evaluation";
 import type { EvaluationSettings, IntentInstance, ModelSettings } from "@/model/model";
 import { getInstance } from "@/services/instanceService";
@@ -68,10 +68,6 @@ export const exportJson = async (dataInfo: DataInfo) => {
     console.log("final output", derivedOutput)
     
     return derivedOutput
-}
-
-const calculateMetrics = (instance: IntentInstance, instanceData: InstanceInfo) => {
-    return null
 }
 
 const generateJson = (instance: IntentInstance, instanceData: InstanceInfo) => {
@@ -167,13 +163,4 @@ const generateJson = (instance: IntentInstance, instanceData: InstanceInfo) => {
     // output.status = output.
 
     return output
-}
-
-const serializeMessage = (message: Message) => {
-    return {
-        type: message.type,
-        text: message.content,
-        timestamp: message.timestamp,
-        score: 'score' in message ? message.score : 0
-    }
 }

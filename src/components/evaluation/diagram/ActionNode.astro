@@ -38,7 +38,9 @@ if ('requestError' in chat) {
     <Separator />
 
     <CardContent>
-        <PromptList prompts={action.prompts} action={action} client:visible />
+        <PromptList prompts={Object.keys(action.prompts).flatMap((key) => {
+            return action.prompts[key].template;
+        })} action={action} client:visible />
 
         <h3 class="font-bold mt-6 mb-2">Step needed data:</h3>
 

@@ -37,7 +37,7 @@ export const ChatTranscript = ({ chat }: ChatTranscriptProps) => {
 
             <CollapsibleContent className="grid gap-2">
                 {
-                    chat.promptIterations.map((iteration, idx) => {
+                    chat.promptIterations.map((iteration, _) => {
                         const messages = iteration.messages
                         .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
                         return <div key={`iteration-${iteration.id}`} className="grid gap-2">

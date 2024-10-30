@@ -1,10 +1,10 @@
 ---
-import { type AIMessage, type Message, type UserMessage } from "@/model/chat";
+import { type AllMessage } from "@/model/chat";
 import { getAction, getFirstPhase } from "@/lib/phase";
 import ScoreTranscript from "./ScoreTranscript.astro";
 
 export interface Props {
-    message: AIMessage | UserMessage;
+    message: AllMessage;
 }
 
 const { message } = Astro.props;

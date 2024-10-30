@@ -1,5 +1,4 @@
 import type { IntentInstance } from "@/model/model"
-import { exportJson } from "@/lib/metrics"
 import { Button } from "@design/ui/button"
 
 
@@ -14,7 +13,7 @@ export const ExportButton = ({ instance }: ExportButtonProps) => {
         <Button
 
             onClick={() => {
-                const result = exportJson(instance)
+                const result = {}
 
                 const data = JSON.stringify(result, null, 2)
 

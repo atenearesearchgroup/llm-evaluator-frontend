@@ -1,5 +1,5 @@
 import type { EvaluationResultResponse } from "@/model/evaluation";
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 
 export interface EvaluationData {
     list: DataInfo[];

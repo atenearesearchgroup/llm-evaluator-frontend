@@ -1,5 +1,5 @@
-import type { AIMessage, Chat, UserMessage } from "@/model/chat"
-import type { CreateMessageRequest, RequestError, ResponseError, UpdateChatRequest } from "@/model/request"
+import type { AllMessage, Chat } from "@/model/chat"
+import type { CreateMessageRequest, RequestError, UpdateChatRequest } from "@/model/request"
 import { fetchWrapper } from "@/utils/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL
@@ -138,8 +138,8 @@ export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promis
     return newModel
 }
 
-export const sendMessage = async (draftId: Number, message: CreateMessageRequest): Promise<UserMessage | AIMessage | RequestError> => {
-    const newModel = await fetchWrapper<UserMessage | AIMessage>(`${API_URL}/chat/${draftId}/message`,
+export const sendMessage = async (draftId: Number, message: CreateMessageRequest): Promise<AllMessage | RequestError> => {
+    const newModel = await fetchWrapper<AllMessage>(`${API_URL}/chat/${draftId}/message`,
         {
             method: 'POST',
             body: JSON.stringify(message),
@@ -148,41 +148,6 @@ export const sendMessage = async (draftId: Number, message: CreateMessageRequest
             }
         }
     )
-
-    // const newModel = await fetch(`${API_URL}/chat/${draftId}/message`, {
-    //     method: 'POST',
-    //     body: JSON.stringify(message),
-    //     headers: {
-    //         'Content-Type': 'application/json'
-    //     }
-    // })
-    //     .then(async (response) => {
-    //         if (response.ok) {
-    //             return await response.json() as UserMessage | AIMessage
-    //         }
-
-    //         const responseError = await response.json() as ResponseError
-
-    //         return {
-    //             requestError: true,
-    //             message: responseError.message,
-    //             status: responseError.status,
-    //             statusText: responseError.error,
-    //             url: responseError.path
-    //         } as RequestError
-    //     })
-    //     .catch((error) => {
-    //         console.log(error)
-
-    //         return {
-    //             requestError: true,
-    //             message: error.message,
-    //             status: 500,
-    //             statusText: 'Unknown error',
-    //             url: ''
-    //         } as RequestError
-    //     })
-
     return newModel
 }
 

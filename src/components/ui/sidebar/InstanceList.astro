@@ -56,7 +56,7 @@ flex flex-col overflow-y-auto"
         const $toggle = document.getElementById("toggle");
         const $aside = document.getElementById("list");
         const $title = document.getElementById("draft-title");
-        let timeout: NodeJS.Timeout | null = null;
+        let timeout: number | null = null;
 
         if (!$toggle || !$aside || !$title) {
             return;
@@ -64,12 +64,12 @@ flex flex-col overflow-y-auto"
 
         $toggle.addEventListener("click", () => {
             if (timeout !== null) {
-                clearTimeout(timeout);
+                window.clearTimeout(timeout);
                 timeout = null;
             }
 
             if ($aside.classList.contains("opacity-100")) {
-                timeout = setTimeout(() => {
+                timeout = window.setTimeout(() => {
                     $aside.classList.toggle("hidden");
                     $title.classList.toggle("hidden");
                     timeout = null;

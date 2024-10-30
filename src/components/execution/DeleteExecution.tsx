@@ -19,10 +19,10 @@ export const DeleteExecution = ({ id }: DeleteExecutionProps) => {
 
         if (!dataInfo) return;
 
-        await dataInfo.instances.forEach(async (instance) => {
+        await Promise.all(dataInfo.instances.map(async (instance) => {
             console.log(`Deleting instance ${instance.id}`)
-            await deleteInstance(instance.id)
-        })
+            return deleteInstance(instance.id)
+        }))
 
         delEvaluation(id)
 

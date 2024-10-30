@@ -1,5 +1,4 @@
-import type { IntentInstance, IntentModel } from "@/model/model"
-import type { CreateInstanceRequest, CreateModelRequest, RequestError, ResponseError } from "@/model/request"
+import type { RequestError } from "@/model/request"
 import { fetchWrapper } from "@/utils/request"
 
 const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL

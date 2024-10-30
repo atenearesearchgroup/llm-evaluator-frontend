@@ -1,11 +1,7 @@
 import { Badge } from "@/components/shadcdn/ui/badge"
 import { Tooltip, TooltipProvider } from "@/components/shadcdn/ui/tooltip"
-import type { DataInfo, InstanceInfo } from "@/hooks/useEvaluationData"
-import type { IntentInstance } from "@/model/model"
-import { getInstance } from "@/services/instanceService"
+import type { DataInfo } from "@/hooks/useEvaluationData"
 import { TooltipArrow, TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip"
-import { info } from "node_modules/astro/dist/core/logger/core"
-import { useEffect, useState } from "react"
 
 
 type IntentInstanceProps = {

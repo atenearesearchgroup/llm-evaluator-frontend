@@ -1,8 +1,6 @@
 ---
 import PdfLayout from "@/layouts/PdfLayout.astro";
-import MessageTranscript from "@/components/pdf/MessageTranscript.astro";
 import { getInstance } from "@/services/instanceService";
-import type { AllMessage } from "@/model/chat";
 import ChatTranscript from "@/components/pdf/ChatTranscript.astro";
 
 const { id } = Astro.params;
