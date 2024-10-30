@@ -10,8 +10,6 @@ export default defineConfig({
   integrations: [tailwind({
     applyBaseStyles: false
   }), react()
-  // ,
-  //  db()
   ],
   output: "server",
   server: {
