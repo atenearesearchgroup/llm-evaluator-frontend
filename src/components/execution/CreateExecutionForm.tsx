@@ -14,7 +14,7 @@ import { createInstance, createModel, getModels } from "@/services/intentService
 import { CloneFormSchema } from "../instance/form/CloneInstanceForm"
 import { EvaluationSettingsForm } from "../instance/form/EvaluationSettingsForm"
 import { ModelSettingsForm } from "../instance/form/ModelSettingsForm"
-import { loadZipModels } from "./execution"
+import { loadZipModels } from "../../lib/execution"
 import { useEvaluationData } from "@/hooks/useEvaluationData"
 import { deleteInstance, getInstances } from "@/services/instanceService"
 import { uploadFile } from "@/services/fileService"
@@ -192,18 +192,18 @@ export const CreateExecutionForm = ({ }) => {
             uploadFile(model.graderModel, model.id)
         }
 
-        console.log("models", models)
-        console.log("createdInstances", createdInstances)
+        // console.log("models", models)
+        // console.log("createdInstances", createdInstances)
 
         const index = addEvaluation({
             title: formData.title,
             syntax_prompt: formData.syntaxPrompt,
             instances: createdInstances.map(instance => {
-                console.log(models.find(model => {
-                    console.log(model.id, instance.intentModel?.displayName ?? "null")
+                // console.log(models.find(model => {
+                //     console.log(model.id, instance.intentModel?.displayName ?? "null")
 
-                    return model.id === instance.intentModel?.displayName
-                })?.modelDescription ?? "", "DESCRIPTION")
+                //     return model.id === instance.intentModel?.displayName
+                // })?.modelDescription ?? "", "DESCRIPTION")
                 return {
                     id: instance.id,
                     status: "running",

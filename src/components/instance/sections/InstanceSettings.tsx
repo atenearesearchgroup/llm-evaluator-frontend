@@ -108,21 +108,21 @@ export const InstanceSettings = ({ instance }: InstanceSettingsProps) => {
 
                         <div className="grid grid-cols-2">
                             <label className="font-semibold text-center">Max Drafts</label>
-                            <p>{valueOrDefault(evaluationSettings.maxChats)}</p>
+                            <p>{evaluationSettings.maxChats}</p>
                         </div>
 
                         <Separator />
 
                         <div className="grid grid-cols-2">
                             <label className="font-semibold text-center">Max K</label>
-                            <p>{valueOrDefault(evaluationSettings.maxErrors)}</p>
+                            <p>{evaluationSettings.maxErrors}</p>
                         </div>
 
                         <Separator />
 
                         <div className="grid grid-cols-2">
                             <label className="font-semibold text-center">Max Repeating Prompts</label>
-                            <p>{valueOrDefault(evaluationSettings.maxRepeatingPrompt)}</p>
+                            <p>{evaluationSettings.maxRepeatingPrompt}</p>
                         </div>
 
                     </div>

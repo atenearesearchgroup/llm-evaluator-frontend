@@ -10,7 +10,7 @@ import { createChat, getInstance } from '@/services/instanceService';
 import { evaluateMessage, setMessageScore } from '@/services/messageService';
 import { MESSAGE_INVALID_SYNTAX_SCORE, MESSAGE_SCORE_MISSING } from '@/utils/constants';
 import { unzip } from 'unzipit';
-import { ExecutionInfo } from './ExecutionInfo';
+import { ExecutionInfo } from '../components/execution/ExecutionInfo';
 
 
 export type ModelInfo = {
@@ -177,10 +177,8 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
                 throw new Error("Prompt generation failed")
             }
 
-            console.log("content", content)
+            console.log("user_prompt", content)
 
-            // TODO: Remove when PENDING_SCORE IS CHECKED
-            // break
             createdMessage = await sendMessage(lastChat.id, {
                 content: content,
                 promptType: lastChat.actualNode,
