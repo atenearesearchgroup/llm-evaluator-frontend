@@ -1,8 +1,8 @@
 import type { IntentInstance, IntentModel } from "@/model/model"
 import type { CreateInstanceRequest, CreateModelRequest, RequestError, ResponseError } from "@/model/request"
-import { fetchWrapper } from "@/utils/request"
+import { fetchWrapper, getApiUrl } from "@/utils/request"
 
-const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL
+const API_URL = getApiUrl()
 
 export const createModel = async (request: CreateModelRequest): Promise<IntentModel | RequestError> => {
     const newModel = await fetch(`${API_URL}/intent`, {

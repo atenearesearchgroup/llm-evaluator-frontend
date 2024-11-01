@@ -1,8 +1,9 @@
+import { getApiUrl } from "@/utils/request";
 import { useToast } from "@design/ui/use-toast";
 import { useCallback, useEffect, useState} from "react";
 
 // http://localhost:8080/actuator/health
-const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL
+const API_URL = getApiUrl()
 const URL = API_URL + '/actuator/health';
 
 

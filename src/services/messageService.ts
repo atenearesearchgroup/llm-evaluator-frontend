@@ -1,9 +1,9 @@
 import type { AIMessage } from "@/model/chat"
 import type { EvaluationResultResponse } from "@/model/evaluation"
 import type { RequestError, ScoreResponseRequest } from "@/model/request"
-import { fetchWrapper } from "@/utils/request"
+import { fetchWrapper, getApiUrl } from "@/utils/request"
 
-const API_URL = import.meta.env.BACKEND_API_URL || import.meta.env.PUBLIC_BACKEND_API_URL
+const API_URL = getApiUrl()
 
 
 export const setMessageScore = async (messageId: number,request: ScoreResponseRequest): Promise<AIMessage | RequestError> => {
