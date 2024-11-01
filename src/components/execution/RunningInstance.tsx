@@ -15,6 +15,7 @@ import { Star, StarOff } from "lucide-react"
 import { Separator } from "@design/ui/separator"
 import { TranscriptInstance } from "./TranscriptButton"
 import { ScoreRepresentation } from "./ScoreRepresentation"
+import { LoadingInstance } from "./instance/LoadingInstance"
 
 type RunningInstanceProps = {
     instanceData: InstanceInfo,
@@ -144,72 +145,17 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
 
         if (error) return
 
-        //const currentStatus = getStatus(instance)
-
         running.current = true
         handleStatus(instanceData, parent, instance, setInstance, setError, updateInstance, toast);
-
-
         running.current = false
         return
     }, [instance, error]);
 
-    if (instance == null) return (
-        <Card className="p-2">
-            <CardContent className="py-3 px-6 text-sm">
-                Loading instance {instanceData.id}...
-            </CardContent>
-        </Card>
-    )
+    if (instance == null) return (<LoadingInstance instance={instanceData} />)
 
     const status = getStatus(instance)
     const colorStatus = instanceData.status === "running" ? "bg-yellow-500" : (instanceData.status === "completed" ? "bg-green-500" : "bg-red-500")
-
     const lastScore = messages.length === 0 ? 0 : getLastAiMessage(messages)?.score
-
-    if (error) {
-        return (
-            <Card className="p-2">
-                <CardTitle className="flex justify-between text-md px-4 py-2 bg-secondary rounded-lg">
-                    {instance.intentModel?.displayName}
-
-                    <Badge variant={"outline"} className={`text-foreground ${colorStatus}`} >{instanceData.status.toUpperCase()}</Badge>
-                </CardTitle>
-                <CardContent className="py-3 px-6 text-sm">
-                    <div className="flex gap-2">
-                        Current action: <p className="font-semibold"> {status}</p>
-                    </div>
-                    <div className="flex gap-2 items-center">
-                        <p>
-                            Score:
-                        </p>
-                        <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
-                    border-transparent bg-lime-700 text-primary hover:bg-lime-700/60 gap-1">
-                            <ScoreRepresentation score={lastScore} />
-                        </div>
-
-                        <p className="">
-                            /
-                        </p>
-
-                        <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
-                    border-transparent bg-yellow-300 text-primary-foreground hover:text-primary hover:bg-yellow-300/60 gap-1">
-                            <ScoreRepresentation score={instanceData.evaluation?.maxScore} />
-                        </div>
-                    </div>
-                    <div className="font-semibold">
-                        ERROR : {error.message}
-                    </div>
-                    <Separator className="mt-2" />
-                    <LastIterationMessage iteration={lastIteration} />
-                </CardContent>
-                <CardFooter className="py-1 justify-end gap-3">
-                    <TranscriptInstance id={instance.id} />
-                    <Button onClick={() => setError(undefined)}>Retry</Button>
-                </CardFooter>
-            </Card>
-        )
-    }
 
     return (
         <Card className="p-2">
@@ -246,7 +192,12 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
                     </div>
                 </div>
 
-                {status === InstanceStatus.DONE ?
+                {error && 
+                    <div className="font-semibold">
+                        ERROR : {error.message}
+                    </div>}
+
+                {status === InstanceStatus.DONE || error ?
                     <>
                         <Separator className="mt-2" />
                         <LastIterationMessage iteration={lastIteration} />
@@ -254,6 +205,7 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
             </CardContent>
             <CardFooter className="py-1 justify-end">
                 <TranscriptInstance id={instance.id} />
+                {error && <Button onClick={() => setError(undefined)}>Retry</Button>}
             </CardFooter>
         </Card>)
 }

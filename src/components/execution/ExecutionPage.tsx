@@ -8,6 +8,8 @@ import { ExecutionInfo } from "./ExecutionInfo";
 import { RunningInstance } from "./RunningInstance";
 import { ExportListButton } from "./ExportListButton";
 import { DeleteExecution } from "./DeleteExecution";
+import { NotFoundExecution } from "./execution/NotFoundExecution";
+import { LoadingExecution } from "./execution/LoadingExecution";
 
 
 type ExecutionPageProps = {
@@ -51,6 +53,8 @@ export const ExecutionPage = ({ id }: ExecutionPageProps) => {
                 return
             }
 
+            await new Promise(resolve => setTimeout(resolve, 250))
+
             setSampleInstance(result)
         }
 
@@ -59,18 +63,10 @@ export const ExecutionPage = ({ id }: ExecutionPageProps) => {
 
 
     if (!instance)
-        return (
-            <main>
-                <p>404 - Couldnt find instance with id #{id}</p>
-            </main>
-        )
+        return (<NotFoundExecution id={id} />)
 
     if (!sampleInstance)
-        return (
-            <main>
-                <p>Loading the first instance from the execution</p>
-            </main>
-        )
+        return (<LoadingExecution />)
 
     return (
         <main className="flex-1 space-y-4 p-8 pt-6">
@@ -90,7 +86,7 @@ export const ExecutionPage = ({ id }: ExecutionPageProps) => {
                 {/* <DeleteInstance instanceId={instance.id} client:visible /> */}
             </div>
 
-            <ExecutionInfo instance={instance} id={id}/>
+            <ExecutionInfo instance={instance} id={id} />
 
             <section id="instance-list" className="mt-32">
 
