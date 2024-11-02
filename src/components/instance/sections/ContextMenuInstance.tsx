@@ -77,6 +77,7 @@ export const ContextMenuInstance = ({ instance, data, forceReload, children }: C
                     }))
                 }, i * 1000)
             }
+            data.status = `running`
             setTimeout(() => {
                 toastsId.forEach(toastId => toastId.dismiss())
                 forceReload()
@@ -182,7 +183,7 @@ export const ContextMenuInstance = ({ instance, data, forceReload, children }: C
                     window.open(`/instances/${data.id}/transcript`, '_blank')
                 }}
             >
-                <BookTextIcon className="size-4" /> <p>Open transcript</p>
+                <BookTextIcon className="size-4" /> <p>Open Transcript</p>
             </ContextMenuItem>
 
         </ContextMenuContent>
