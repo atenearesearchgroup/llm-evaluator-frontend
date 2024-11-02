@@ -1,8 +1,8 @@
 import type { EvaluationSettings, IntentInstance } from "@/model/model"
-import { Button } from "@design/ui/button"
-import { ScrollArea } from "@design/ui/scroll-area"
-import { Separator } from "@design/ui/separator"
-import { Sheet, SheetContent, SheetTrigger } from "@design/ui/sheet"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 
 type InstanceSettingsProps = {

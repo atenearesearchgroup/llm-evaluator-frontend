@@ -1,19 +1,19 @@
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/shadcdn/ui/form"
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import type { Control } from "react-hook-form"
 import { z } from "zod"
-import { Input } from "@/components/shadcdn/ui/input"
+import { Input } from "@/components/ui/input"
 import {
     Collapsible,
     CollapsibleContent,
     CollapsibleTrigger,
-} from "@/components/shadcdn/ui/collapsible"
+} from "@/components/ui/collapsible"
 import { useState } from "react"
-import { Button } from "@/components/shadcdn/ui/button"
+import { Button } from "@/components/ui/button"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
-import type { CloneFormSchema } from "./CloneInstanceForm"
+import type { FormSchema } from "@/components/execution/CreateExecutionForm"
 
 type EvaluationSettingsFormProps = {
-    control: Control<z.infer<typeof CloneFormSchema>>,
+    control: Control<z.infer<typeof FormSchema>>,
     // control: Control<FormValues>,
 }
 
