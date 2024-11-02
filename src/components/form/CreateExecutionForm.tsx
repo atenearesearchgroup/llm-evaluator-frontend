@@ -328,8 +328,8 @@ export const CreateExecutionForm = ({ }) => {
                 />
 
 
-                <EvaluationSettingsForm control={form.control as any as Control<z.infer<typeof CloneFormSchema>>} />
-                <ModelSettingsForm control={form.control as any as Control<z.infer<typeof CloneFormSchema>>} />
+                <EvaluationSettingsForm control={form.control} />
+                <ModelSettingsForm control={form.control} />
                 <Button type="submit">Create</Button>
             </form>
         </Form>
