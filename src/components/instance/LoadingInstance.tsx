@@ -14,29 +14,6 @@ export type LoadingInstanceProps = {
 
 export const LoadingInstance = ({  }: LoadingInstanceProps) => {
 
-    // return (
-    //     <Skeleton className="w-full h-52" />
-    //     )
-
-    const instance = {
-        intentModel: {
-            displayName: "Intent Model"
-        }
-    }
-
-    const lastChat = {
-        actualNode: undefined
-    }
-
-    const colorStatus = "bg-primary"
-    const instanceData = {
-        status: InstanceStatus.DONE,
-        evaluation: {
-            maxScore: 10
-        }
-    }
-    const status = instanceData.status
-
     return (
         <Card className="p-2">
             <Skeleton className="flex justify-between items-center rounded-lg ps-3 pe-4 w-full h-10 bg-primary-foreground">

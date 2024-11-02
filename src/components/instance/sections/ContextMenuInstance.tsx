@@ -101,6 +101,7 @@ export const ContextMenuInstance = ({ instance, data, forceReload, children }: C
             <ContextMenuSeparator />
             <ContextMenuItem
                 className="space-x-2"
+                disabled={!lastMessage ? true : undefined}
                 onClick={() => {
                     navigator.clipboard.writeText(lastMessage?.content ?? "")
                     toast({
@@ -131,7 +132,7 @@ export const ContextMenuInstance = ({ instance, data, forceReload, children }: C
             <ContextMenuSeparator />
             <ContextMenuSub>
                 <ContextMenuSubTrigger className="space-x-2"
-                    disabled={!lastMessage ? true : undefined}
+                    disabled={!lastMessage || !(`score` in lastMessage) ? true : undefined}
                 ><FileLineChartIcon className="size-4" /> <p>Export diagram</p></ContextMenuSubTrigger>
                 <ContextMenuSubContent>
                     <ContextMenuItem
@@ -181,7 +182,7 @@ export const ContextMenuInstance = ({ instance, data, forceReload, children }: C
                     window.open(`/instances/${data.id}/transcript`, '_blank')
                 }}
             >
-                <BookTextIcon className="size-4" /> <p>Go to transcript</p>
+                <BookTextIcon className="size-4" /> <p>Open transcript</p>
             </ContextMenuItem>
 
         </ContextMenuContent>
