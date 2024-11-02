@@ -1,4 +1,4 @@
-import { Skeleton } from "@design/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
 
 
 export const LoadingExecution = ({}) => {

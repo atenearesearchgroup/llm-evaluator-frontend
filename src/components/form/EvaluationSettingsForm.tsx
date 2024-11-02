@@ -10,7 +10,7 @@ import {
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
-import type { FormSchema } from "@/components/execution/CreateExecutionForm"
+import type { FormSchema } from "@/components/form/CreateExecutionForm"
 
 type EvaluationSettingsFormProps = {
     control: Control<z.infer<typeof FormSchema>>,

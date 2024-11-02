@@ -1,6 +1,6 @@
 import { useEvaluationData } from "@/hooks/useEvaluationData"
 import { exportJson } from "@/lib/metrics"
-import { Button } from "@design/ui/button"
+import { Button } from "@/components/ui/button"
 import { useMemo } from "react"
 
 

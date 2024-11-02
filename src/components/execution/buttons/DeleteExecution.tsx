@@ -1,8 +1,8 @@
 import { useEvaluationData } from "@/hooks/useEvaluationData";
 import { deleteInstance } from "@/services/instanceService";
-import { Button } from "@design/ui/button";
-import { Dialog, DialogDescription, DialogTrigger, DialogContent, DialogFooter, DialogClose } from "@design/ui/dialog";
-import { useToast } from "@design/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogDescription, DialogTrigger, DialogContent, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
 
 type DeleteExecutionProps = {
     id: number;

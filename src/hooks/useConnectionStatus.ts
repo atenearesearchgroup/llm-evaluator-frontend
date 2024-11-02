@@ -1,5 +1,5 @@
 import { getApiUrl } from "@/utils/request";
-import { useToast } from "@design/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useCallback, useEffect, useState} from "react";
 
 // http://localhost:8080/actuator/health

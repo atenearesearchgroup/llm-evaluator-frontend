@@ -2,20 +2,24 @@ import type { DataInfo, InstanceInfo } from "@/hooks/useEvaluationData"
 import type { AIMessage, Message, PromptIteration } from "@/model/chat"
 import type { IntentInstance } from "@/model/model"
 import { getInstance } from "@/services/instanceService"
-import { Card, CardContent, CardFooter, CardTitle } from "@design/ui/card"
+import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { executeAction, getStatus, InstanceStatus } from "../../lib/execution"
-import { useToast } from "@design/ui/use-toast"
+import { useToast } from "@/components/ui/use-toast"
 import type { RequestError } from "@/model/request"
-import { Button } from "@design/ui/button"
-import { Badge } from "@design/ui/badge"
-import { LastIterationMessage } from "./LastIterationMessage"
-import { MESSAGE_INVALID_SYNTAX_SCORE } from "@/utils/constants"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { LastIterationMessage } from "./sections/LastIterationMessage"
+import { MESSAGE_INVALID_SYNTAX_SCORE, MESSAGE_SCORE_MISSING } from "@/utils/constants"
 import { Star, StarOff } from "lucide-react"
-import { Separator } from "@design/ui/separator"
-import { TranscriptInstance } from "./TranscriptButton"
-import { ScoreRepresentation } from "./ScoreRepresentation"
-import { LoadingInstance } from "./instance/LoadingInstance"
+import { Separator } from "@/components/ui/separator"
+import { TranscriptInstance } from "./buttons/TranscriptButton"
+import { ScoreRepresentation } from "../score/ScoreRepresentation"
+import { LoadingInstance } from "./LoadingInstance"
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu"
+import { setMessageScore } from "@/services/messageService"
+import { finalizeDraft, updateDraft } from "@/services/chatService"
+import { ContextMenuInstance } from "./sections/ContextMenuInstance"
 
 type RunningInstanceProps = {
     instanceData: InstanceInfo,
@@ -44,8 +48,8 @@ const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instan
 
     if (status === InstanceStatus.DONE) {
         if (instanceData.status === "running") {
-            console.log("Updating instance status to completed with id", instanceData.id)
             instanceData.status = instanceData?.evaluation?.score ?? -1 >= 0 ? "completed" : "failed"
+            console.log(`Updating instance status to ${instanceData.status} with id`, instanceData.id)
             updateInstance(instanceData)
         }
 
@@ -90,6 +94,23 @@ const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instan
 
 }
 
+const loadInstance = async (id: number, setInstance: (instance: IntentInstance) => void, delay: number = 100) => {
+    const loadedInstance = await getInstance(id)
+
+    if ("requestError" in loadedInstance) {
+
+        if (delay >= 4000) {
+            console.error(loadedInstance)
+            return
+        }
+
+        setTimeout(() => loadInstance(id, setInstance, delay * 2), delay)
+        return
+    }
+
+    setInstance(loadedInstance)
+}
+
 export const getScoreRepresentation = (score?: number) => {
     if (score == null || score == -2) return < ><StarOff className={"size-[0.75rem]"} /> <p>N/A</p></>
     if (score === MESSAGE_INVALID_SYNTAX_SCORE) return <><StarOff className={"size-[0.75rem]"} /> <p>Invalid Syntax</p></>
@@ -98,7 +119,7 @@ export const getScoreRepresentation = (score?: number) => {
 
 export const RunningInstance = ({ instanceData, parent, updateInstance }: RunningInstanceProps) => {
     const running = useRef(false)
-    const [instance, setInstance] = useState<IntentInstance>()
+    const [instance, setInstance] = useState<IntentInstance | undefined>(undefined)
     const [error, setError] = useState<RequestError>()
     const { toast } = useToast()
 
@@ -121,23 +142,7 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
     }, [lastIteration]);
 
     useEffect(() => {
-        const loadInstance = async (delay: number = 100) => {
-            const loadedInstance = await getInstance(instanceData.id)
-
-            if ("requestError" in loadedInstance) {
-
-                if (delay >= 4000) {
-                    console.error(loadedInstance)
-                    return
-                }
-
-                setTimeout(() => loadInstance(delay * 2), delay)
-                return
-            }
-
-            setInstance(loadedInstance)
-        }
-        loadInstance()
+        loadInstance(instanceData.id, setInstance)
     }, [])
 
     useEffect(() => {
@@ -158,54 +163,60 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
     const lastScore = messages.length === 0 ? 0 : getLastAiMessage(messages)?.score
 
     return (
-        <Card className="p-2">
-            <CardTitle className="flex justify-between text-md px-4 py-2 bg-secondary rounded-lg">
-                {instance.intentModel?.displayName}
-                <Badge variant={"outline"} className={`text-foreground ${colorStatus}`} >{instanceData.status.toUpperCase()}</Badge>
-            </CardTitle>
-            <CardContent className="py-3 px-6 text-sm">
-                <div className="flex gap-2">
-                    Current action: <p className="font-semibold"> {status}</p>
-                </div>
-                {
-                    status !== InstanceStatus.DONE &&
-                    <div>
-                        Chat status: {lastChat?.actualNode || "No active Chat"}
+        <ContextMenuInstance instance={instance} data={instanceData} forceReload={() => {
+            setInstance(undefined)
+            loadInstance(instanceData.id, setInstance)
+        }}>
+            <Card className="p-2">
+                <CardTitle className="flex justify-between text-md px-4 py-2 bg-secondary rounded-lg">
+                    {instance.intentModel?.displayName}
+                    <Badge variant={"outline"} className={`text-foreground ${colorStatus}`} >{instanceData.status.toUpperCase()}</Badge>
+                </CardTitle>
+                <CardContent className="py-3 px-6 text-sm">
+                    <div className="flex gap-2">
+                        Current action: <p className="font-semibold"> {status}</p>
                     </div>
-                }
-                <div className="flex gap-2 items-center">
-                    <p>
-                        Score:
-                    </p>
-                    <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
+                    {
+                        status !== InstanceStatus.DONE &&
+                        <div>
+                            Chat status: {lastChat?.actualNode || "No active Chat"}
+                        </div>
+                    }
+                    <div className="flex gap-2 items-center">
+                        <p>
+                            Score:
+                        </p>
+                        <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
                     border-transparent bg-lime-700 text-primary hover:bg-lime-700/60 gap-1">
-                        <ScoreRepresentation score={lastScore}/>
-                    </div>
+                            <ScoreRepresentation score={lastScore} />
+                        </div>
 
-                    <p className="">
-                        /
-                    </p>
+                        <p className="">
+                            /
+                        </p>
 
-                    <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
+                        <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
                     border-transparent bg-yellow-300 text-primary-foreground hover:text-primary hover:bg-yellow-300/60 gap-1">
-                        <ScoreRepresentation score={instanceData.evaluation?.maxScore} />
+                            <ScoreRepresentation score={instanceData.evaluation?.maxScore} />
+                        </div>
                     </div>
-                </div>
 
-                {error && 
-                    <div className="font-semibold">
-                        ERROR : {error.message}
-                    </div>}
+                    {error &&
+                        <div className="font-semibold">
+                            ERROR : {error.message}
+                        </div>}
 
-                {status === InstanceStatus.DONE || error ?
-                    <>
-                        <Separator className="mt-2" />
-                        <LastIterationMessage iteration={lastIteration} />
-                    </> : null}
-            </CardContent>
-            <CardFooter className="py-1 justify-end">
-                <TranscriptInstance id={instance.id} />
-                {error && <Button onClick={() => setError(undefined)}>Retry</Button>}
-            </CardFooter>
-        </Card>)
+                    {status === InstanceStatus.DONE || error ?
+                        <>
+                            <Separator className="mt-2" />
+                            <LastIterationMessage iteration={lastIteration} />
+                        </> : null}
+                </CardContent>
+                <CardFooter className="py-1 justify-end">
+                    <TranscriptInstance id={instance.id} />
+                    {error && <Button onClick={() => setError(undefined)}>Retry</Button>}
+                </CardFooter>
+            </Card>
+        </ContextMenuInstance>
+    )
 }

@@ -5,20 +5,19 @@ import type { EvaluationSettings, IntentInstance, IntentModel, ModelSettings } f
 import { z } from "zod"
 import { useForm, type Control } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useToast } from "@/components/shadcdn/ui/use-toast"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/shadcdn/ui/form"
-import { Input } from "@/components/shadcdn/ui/input"
-import { Button } from "@/components/shadcdn/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/shadcdn/ui/select"
+import { useToast } from "@/components/ui/use-toast"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { createInstance, createModel, getModels } from "@/services/intentService"
-import { CloneFormSchema } from "../instance/form/CloneInstanceForm"
-import { EvaluationSettingsForm } from "../instance/form/EvaluationSettingsForm"
-import { ModelSettingsForm } from "../instance/form/ModelSettingsForm"
+import { EvaluationSettingsForm } from "./EvaluationSettingsForm"
+import { ModelSettingsForm } from "./ModelSettingsForm"
 import { loadZipModels } from "../../lib/execution"
 import { useEvaluationData } from "@/hooks/useEvaluationData"
 import { deleteInstance, getInstances } from "@/services/instanceService"
 import { uploadFile } from "@/services/fileService"
-import { Textarea } from "@design/ui/textarea"
+import { Textarea } from "@/components/ui/textarea"
 import { getDefaultSyntaxPrompt } from "@/lib/phase"
 
 const getAvailablePlatforms = async (): Promise<[string[], IntentModel[]]> => {
@@ -29,7 +28,6 @@ const getAvailablePlatforms = async (): Promise<[string[], IntentModel[]]> => {
         console.error(platforms)
         return [[], []]
     }
-
 
     if ('requestError' in intentModels) {
         console.error(intentModels)
@@ -45,6 +43,30 @@ const ZipSchema = z
     .any()
 // .instanceof(File)
 // .refine((file) => file.type === ZIP_MIME, `File must be a zip file`)
+
+const CloneFormSchema = z.object({
+    maxErrors: z.coerce.number().int().min(0, {
+        message: "Max errors must be at least 0.",
+    }),
+    maxChats: z.coerce.number().int().min(1, {
+        message: "Max chats must be at least 1.",
+    }),
+    maxRepeatingPrompt: z.coerce.number().int().min(1, {
+        message: "Max repeating prompt must be at least 1.",
+    }),
+
+    modelSettings: z.object({
+        modelName: z.string(),
+        modelOwner: z.string().optional(),
+        version: z.string().optional(),
+        systemPrompt: z.string().optional(),
+        maxTokens: z.coerce.number().int().optional(),
+        temperature: z.coerce.number().optional(),
+        topP: z.coerce.number().optional(),
+        frequencyPenalty: z.coerce.number().optional(),
+        presencePenalty: z.coerce.number().optional()
+    })
+})
 
 export const FormSchema = CloneFormSchema.extend({
     title: z.string().min(2, {

@@ -1,6 +1,6 @@
 import type { PromptIteration } from "@/model/chat";
-import { Button } from "@design/ui/button";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@design/ui/collapsible";
+import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState } from "react";
 

@@ -3,13 +3,13 @@ import { InstanceSettings } from "../instance/sections/InstanceSettings";
 import { getInstance } from "@/services/instanceService";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { IntentInstance } from "@/model/model";
-import { Input } from "@design/ui/input";
+import { Input } from "@/components/ui/input";
 import { ExecutionInfo } from "./ExecutionInfo";
-import { RunningInstance } from "./RunningInstance";
-import { ExportListButton } from "./ExportListButton";
-import { DeleteExecution } from "./DeleteExecution";
-import { NotFoundExecution } from "./execution/NotFoundExecution";
-import { LoadingExecution } from "./execution/LoadingExecution";
+import { RunningInstance } from "../instance/RunningInstance";
+import { ExportListButton } from "./buttons/ExportListButton";
+import { DeleteExecution } from "./buttons/DeleteExecution";
+import { NotFoundExecution } from "./skeletons/NotFoundExecution";
+import { LoadingExecution } from "./skeletons/LoadingExecution";
 
 
 type ExecutionPageProps = {

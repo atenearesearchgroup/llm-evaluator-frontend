@@ -128,6 +128,29 @@ export const getStatus = (instance: IntentInstance) => {
     return InstanceStatus.PENDING_MODEL_DESCRIPTION;
 }
 
+// TODO: Implement undoAction
+export const undoAction = async (execution: InstanceInfo, instance: IntentInstance) => {
+
+    const status = getStatus(instance)
+    if(instance.chats.length === 0) 
+        return instance
+    
+
+    const lastChat = instance.chats[instance.chats.length - 1]
+    
+    if(lastChat.promptIterations.length === 0) 
+        return instance
+    const lastIteration = lastChat.promptIterations[lastChat.promptIterations.length - 1]
+
+    if(lastIteration.messages.length === 0) {
+        return instance
+    }
+
+    const lastMessage = lastIteration.messages[lastIteration.messages.length - 1]
+
+}
+
+
 export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo, instance: IntentInstance, status: InstanceStatus) => {
     let lastChat: Chat, createdMessage: any, lastMessage: AIMessage, action: Action
     let content: string
@@ -317,7 +340,7 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
                 throw new Error("Couldnt find syntax errors list")
             }
 
-            console.log(execution.evaluation.syntaxErrors)
+            console.log("Found syntax errors ",execution.evaluation.syntaxErrors)
 
             // let prompt = ""
 
@@ -327,7 +350,7 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
 
             let prompt = getSyntaxPrompt(execution.evaluation.syntaxErrors)
 
-            console.log("generated prompt", prompt)
+            console.log("generated syntax prompt", prompt)
 
             //throw new Error("Found syntax error, WIP")
 

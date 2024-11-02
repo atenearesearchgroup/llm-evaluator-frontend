@@ -1,5 +1,5 @@
 import type { DataInfo } from "@/hooks/useEvaluationData"
-import { Card, CardContent } from "@design/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { useMemo, useState } from "react"
 
 type ExecutionInfoProps = {

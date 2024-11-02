@@ -1,4 +1,4 @@
-import { Button } from "@design/ui/button";
+import { Button } from "@/components/ui/button";
 
 type TranscriptInstanceProps = {
     id: number;

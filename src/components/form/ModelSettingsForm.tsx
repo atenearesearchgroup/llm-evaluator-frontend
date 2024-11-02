@@ -11,7 +11,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {  ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
-import type { FormSchema } from "@/components/execution/CreateExecutionForm"
+import type { FormSchema } from "@/components/form/CreateExecutionForm"
 
 type ModelSettingsFormProps = {
     control: Control<z.infer<typeof FormSchema>>,
