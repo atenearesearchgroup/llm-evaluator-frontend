@@ -197,6 +197,9 @@
                 "missing": {
                     "template" : "- Class {0} is missing attribute/s: {1}",
                     "group" : false
+                },
+                "wrong_type": {
+                    "template" : "- Attribute {1} from class {0} should be a {2}."
                 }
             },
             "prompts2": [
@@ -233,6 +236,9 @@
             "prompts": {
                 "missing": {
                     "template": "- The association end from class {0} with name {1} is missing."
+                },
+                "wrong_bound": {
+                    "template": "- The association end from class {0} to class {1}, with name {2}, should have a multiplicity of {3}."
                 }
             },
             "prompts2": [

@@ -379,6 +379,8 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
 const generateFullPrompt = (currentText: string, { prePrompt = '', postPrompt = '', fewShot }: Action, useFewShot: boolean) => {
     let result = prePrompt
 
+    if (currentText.length > 0 && prePrompt.length > 0) result = result.concat('\n')
+
     result = result.concat(currentText)
 
     if (currentText.length == 0 || postPrompt.length > 0) result = result.concat('\n')
@@ -425,7 +427,7 @@ const generateContent = (evaluation: EvaluationResultResponse, action: Action) =
         let template = action?.prompts[error]
 
         if (template == null) {
-            throw new Error("Prompt not found for action `"+action.id+"` with error of `" + error +"`. Values given for the prompt: [" + errors[0].values.join(", ")+"]")
+            throw new Error("Prompt not found for action `"+action.id+"` with error of `" + error +"`. Given values for the prompt: [" + errors[0].values.join(", ")+"]")
         }
 
         if (template.group) {
@@ -457,7 +459,7 @@ const generateContent = (evaluation: EvaluationResultResponse, action: Action) =
 
         }
 
-        promptContent = promptContent.concat("\n").concat(content)
+        promptContent = promptContent.concat(content)
     })
 
 
