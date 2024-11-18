@@ -134,6 +134,9 @@
             "to": "decision:classes",
             "prePrompt": "",
             "prompts2": [],
+            "prompts": {
+
+            },
             "postPrompt": ""
         },
         {
@@ -199,7 +202,8 @@
                     "group" : false
                 },
                 "wrong_type": {
-                    "template" : "- Attribute {1} from class {0} should be a {2}."
+                    "template" : "- Attribute {1} from class {0} should be a {2}.",
+                    "group": false
                 }
             },
             "prompts2": [
@@ -215,7 +219,8 @@
             "postPrompt": "Can you fix these problems?",
             "prompts": {
                 "missing": {
-                    "template": "- The association between classes {0} (with role {3}) and {2} (with role {1}) is missing."
+                    "template": "- The association between classes {0} (with role {3}) and {2} (with role {1}) is missing.",
+                    "group": false
                 }
             },
             "prompts2": [
@@ -235,10 +240,12 @@
             "postPrompt": "Can you fix these problems?",
             "prompts": {
                 "missing": {
-                    "template": "- The association end from class {0} with name {1} is missing."
+                    "template": "- The association end from class {0} with name {1} is missing.",
+                    "group": false
                 },
                 "wrong_bound": {
-                    "template": "- The association end from class {0} to class {1}, with name {2}, should have a multiplicity of {3}."
+                    "template": "- The association end from class {0} to class {1}, with name {2}, should have a multiplicity of {3}.",
+                    "group": false
                 }
             },
             "prompts2": [
@@ -256,6 +263,9 @@
             "to": "decision:classes",
             "prePrompt": "Incorrect associations multiplicities: There are some problems with the associations multiplicities in the model:",
             "postPrompt": "Can you fix these problems?",
+            "prompts": {
+
+            },
             "prompts2": [
                 "- The association between classes <class 1, class 2> (with the name of <associationName>) should expect <cardinality_class 1> <class 1> to be related with <cardinality_class2> <class 2>.",
                 "- The association between classes <class 1, class 2> (with the name of <associationName>) have the multiplicities of each entity in the reverse side."
@@ -267,6 +277,9 @@
             "to": "decision:classes",
             "prePrompt": "Incorrect associations identifiers and roles names: There are some problems with the associations and roles names in the model:",
             "postPrompt": "Can you fix these problems?",
+            "prompts": {
+
+            },
             "prompts2": [
                 "- The association between classes <class 1, class 2> (with the name of <associationName>) have either no relationship identifier or roles names.",
                 "- The association between classes <class 1, class 2> (with the name of <associationName>) have either a generic association identifier or generic roles names.",
@@ -279,6 +292,9 @@
             "to": "decision:classes",
             "prePrompt": "Incorrect association classes: There are some problems with the association classes in the model:",
             "postPrompt": "Can you fix these problems?",
+            "prompts": {
+
+            },
             "prompts2": [
                 "- The association between classes <class 1, class 2> (with the name of <associationName>) and the class <class 3> itself should be part of an association class represented by <class 3>."
             ]
@@ -289,6 +305,9 @@
             "to": "decision:classes",
             "prePrompt": "Incorrect operations: There are some problems with the operations in the model:",
             "postPrompt": "Can you fix these problems?",
+            "prompts": {
+
+            },
             "prompts2": [ 
                 "- The class <class 1> is missing the next operations: <List of operations separated by comma>.",
                 "- The class <class 1> should not have the next operations: <List of operations separated by comma>.",
@@ -321,6 +340,9 @@
             "to": null,
             "prePrompt": "",
             "postPrompt": "",
+            "prompts": {
+
+            },
             "prompts2": [ ]
         }
     ]

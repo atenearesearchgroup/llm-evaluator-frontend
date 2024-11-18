@@ -26,7 +26,7 @@ export const getNode = (id: string): (Action | Decision) => {
 }
 
 export const getAction = (id: string): Action => {
-    return mockData.actions.find(action => action.id === id) as Action
+    return mockData.actions.find(action => action.id === id) as unknown as Action
 }
 
 export const getDecision = (id: string): Decision => {
