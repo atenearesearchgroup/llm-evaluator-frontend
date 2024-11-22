@@ -10,7 +10,7 @@ type InstanceSettingsProps = {
 }
 
 const valueOrDefault = (value?: number) => {
-    if (!value || value === -1)
+    if (value === undefined || value === -1)
         return "Default"
 
     return value.toString()
