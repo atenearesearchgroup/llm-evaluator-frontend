@@ -19,6 +19,7 @@ import { deleteInstance, getInstances } from "@/services/instanceService"
 import { uploadFile } from "@/services/fileService"
 import { Textarea } from "@/components/ui/textarea"
 import { getDefaultSyntaxPrompt } from "@/lib/phase"
+import { unzip } from "unzipit"
 
 const getAvailablePlatforms = async (): Promise<[string[], IntentModel[]]> => {
     const platforms = await getPlatforms()
@@ -203,10 +204,13 @@ export const CreateExecutionForm = ({ }) => {
             toast(
                 {
                     title: "No instances created",
-                    description: "No instances were created",
+                    description: "No instances were created, check your zip",
                     className: "bg-red-600"
                 }
             )
+
+            console.debug("models", models)
+            console.debug("zip content", await unzip(formData.zip))
             return
         }
 
@@ -271,7 +275,7 @@ export const CreateExecutionForm = ({ }) => {
                     name="zip"
                     render={({ field: { value, onChange, ...field } }) => (
                         <FormItem>
-                            <FormLabel>Intent Model zip</FormLabel>
+                            <FormLabel>Test suite</FormLabel>
                             <FormControl>
                                 <Input type="file" accept={ZIP_MIME}
 
@@ -282,6 +286,9 @@ export const CreateExecutionForm = ({ }) => {
                                         onChange(file);
                                     }} {...field} />
                             </FormControl>
+                            <FormDescription>
+                                This is the test suite to be used (zip file)
+                            </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -314,7 +321,7 @@ export const CreateExecutionForm = ({ }) => {
                     control={form.control}
                     name="syntaxPrompt"
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="hidden">
                             <FormLabel>Syntax prompt (<i className="italic">Deprecated</i>)</FormLabel>
                             <FormControl>
                                 <Textarea {...field} disabled/>
