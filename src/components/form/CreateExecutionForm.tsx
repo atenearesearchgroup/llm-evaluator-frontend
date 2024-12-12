@@ -321,10 +321,10 @@ export const CreateExecutionForm = ({ }) => {
                     control={form.control}
                     name="syntaxPrompt"
                     render={({ field }) => (
-                        <FormItem className="hidden">
-                            <FormLabel>Syntax prompt (<i className="italic">Deprecated</i>)</FormLabel>
+                        <FormItem>
+                            <FormLabel>Syntax prompt</FormLabel>
                             <FormControl>
-                                <Textarea {...field} disabled/>
+                                <Textarea {...field} className="min-h-24"/>
                             </FormControl>
                             <FormDescription>
                                 This is the prompt to be used in case there are syntax errors
