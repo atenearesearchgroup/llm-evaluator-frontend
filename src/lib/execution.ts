@@ -10,7 +10,6 @@ import { createChat, getInstance } from '@/services/instanceService';
 import { evaluateMessage, setMessageScore } from '@/services/messageService';
 import { MESSAGE_INVALID_SYNTAX_SCORE, MESSAGE_SCORE_MISSING } from '@/utils/constants';
 import { unzip } from 'unzipit';
-import { ExecutionInfo } from '../components/execution/ExecutionInfo';
 
 
 export type ModelInfo = {
@@ -335,22 +334,19 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
                 break
             }
 
-            
+            let prompt = ""
+
             if (!execution.evaluation?.syntaxErrors) {
-                throw new Error("Couldnt find syntax errors list")
+                prompt = dataInfo.syntax_prompt ?? "Please provide a valid PlantUML response"
+                console.log("Couldnt find a valid diagram, providing a default prompt")
+                // throw new Error("Couldnt find syntax errors list")
+            } else {
+                console.log("Found syntax errors ",execution.evaluation.syntaxErrors)
+
+                prompt = getSyntaxPrompt(execution.evaluation.syntaxErrors)
+
+                console.log("generated syntax prompt", prompt)
             }
-
-            console.log("Found syntax errors ",execution.evaluation.syntaxErrors)
-
-            // let prompt = ""
-
-            // execution.evaluation.syntaxErrors.forEach((v)=> {
-            //     prompt = prompt + "\n- " + v;
-            // })
-
-            let prompt = getSyntaxPrompt(execution.evaluation.syntaxErrors)
-
-            console.log("generated syntax prompt", prompt)
 
             //throw new Error("Found syntax error, WIP")
 
