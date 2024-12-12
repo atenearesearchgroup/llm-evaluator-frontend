@@ -10,7 +10,7 @@ type DeleteExecutionProps = {
 
 export const DeleteExecution = ({ id }: DeleteExecutionProps) => {
     const { getExecutionInstance, delEvaluation } = useEvaluationData()
-    const { toast} = useToast()
+    const { toast } = useToast()
 
     const handleDelete = async () => {
         console.log(`Delete execution with id: ${id}`)
@@ -33,7 +33,10 @@ export const DeleteExecution = ({ id }: DeleteExecutionProps) => {
             }
         )
 
-        
+        setTimeout(() => {
+            window.location.href = "/"
+        }, 2000)
+
     }
 
     return (
