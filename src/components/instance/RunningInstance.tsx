@@ -101,7 +101,7 @@ const loadInstance = async (id: number, setInstance: (instance: IntentInstance) 
             return
         }
 
-        setTimeout(() => loadInstance(id, setInstance, delay * 2), delay)
+        setTimeout(() => loadInstance(id, setInstance, Math.max(delay * 2, 15*1000)), delay)
         return
     }
 
@@ -153,7 +153,7 @@ export const RunningInstance = ({ instanceData, parent, updateInstance }: Runnin
         return
     }, [instance, error]);
 
-    if (instance == null) return (<LoadingInstance instance={instanceData} />)
+    if (instance == undefined) return (<LoadingInstance instance={instanceData} />)
 
     const status = getStatus(instance)
     const colorStatus = instanceData.status === "running" ? "bg-yellow-500" : (instanceData.status === "completed" ? "bg-green-500" : "bg-red-500")

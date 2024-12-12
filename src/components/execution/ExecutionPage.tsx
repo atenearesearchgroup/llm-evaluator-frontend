@@ -18,7 +18,7 @@ type ExecutionPageProps = {
 
 export const ExecutionPage = ({ id }: ExecutionPageProps) => {
     const broadcast = useMemo(() => new BroadcastChannel(`execution-${id}`), [id])
-    const [sampleInstance, setSampleInstance] = useState<IntentInstance | null>(null)
+    const [sampleInstance, setSampleInstance] = useState<IntentInstance | undefined | null>(undefined)
 
     const { getExecutionInstance, updateExecutionInstance } = useEvaluationData()
     const instance = useMemo(() => getExecutionInstance(id), [id, getExecutionInstance])
@@ -62,10 +62,10 @@ export const ExecutionPage = ({ id }: ExecutionPageProps) => {
     }, [])
 
 
-    if (!instance)
+    if (!instance || sampleInstance === null)
         return (<NotFoundExecution id={id} />)
 
-    if (!sampleInstance)
+    if (sampleInstance === undefined)
         return (<LoadingExecution />)
 
     return (

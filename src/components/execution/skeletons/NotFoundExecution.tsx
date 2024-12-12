@@ -1,3 +1,4 @@
+import { Card, CardTitle } from "@/components/ui/card";
 
 export type NotFoundExecutionProps = {
     id: number;
@@ -5,9 +6,9 @@ export type NotFoundExecutionProps = {
 
 export const NotFoundExecution = ({ id }: NotFoundExecutionProps) => {
     return (
-        <main>
-            <p>404 - Couldnt find instance with id #{id}</p>
-        </main>
+        <Card>
+            <CardTitle className="p-10 text-center">Couldn't find instances related to execution with id #{id}</CardTitle>
+        </Card>
     )
 }
 
