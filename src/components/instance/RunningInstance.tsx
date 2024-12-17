@@ -45,7 +45,7 @@ const handleStatus = async (instanceData: InstanceInfo, parent: DataInfo, instan
 
     if (status === InstanceStatus.DONE) {
         if (instanceData.status === "running") {
-            instanceData.status = instanceData?.evaluation?.score ?? -1 >= 0 ? "completed" : "failed"
+            instanceData.status = (instanceData?.evaluation?.score ?? MESSAGE_INVALID_SYNTAX_SCORE) >= 0 ? "completed" : "failed"
             console.log(`Updating instance status to ${instanceData.status} with id`, instanceData.id)
             updateInstance(instanceData)
         }
