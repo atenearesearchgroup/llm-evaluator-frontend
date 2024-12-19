@@ -35,6 +35,11 @@ export const InstanceSettings = ({ instance }: InstanceSettingsProps) => {
                         </legend>
                         <div className="grid gap-2 ">
                             <div className="grid grid-cols-2">
+                                <label className="font-semibold text-center">Platform</label>
+                                <p>{instance.platform}</p>
+                            </div>
+                            <Separator />
+                            <div className="grid grid-cols-2">
                                 <label className="font-semibold text-center">Model</label>
                                 <p>{modelSettings.modelName}</p>
                             </div>
