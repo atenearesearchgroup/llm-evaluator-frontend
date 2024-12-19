@@ -26,6 +26,18 @@ export const updateDraft = async (draftId: Number, update: UpdateChatRequest): P
     return newModel
 }
 
+export const deleteDraft = async (draftId: Number) : Promise<{ result: boolean } | RequestError> => {
+    const newModel = await fetchWrapper<Response>(`${API_URL}/chat/${draftId}`, {
+        method: 'DELETE'
+    }, "response")
+
+    if ('ok' in newModel) {
+        return { result: true }
+    }
+
+    return newModel
+}
+
 export const finalizeDraft = async (draftId: Number, finalize?: boolean): Promise<{ result: boolean } | RequestError> => {
     const newModel = await fetchWrapper<Response>(`${API_URL}/chat/${draftId}/finish`, {
         method: 'POST',

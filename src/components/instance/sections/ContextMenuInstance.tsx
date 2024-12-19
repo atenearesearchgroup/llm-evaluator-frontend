@@ -1,16 +1,17 @@
 import type { InstanceInfo } from "@/hooks/useEvaluationData";
 import { getStatus, InstanceStatus } from "@/lib/execution";
 import type { IntentInstance } from "@/model/model";
-import { finalizeDraft, updateDraft } from "@/services/chatService";
+import { deleteDraft, finalizeDraft, updateDraft } from "@/services/chatService";
 import { setMessageScore } from "@/services/messageService";
 import { MESSAGE_SCORE_MISSING } from "@/utils/constants";
 import { getLastMessage } from "@/utils/message";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger, ContextMenuTrigger } from "@/components/ui/context-menu";
 import type { ToastProps } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
-import { BookTextIcon, ClipboardCopyIcon, FileLineChartIcon, LinkIcon, RotateCcwIcon, ScrollTextIcon } from "lucide-react";
+import { BookTextIcon, ClipboardCopyIcon, DeleteIcon, EraserIcon, FileLineChartIcon, LinkIcon, RotateCcwIcon, ScrollTextIcon } from "lucide-react";
 import { useCallback } from "react";
 import { generatePlantUMLLink, getPlantUML } from "@/lib/plantuml";
+import { getInstance } from "@/services/instanceService";
 
 export type ContextMenuInstanceProps = {
     instance: IntentInstance;
@@ -87,17 +88,55 @@ export const ContextMenuInstance = ({ instance, data, forceReload, children }: C
                 toast(error)
         }
     }, [instance])
+    const triggerReRun = useCallback(async () => {
+        const toastsId: { dismiss: () => void }[] = []
+        for (let i = 0; i < 3; i++) {
+            setTimeout(() => {
+                toastsId.push(toast({
+                    title: "Re-running...",
+                    description: `The instance will be re-run in ${3 - i} seconds`,
+                }))
+            }, i * 1000)
+        }
+        const createdInstance = await getInstance(data.id)
+
+        if (`requestError` in createdInstance) {
+            toast({
+                title: "Error",
+                description: "The instance could not be re-run",
+                variant: "destructive"
+            })
+            return
+        }
+
+
+        setTimeout(() => {
+            toastsId.forEach(toastId => toastId.dismiss())
+            data.status = `running`
+            data.evaluation = undefined
+            createdInstance.chats.forEach(chat => {
+                deleteDraft(chat.id)
+            })
+            forceReload()
+        }, 3000)
+    }, [instance])
 
     return (<ContextMenu>
         <ContextMenuTrigger>
             {children}
         </ContextMenuTrigger>
         <ContextMenuContent>
-            <ContextMenuItem disabled={(status !== InstanceStatus.DONE || !lastMessage) ? true : undefined}
+            <ContextMenuItem disabled={(status !== InstanceStatus.DONE && status !== InstanceStatus.PENDING_USER || !lastMessage) ? true : undefined}
                 onClick={triggerReEvaluation}
                 className="space-x-2"
             >
                 <RotateCcwIcon className="size-4" /> <p>Re-Evaluate </p>
+            </ContextMenuItem>
+            <ContextMenuItem disabled={(status !== InstanceStatus.DONE) ? true : undefined}
+                onClick={triggerReRun}
+                className="space-x-2"
+            >
+                <EraserIcon className="size-4" /> <p>Re-Run instance</p>
             </ContextMenuItem>
             <ContextMenuSeparator />
             <ContextMenuItem
