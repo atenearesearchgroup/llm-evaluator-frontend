@@ -169,6 +169,9 @@ function deepEqual(obj1 : any, obj2: any) {
     if(isPrimitive(obj1) && isPrimitive(obj2)) // compare primitives
         return obj1 === obj2;
 
+    if((obj1 == null || obj2 == null) && obj1 !== obj2) // compare null or undefined
+        return false;
+
     if(Object.keys(obj1).length !== Object.keys(obj2).length)
         return false;
 
