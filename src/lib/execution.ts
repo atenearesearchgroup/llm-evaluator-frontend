@@ -4,7 +4,7 @@ import type { AIMessage, Chat } from '@/model/chat';
 import type { Action } from '@/model/diagram';
 import type { EvaluationResultResponse, ModelError } from '@/model/evaluation';
 import type { IntentInstance } from '@/model/model';
-import type { RequestError } from '@/model/request';
+import {isRequestError} from '@/utils/request';
 import { finalizeDraft, generateMessage, sendMessage, updateDraft } from '@/services/chatService';
 import { createChat, getInstance } from '@/services/instanceService';
 import { evaluateMessage, setMessageScore } from '@/services/messageService';
@@ -87,6 +87,7 @@ export const getStatus = (instance: IntentInstance) => {
     const lastChatNotFinalized = instance.chats.length > 0 && !instance.chats[instance.chats.length - 1].finalized
 
     if (instance.chats.length >= instance.maxChats && instance.chats[instance.chats.length - 1].finalized || lastChatSuccess) {
+        console.debug("Instance is done", instance.chats.length>=instance.maxChats, instance.chats[instance.chats.length - 1].finalized, lastChatSuccess)
         return InstanceStatus.DONE;
     }
 
@@ -159,7 +160,7 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
             // create a new chat
             const newChat = await createChat(instance.id)
 
-            if (`requestError` in newChat) {
+            if (isRequestError(newChat)) {
                 throw newChat
             }
 
@@ -177,7 +178,7 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
                 manual: false
             })
 
-            if (`requestError` in createdMessage) {
+            if (isRequestError(createdMessage)) {
                 throw createdMessage
             }
 
@@ -205,16 +206,20 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
                 content: content,
                 promptType: lastChat.actualNode,
                 manual: false
+            }).catch(e => {
+                console.error("Error while sending message", e)
+                return e
             })
 
-            if (`requestError` in createdMessage) {
-                createdMessage = createdMessage as RequestError
-
+            if (isRequestError(createdMessage)) {
                 if (createdMessage.status !== 400) {
                     throw createdMessage
                 }
 
-                execution.status = "failed"
+                console.debug("Invalid syntax error, finalizing draft")
+                console.debug("Error message", createdMessage.message)
+
+                execution.status = "completed"
                 await finalizeDraft(lastChat.id)
             }
             break
@@ -236,7 +241,7 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
                 score: MESSAGE_SCORE_MISSING
             })
 
-            if (`requestError` in createdMessage) {
+            if (isRequestError(createdMessage)) {
                 throw createdMessage
             }
 
@@ -255,11 +260,11 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
 
             let evaluation = await evaluateMessage(lastMessage.id)
 
-            if (`requestError` in evaluation) {
+            if (isRequestError(evaluation)) {
                 throw evaluation
             }
 
-            console.log("evaluation", evaluation)
+            console.debug("evaluation", evaluation)
 
             execution.evaluation = evaluation as EvaluationResultResponse
 
@@ -329,6 +334,10 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
                 .filter(message => message.score === MESSAGE_INVALID_SYNTAX_SCORE).length
 
             if(invalidSyntaxCount > instance.maxErrors) {
+                console.log("Too many invalid syntax errors, finalizing draft", invalidSyntaxCount, instance.maxErrors,lastIteration.messages
+                    .filter(m => `score` in m)
+                    .map(m => m as AIMessage)
+                    .filter(message => message.score === MESSAGE_INVALID_SYNTAX_SCORE))
                 await finalizeDraft(lastChat.id)
                 execution.status = "failed"
                 break
@@ -358,7 +367,7 @@ export const executeAction = async (execution: InstanceInfo, dataInfo: DataInfo,
                 manual: false
             })
 
-            if (`requestError` in response) {
+            if (isRequestError(response)) {
                 throw response
             }
 

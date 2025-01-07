@@ -1,4 +1,5 @@
-import type { RequestError, ResponseError } from "@/model/request";
+import type { RequestError, ResponseError} from "@/model/request";
+
 
 export const getApiUrl = (): string => {
     let result : string|undefined = import.meta.env.BACKEND_API_URL;
@@ -39,21 +40,32 @@ export const fetchWrapper = async <T>(
         }
 
         const responseError = await response.json() as ResponseError;
-        return {
-            requestError: true,
+        return createRequestError({
             message: responseError.message,
             status: responseError.status,
             statusText: responseError.error,
             url: responseError.path
-        } as RequestError;
+        });
     } catch (error) {
-        console.log(error);
-        return {
-            requestError: true,
+        return createRequestError({
             message: (error as any).message,
             status: 500,
             statusText: "Internal Server Error",
             url
-        } as RequestError;
+        });
     }
 };
+
+
+export const RequestErrorKey = Symbol('requestError')
+
+export const createRequestError = (props: Omit<RequestError, typeof RequestErrorKey>): RequestError => {
+    return {
+        [RequestErrorKey]: true,
+        ...props
+    }
+}
+
+export const isRequestError = (error: any): error is RequestError => {
+    return error[RequestErrorKey] === true
+}

@@ -1,3 +1,4 @@
+import type { RequestErrorKey } from "@/utils/request";
 import type { Message, MessageType } from "./chat";
 import type { IntentModel } from "./model"
 
@@ -52,8 +53,20 @@ export interface ResponseError {
     timestamp: Date;
 }
 
+
+
+// export const createRequestError = (error: ResponseError): RequestError => {
+//     return {
+//         [RequestErrorKey]: true,
+//         message: error.message,
+//         status: error.status,
+//         statusText: error.error,
+//         url: error.path
+//     }
+// }
+
 export interface RequestError {
-    requestError: boolean;
+    [RequestErrorKey]: true;
     message: string;
     status: number;
     statusText: string;

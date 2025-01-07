@@ -2,6 +2,7 @@ import type { DataInfo, InstanceInfo } from "@/hooks/useEvaluationData";
 import type { Chat } from "@/model/chat";
 import type { CategoryError } from "@/model/evaluation";
 import type { EvaluationSettings, IntentInstance, ModelSettings } from "@/model/model";
+import { isRequestError } from "@/utils/request";
 import { getInstance } from "@/services/instanceService";
 
 const dateFormat = new Intl.DateTimeFormat("es", {
@@ -33,7 +34,7 @@ export const exportJson = async (dataInfo: DataInfo) => {
 
     for (const instanceData of dataInfo.instances) {
         const instance = await getInstance(instanceData.id)
-        if (`requestError` in instance) {
+        if (isRequestError(instance)) {
             console.error(instance)
             return
         }
