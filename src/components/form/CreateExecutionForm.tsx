@@ -43,17 +43,18 @@ import { uploadFile } from "@/services/fileService";
 import { Textarea } from "@/components/ui/textarea";
 import { getDefaultSyntaxPrompt } from "@/lib/phase";
 import { unzip } from "unzipit";
+import { isRequestError } from "@/utils/request";
 
 const getAvailablePlatforms = async (): Promise<[string[], IntentModel[]]> => {
 	const platforms = await getPlatforms();
 	const intentModels = await getModels();
 
-	if ("requestError" in platforms) {
+	if (isRequestError(platforms)) {
 		console.error(platforms);
 		return [[], []];
 	}
 
-	if ("requestError" in intentModels) {
+	if (isRequestError(intentModels)) {
 		console.error(intentModels);
 		return [[], []];
 	}
@@ -151,7 +152,7 @@ export const CreateExecutionForm = ({}) => {
 
 		const oldInstance = await getInstances(formData.title);
 
-		if ("requestError" in intentModels) {
+		if (isRequestError(intentModels)) {
 			toast({
 				title: "Error creating instance",
 				description: intentModels.message,
@@ -160,7 +161,7 @@ export const CreateExecutionForm = ({}) => {
 			return;
 		}
 
-		if ("requestError" in oldInstance) {
+		if (isRequestError(oldInstance)) {
 			toast({
 				title: "Error creating instance",
 				description: oldInstance.message,
@@ -200,7 +201,7 @@ export const CreateExecutionForm = ({}) => {
 
 			const response = await createInstance(model.id, request);
 
-			if ("requestError" in response) {
+			if (isRequestError(response)) {
 				toast({
 					title: "Error creating instance for model " + model.id,
 					description: response.message,

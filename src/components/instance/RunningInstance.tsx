@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { executeAction, getStatus, InstanceStatus } from "../../lib/execution";
 import { useToast } from "@/components/ui/use-toast";
 import type { RequestError } from "@/model/request";
-import { isRequestError } from "@/utils/request";
+import { createRequestError, isRequestError } from "@/utils/request";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LastIterationMessage } from "./sections/LastIterationMessage";
@@ -60,6 +60,22 @@ const handleStatus = async (
 				instanceData.id,
 			);
 			updateInstance(instanceData);
+		} else {
+			const oldStatus = instanceData.status;
+			const newStatus =
+				(instanceData?.evaluation?.score ??
+					MESSAGE_INVALID_SYNTAX_SCORE) >= 0
+					? "completed"
+					: "failed";
+
+			if (oldStatus !== newStatus) {
+				console.debug(
+					`Updating instance status to ${newStatus} with id`,
+					instanceData.id,
+				);
+				instanceData.status = newStatus;
+				updateInstance(instanceData);
+			}
 		}
 
 		return;
@@ -91,13 +107,14 @@ const handleStatus = async (
 		}, 1000);
 
 		if (status === getStatus(newInstance))
-			setError({
-				message: "No changes on instance",
-				status: 500,
-				statusText: "No changes",
-				requestError: true,
-				url: "",
-			});
+			setError(
+				createRequestError({
+					message: "No changes on instance",
+					status: 500,
+					statusText: "No changes",
+					url: "",
+				}),
+			);
 	} catch (e: RequestError | any) {
 		setError(e);
 		console.error(e);
@@ -116,7 +133,7 @@ const loadInstance = async (
 ) => {
 	const loadedInstance = await getInstance(id);
 
-	if ("requestError" in loadedInstance) {
+	if (isRequestError(loadedInstance)) {
 		if (delay >= 4000) {
 			console.error(loadedInstance);
 			return;
