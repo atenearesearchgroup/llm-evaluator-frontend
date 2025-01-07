@@ -1,44 +1,50 @@
-import { useEvaluationData } from "@/hooks/useEvaluationData"
-import { exportJson } from "@/lib/metrics"
-import { Button } from "@/components/ui/button"
-import { useMemo } from "react"
-
+import { useEvaluationData } from "@/hooks/useEvaluationData";
+import { exportJson } from "@/lib/metrics";
+import { Button } from "@/components/ui/button";
+import { useMemo } from "react";
 
 type ExportListButtonProps = {
-    id: number
-}
+	id: number;
+};
 
 export const ExportListButton = ({ id }: ExportListButtonProps) => {
+	const { getExecutionInstance } = useEvaluationData();
+	const instance = useMemo(
+		() => getExecutionInstance(id),
+		[id, getExecutionInstance],
+	);
 
-    const {getExecutionInstance} = useEvaluationData()
-    const instance = useMemo(() => getExecutionInstance(id), [id, getExecutionInstance])
+	return (
+		<Button
+			onClick={async () => {
+				if (
+					instance.instances.find((i) => i.status === "running") !==
+					undefined
+				) {
+					alert("Exporting data containing running instances...");
+				}
 
-    return (
-        <Button
-            onClick={async () => {
+				const result = await exportJson(instance);
 
-                if(instance.instances.find(i => i.status === 'running') !== undefined) {
-                    alert('Exporting data containing running instances...')
-                }
+				const data = JSON.stringify(result, null, 2);
 
-                const result = await exportJson(instance)
+				const file = new File([data], `${id}-data.json`, {
+					type: "application/json",
+				});
 
-                const data = JSON.stringify(result, null, 2)
+				const url = URL.createObjectURL(file);
 
-                const file = new File([data], `${id}-data.json`, { type: "application/json" })
+				var a = document.createElement("a");
+				a.classList.add("hidden");
+				a.href = url;
+				a.download = file.name;
+				a.click();
 
-                const url = URL.createObjectURL(file)
-
-                var a = document.createElement("a");
-                a.classList.add("hidden");
-                a.href = url;
-                a.download = file.name;
-                a.click();
-
-                window.URL.revokeObjectURL(url)
-            }}
-            variant={"link"}>
-            Export execution data
-        </Button>
-    )
-}
+				window.URL.revokeObjectURL(url);
+			}}
+			variant={"link"}
+		>
+			Export execution data
+		</Button>
+	);
+};

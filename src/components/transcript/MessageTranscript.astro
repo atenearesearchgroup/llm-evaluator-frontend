@@ -4,7 +4,7 @@ import { getAction, getFirstPhase } from "@/lib/phase";
 import ScoreTranscript from "./ScoreTranscript.astro";
 
 export interface Props {
-    message: AllMessage;
+	message: AllMessage;
 }
 
 const { message } = Astro.props;
@@ -12,9 +12,9 @@ const { message } = Astro.props;
 const phase = getAction(message.promptIteration?.type || getFirstPhase());
 
 let [day, month, year] = [
-    message.timestamp.getDate(),
-    message.timestamp.getMonth() + 1,
-    message.timestamp.getFullYear(),
+	message.timestamp.getDate(),
+	message.timestamp.getMonth() + 1,
+	message.timestamp.getFullYear(),
 ];
 
 const isUserMessage = message.type === "user";
@@ -23,31 +23,31 @@ const messageType = isUserMessage ? "Prompt" : "Response";
 ---
 
 <article class="flex flex-col gap-2">
-    <section class="text-pretty flex justify-between items-center">
-        <h3 class="font-catamaran font-semibold text-lg">{messageType}:</h3>
-        <div
-            class="text-right
+	<section class="text-pretty flex justify-between items-center">
+		<h3 class="font-catamaran font-semibold text-lg">{messageType}:</h3>
+		<div
+			class="text-right
         flex flex-row gap-2 items-center my-2 justify-end"
-        >
-            {!isUserMessage && <ScoreTranscript message={message} />}
-            <section
-                class="py-1 px-3 bg-lime-600 bg-opacity-60 rounded-full
+		>
+			{!isUserMessage && <ScoreTranscript message={message} />}
+			<section
+				class="py-1 px-3 bg-lime-600 bg-opacity-60 rounded-full
     flex flex-row gap-1 text-xs"
-            >
-                <p class="font-medium">Date:</p>
-                {`${day}/${month}/${year}`}
-            </section>
-        </div>
-    </section>
-    <p
-        class={`whitespace-pre-line text-pretty break-before-page cursor-pointer` +
-            (isUserMessage ? " text-sm" : " text-sm")}
-            data-clipboard-text={message.content}
-            onclick="window.navigator.clipboard.writeText(this.dataset.clipboardText); alert('Copied to clipboard!');"
-    >
-        {message.content}
-    </p>
-    <!-- <section class="text-pretty">
+			>
+				<p class="font-medium">Date:</p>
+				{`${day}/${month}/${year}`}
+			</section>
+		</div>
+	</section>
+	<p
+		class={`whitespace-pre-line text-pretty break-before-page cursor-pointer` +
+			(isUserMessage ? " text-sm" : " text-sm")}
+		data-clipboard-text={message.content}
+		onclick="window.navigator.clipboard.writeText(this.dataset.clipboardText); alert('Copied to clipboard!');"
+	>
+		{message.content}
+	</p>
+	<!-- <section class="text-pretty">
         <h3 class="font-catamaran font-semibold text-lg">Response:</h3>
 
         <p class="whitespace-pre-line text-pretty break-before-page">

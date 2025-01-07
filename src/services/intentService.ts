@@ -1,11 +1,12 @@
 import type { IntentInstance, IntentModel } from "@/model/model"
 import type { CreateInstanceRequest, CreateModelRequest, RequestError, ResponseError } from "@/model/request"
-import { fetchWrapper, getApiUrl } from "@/utils/request"
+import { createRequestError, fetchWrapper, getApiUrl } from "@/utils/request"
 
 const API_URL = getApiUrl()
 
 export const createModel = async (request: CreateModelRequest): Promise<IntentModel | RequestError> => {
-    const newModel = await fetch(`${API_URL}/intent`, {
+    const url = `${API_URL}/intent`
+    const newModel = await fetch(url, {
         method: 'POST',
         body: JSON.stringify(request),
         headers: {
@@ -19,25 +20,20 @@ export const createModel = async (request: CreateModelRequest): Promise<IntentMo
 
             const responseError = await response.json() as ResponseError
 
-            return {
-                requestError: true,
+            return createRequestError({
                 message: responseError.message,
                 status: responseError.status,
                 statusText: responseError.error,
                 url: responseError.path
-            } as RequestError
+            })
         })
         .catch((error) => {
-            // console.log(error)
-            // console.log(API_URL)
-
-            return {
-                requestError: true,
-                message: error.message,
-                status: 0,
-                statusText: 'Unknown error',
-                url: `${API_URL}`
-            } as RequestError
+            return createRequestError({
+                message: (error as any).message,
+                status: 500,
+                statusText: 'Internal Server Error',
+                url
+            })
         })
 
     return newModel
@@ -50,8 +46,8 @@ export const getModels = async (): Promise<IntentModel[] | RequestError> => {
 }
 
 export const getInstancesFromModel = async (model: string): Promise<IntentInstance[] | RequestError> => {
-    const instances = await fetch(`${API_URL}/intent/${model}/instance`)
-
+    const url = `${API_URL}/intent/${model}/instance`
+    const instances = await fetch(url)
         .then(async (response) => {
             if (response.ok) {
                 return await response.json() as IntentInstance[]
@@ -59,31 +55,30 @@ export const getInstancesFromModel = async (model: string): Promise<IntentInstan
 
             const responseError = await response.json() as ResponseError
 
-            return {
-                requestError: true,
+            return createRequestError({
                 message: responseError.message,
                 status: responseError.status,
                 statusText: responseError.error,
                 url: responseError.path
-            } as RequestError
+            })
         })
         .catch((error) => {
-            console.log(error)
+            console.error(error)
 
-            return {
-                requestError: true,
-                message: error.message,
-                status: 0,
-                statusText: 'Unknown error',
-                url: ''
-            } as RequestError
+            return createRequestError({
+                message: (error as any).message,
+                status: 500,
+                statusText: 'Internal Server Error',
+                url
+            })
         })
 
     return instances
 }
 
 export const createInstance = async (model: string, settings: CreateInstanceRequest): Promise<IntentInstance | RequestError> => {
-    const instance = await fetch(`${API_URL}/intent/${model}/instance`, {
+    const url = `${API_URL}/intent/${model}/instance`
+    const instance = await fetch(url, {
         method: 'POST',
         body: JSON.stringify(settings),
         headers: {
@@ -97,24 +92,22 @@ export const createInstance = async (model: string, settings: CreateInstanceRequ
 
             const responseError = await response.json() as ResponseError
 
-            return {
-                requestError: true,
+            return createRequestError({
                 message: responseError.message,
                 status: responseError.status,
                 statusText: responseError.error,
                 url: responseError.path
-            } as RequestError
+            })
         })
         .catch((error) => {
             console.log(error)
 
-            return {
-                requestError: true,
-                message: error.message,
-                status: 0,
-                statusText: 'Unknown error',
-                url: ''
-            } as RequestError
+            return createRequestError({
+                message: (error as any).message,
+                status: 500,
+                statusText: 'Internal Server Error',
+                url
+            })
         })
 
     return instance

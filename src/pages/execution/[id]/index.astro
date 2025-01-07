@@ -1,18 +1,16 @@
 ---
-import {ExecutionPage} from "@/components/execution/ExecutionPage"
+import { ExecutionPage } from "@/components/execution/ExecutionPage";
 import Layout from "@/layouts/Layout.astro";
 
 const { id } = Astro.params;
 
 if (id == null) {
-    return Astro.redirect("/");
+	return Astro.redirect("/");
 }
 
-// const 
-
-
+// const
 ---
 
 <Layout title={`Execution ${id}`}>
-  <ExecutionPage id={Number(id)} client:only="react"  />
+	<ExecutionPage id={Number(id)} client:only="react" />
 </Layout>

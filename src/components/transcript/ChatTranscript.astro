@@ -3,7 +3,7 @@ import type { Chat } from "@/model/chat";
 import IterationTranscript from "./IterationTranscript.astro";
 
 export interface Props {
-    chat: Chat;
+	chat: Chat;
 }
 
 const { chat } = Astro.props;
@@ -12,14 +12,14 @@ const iterations = chat.promptIterations.sort((a, b) => a.id - b.id);
 ---
 
 <article class="space-y-5">
-    <h2 class="font-catamaran font-semibold text-2xl">
-        Chat #{chat.draftNumber + 1} Transcript
-    </h2>
-    <ul class="flex flex-col gap-5 divide-y-2 divide-slate-700/40">
-        {
-            iterations.map((iteration, _) => {
-                return <IterationTranscript iteration={iteration} />;
-            })
-        }
-    </ul>
+	<h2 class="font-catamaran font-semibold text-2xl">
+		Chat #{chat.draftNumber + 1} Transcript
+	</h2>
+	<ul class="flex flex-col gap-5 divide-y-2 divide-slate-700/40">
+		{
+			iterations.map((iteration, _) => {
+				return <IterationTranscript iteration={iteration} />;
+			})
+		}
+	</ul>
 </article>
