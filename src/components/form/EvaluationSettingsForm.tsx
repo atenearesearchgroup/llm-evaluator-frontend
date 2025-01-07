@@ -1,98 +1,112 @@
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import type { Control } from "react-hook-form"
-import { z } from "zod"
-import { Input } from "@/components/ui/input"
 import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
-import type { FormSchema } from "@/components/form/CreateExecutionForm"
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
+import type { Control } from "react-hook-form";
+import { z } from "zod";
+import { Input } from "@/components/ui/input";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import type { FormSchema } from "@/components/form/CreateExecutionForm";
 
 type EvaluationSettingsFormProps = {
-    control: Control<z.infer<typeof FormSchema>>,
-    // control: Control<FormValues>,
-}
+	control: Control<z.infer<typeof FormSchema>>;
+	// control: Control<FormValues>,
+};
 
-export const EvaluationSettingsForm = ({ control }: EvaluationSettingsFormProps) => {
-    const [isOpen, setIsOpen] = useState(false)
+export const EvaluationSettingsForm = ({
+	control,
+}: EvaluationSettingsFormProps) => {
+	const [isOpen, setIsOpen] = useState(false);
 
-    return (
-        <Collapsible
-            open={isOpen}
-            onOpenChange={setIsOpen}
-        // className="w-[350px] space-y-2"
-        >
-            <fieldset className={`animate-accordion-down grid gap-6 rounded-lg border ${isOpen ? "p-4" : "px-4"}`}>
-                <legend className="-ml-1 px-1 text-sm font-medium flex items-center justify-between space-x-2 ">
-                    <p className="text-sm font-semibold">
-                        Evaluation Settings
-                    </p>
-                    <CollapsibleTrigger asChild>
-                        <Button variant="ghost" size="sm" className="w-9 p-0">
-                            {isOpen ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
+	return (
+		<Collapsible
+			open={isOpen}
+			onOpenChange={setIsOpen}
+			// className="w-[350px] space-y-2"
+		>
+			<fieldset
+				className={`animate-accordion-down grid gap-6 rounded-lg border ${isOpen ? "p-4" : "px-4"}`}
+			>
+				<legend className="-ml-1 px-1 text-sm font-medium flex items-center justify-between space-x-2 ">
+					<p className="text-sm font-semibold">Evaluation Settings</p>
+					<CollapsibleTrigger asChild>
+						<Button variant="ghost" size="sm" className="w-9 p-0">
+							{isOpen ? (
+								<ChevronUpIcon className="h-4 w-4" />
+							) : (
+								<ChevronDownIcon className="h-4 w-4" />
+							)}
 
-                            <span className="sr-only">Toggle</span>
-                        </Button>
-                    </CollapsibleTrigger>
-                </legend>
+							<span className="sr-only">Toggle</span>
+						</Button>
+					</CollapsibleTrigger>
+				</legend>
 
-                <CollapsibleContent className="grid gap-2">
+				<CollapsibleContent className="grid gap-2">
+					<FormField
+						control={control}
+						name="maxErrors"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Max Errors</FormLabel>
+								<FormControl>
+									<Input type="number" {...field} />
+								</FormControl>
+								<FormDescription>
+									How many times syntax errors will trigger a
+									prompt to fix the error
+								</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={control}
+						name="maxChats"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Max Chats</FormLabel>
+								<FormControl>
+									<Input {...field} />
+								</FormControl>
+								<FormDescription>
+									How many chats are allowed to be executed
+								</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-                    <FormField
-                        control={control}
-                        name="maxErrors"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Max Errors</FormLabel>
-                                <FormControl>
-                                    <Input type="number" {...field} />
-                                </FormControl>
-                                <FormDescription>
-                                    How many times syntax errors will trigger a prompt to fix the error
-                                </FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={control}
-                        name="maxChats"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Max Chats</FormLabel>
-                                <FormControl>
-                                    <Input {...field} />
-                                </FormControl>
-                                <FormDescription>
-                                    How many chats are allowed to be executed
-                                </FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={control}
-                        name="maxRepeatingPrompt"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Max Repeating prompts</FormLabel>
-                                <FormControl>
-                                    <Input {...field} />
-                                </FormControl>
-                                <FormDescription>
-                                    How many times the same prompt can be used to fix a certain element type
-                                </FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </CollapsibleContent>
-            </fieldset>
-        </Collapsible >
-    )
-}
+					<FormField
+						control={control}
+						name="maxRepeatingPrompt"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Max Repeating prompts</FormLabel>
+								<FormControl>
+									<Input {...field} />
+								</FormControl>
+								<FormDescription>
+									How many times the same prompt can be used
+									to fix a certain element type
+								</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</CollapsibleContent>
+			</fieldset>
+		</Collapsible>
+	);
+};

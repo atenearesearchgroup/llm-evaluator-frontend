@@ -1,140 +1,173 @@
-import type { EvaluationSettings, IntentInstance } from "@/model/model"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-
+import type { EvaluationSettings, IntentInstance } from "@/model/model";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 type InstanceSettingsProps = {
-    instance: IntentInstance
-}
+	instance: IntentInstance;
+};
 
 const valueOrDefault = (value?: number) => {
-    if (value === undefined || value === -1)
-        return "Default"
+	if (value === undefined || value === -1) return "Default";
 
-    return value.toString()
-}
+	return value.toString();
+};
 
 export const InstanceSettings = ({ instance }: InstanceSettingsProps) => {
-    const modelSettings = instance.modelSettings
-    const evaluationSettings = instance as EvaluationSettings
+	const modelSettings = instance.modelSettings;
+	const evaluationSettings = instance as EvaluationSettings;
 
-    return (
-        <Sheet>
-            <SheetTrigger asChild>
-                <Button variant={"secondary"}>Instance Settings</Button>
-            </SheetTrigger>
-            <SheetContent className="flex ">
-                <ScrollArea>
-                    <fieldset id="modelSettings" className="bg-card rounded-lg border p-3 mb-3" >
-                        <legend className="-ml-1 px-1 text-sm font-medium flex items-center justify-start space-x-2 ">
-                            <p className="text font-bold">
-                                Model Settings
-                            </p>
-                        </legend>
-                        <div className="grid gap-2 ">
-                            <div className="grid grid-cols-2">
-                                <label className="font-semibold text-center">Platform</label>
-                                <p>{instance.platform}</p>
-                            </div>
-                            <Separator />
-                            <div className="grid grid-cols-2">
-                                <label className="font-semibold text-center">Model</label>
-                                <p>{modelSettings.modelName}</p>
-                            </div>
-                            <Separator />
+	return (
+		<Sheet>
+			<SheetTrigger asChild>
+				<Button variant={"secondary"}>Instance Settings</Button>
+			</SheetTrigger>
+			<SheetContent className="flex ">
+				<ScrollArea>
+					<fieldset
+						id="modelSettings"
+						className="bg-card rounded-lg border p-3 mb-3"
+					>
+						<legend className="-ml-1 px-1 text-sm font-medium flex items-center justify-start space-x-2 ">
+							<p className="text font-bold">Model Settings</p>
+						</legend>
+						<div className="grid gap-2 ">
+							<div className="grid grid-cols-2">
+								<label className="font-semibold text-center">
+									Platform
+								</label>
+								<p>{instance.platform}</p>
+							</div>
+							<Separator />
+							<div className="grid grid-cols-2">
+								<label className="font-semibold text-center">
+									Model
+								</label>
+								<p>{modelSettings.modelName}</p>
+							</div>
+							<Separator />
 
-                            <div className="grid grid-cols-2">
-                                <label className="font-semibold text-center">Model Owner</label>
-                                <p>{modelSettings.modelOwner ?? "Unset"}</p>
+							<div className="grid grid-cols-2">
+								<label className="font-semibold text-center">
+									Model Owner
+								</label>
+								<p>{modelSettings.modelOwner ?? "Unset"}</p>
+							</div>
+							<Separator />
 
-                            </div>
-                            <Separator />
+							<div className="grid grid-cols-2">
+								<label className="font-semibold text-center">
+									Version
+								</label>
+								<p>{modelSettings.version ?? "Unset"}</p>
+							</div>
 
-                            <div className="grid grid-cols-2">
-                                <label className="font-semibold text-center">Version</label>
-                                <p>{modelSettings.version ?? "Unset"}</p>
-                            </div>
+							<Separator />
 
-                            <Separator />
+							<div className="grid grid-cols-2">
+								<label className="font-semibold text-center">
+									System Prompt
+								</label>
+								<p className="whitespace-pre-line">
+									{modelSettings.systemPrompt}
+								</p>
+							</div>
 
-                            <div className="grid grid-cols-2">
-                                <label className="font-semibold text-center">System Prompt</label>
-                                <p className="whitespace-pre-line">{modelSettings.systemPrompt}</p>
-                            </div>
+							<Separator />
 
-                            <Separator />
+							<div className="grid grid-cols-2">
+								<label className="font-semibold text-center">
+									Max Tokens
+								</label>
+								<p>{valueOrDefault(modelSettings.maxTokens)}</p>
+							</div>
 
-                            <div className="grid grid-cols-2">
-                                <label className="font-semibold text-center">Max Tokens</label>
-                                <p>{valueOrDefault(modelSettings.maxTokens)}</p>
-                            </div>
+							<Separator />
 
-                            <Separator />
+							<div className="grid grid-cols-2">
+								<label className="font-semibold text-center">
+									Temperature
+								</label>
+								<p>
+									{valueOrDefault(modelSettings.temperature)}
+								</p>
+							</div>
 
-                            <div className="grid grid-cols-2">
-                                <label className="font-semibold text-center">Temperature</label>
-                                <p>{valueOrDefault(modelSettings.temperature)}</p>
-                            </div>
+							<Separator />
 
-                            <Separator />
+							<div className="grid grid-cols-2">
+								<label className="font-semibold text-center">
+									Top P
+								</label>
+								<p>{valueOrDefault(modelSettings.topP)}</p>
+							</div>
 
-                            <div className="grid grid-cols-2">
-                                <label className="font-semibold text-center">Top P</label>
-                                <p>{valueOrDefault(modelSettings.topP)}</p>
-                            </div>
+							<Separator />
 
-                            <Separator />
+							<div className="grid grid-cols-2">
+								<label className="font-semibold text-center">
+									Presence Penalty
+								</label>
+								<p>
+									{valueOrDefault(
+										modelSettings.presencePenalty,
+									)}
+								</p>
+							</div>
 
-                            <div className="grid grid-cols-2">
-                                <label className="font-semibold text-center">Presence Penalty</label>
-                                <p>{valueOrDefault(modelSettings.presencePenalty)}</p>
-                            </div>
+							<Separator />
 
-                            <Separator />
+							<div className="grid grid-cols-2">
+								<label className="font-semibold text-center">
+									Frequency Penalty
+								</label>
+								<p>
+									{valueOrDefault(
+										modelSettings.frequencyPenalty,
+									)}
+								</p>
+							</div>
+						</div>
+					</fieldset>
 
-                            <div className="grid grid-cols-2">
-                                <label className="font-semibold text-center">Frequency Penalty</label>
-                                <p>{valueOrDefault(modelSettings.frequencyPenalty)}</p>
-                            </div>
+					<fieldset
+						id="modelSettings"
+						className="bg-card rounded-lg border p-3 "
+					>
+						<legend className="-ml-1 px-1 text-sm font-medium flex items-center justify-start space-x-2 ">
+							<p className="text font-bold">
+								Evaluation Settings
+							</p>
+						</legend>
+						<div className="grid gap-2 ">
+							<div className="grid grid-cols-2">
+								<label className="font-semibold text-center">
+									Max Errors
+								</label>
+								<p>{evaluationSettings.maxErrors}</p>
+							</div>
 
-                        </div>
-                    </fieldset>
+							<Separator />
 
+							<div className="grid grid-cols-2">
+								<label className="font-semibold text-center">
+									Max Chats
+								</label>
+								<p>{evaluationSettings.maxChats}</p>
+							</div>
+							<Separator />
 
-                    <fieldset id="modelSettings" className="bg-card rounded-lg border p-3 " >
-                        <legend className="-ml-1 px-1 text-sm font-medium flex items-center justify-start space-x-2 ">
-                            <p className="text font-bold">
-                                Evaluation Settings
-                            </p>
-                        </legend>
-                        <div className="grid gap-2 ">
-
-
-                            <div className="grid grid-cols-2">
-                                <label className="font-semibold text-center">Max Errors</label>
-                                <p>{evaluationSettings.maxErrors}</p>
-                            </div>
-
-                            <Separator />
-
-                            <div className="grid grid-cols-2">
-                                <label className="font-semibold text-center">Max Chats</label>
-                                <p>{evaluationSettings.maxChats}</p>
-                            </div>
-                            <Separator />
-
-                            <div className="grid grid-cols-2">
-                                <label className="font-semibold text-center">Max Repeating Prompts</label>
-                                <p>{evaluationSettings.maxRepeatingPrompt}</p>
-                            </div>
-
-                        </div>
-                    </fieldset>
-                </ScrollArea>
-            </SheetContent>
-        </Sheet>
-    )
-
-}
+							<div className="grid grid-cols-2">
+								<label className="font-semibold text-center">
+									Max Repeating Prompts
+								</label>
+								<p>{evaluationSettings.maxRepeatingPrompt}</p>
+							</div>
+						</div>
+					</fieldset>
+				</ScrollArea>
+			</SheetContent>
+		</Sheet>
+	);
+};

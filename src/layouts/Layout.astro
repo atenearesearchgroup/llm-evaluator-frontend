@@ -4,7 +4,7 @@ import Header from "@/components/general/Header.astro";
 import Footer from "@/components/general/Footer.astro";
 import { ViewTransitions } from "astro:transitions";
 import { Toaster } from "@/components/ui/toaster";
-import {ExecutionBar} from "@/components/sidebar/ExecutionBar";
+import { ExecutionBar } from "@/components/sidebar/ExecutionBar";
 // import ExecutionBar from "@/components/ui/sidebar/ExecutionBar.astro";
 
 interface Props {
@@ -34,11 +34,10 @@ const finalTitle = forceTitle ? title : `Model eval Assistant - ${title}`;
 	</head>
 	<body class="dark font-catamaran
 	 bg-background antialiased">
-
 		<main class={`sm:flex flex-row bg-background`}>
 			<!-- <DraftList /> -->
-			 <ExecutionBar client:only="react" />
-			 <!-- <ExecutionBar/> -->
+			<ExecutionBar client:only="react" />
+			<!-- <ExecutionBar/> -->
 
 			<section class="mx-auto md:w-[60dvw] max-w-[700px]">
 				<Header />

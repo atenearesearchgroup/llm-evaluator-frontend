@@ -1,19 +1,16 @@
 ---
 import { Separator } from "@/components/ui/separator";
 import { CreateExecutionForm } from "../form/CreateExecutionForm";
-
 ---
 
 <!-- bg-slate-700 -->
 <section
-    class="antialiased bg-card text-card-foreground border
+	class="antialiased bg-card text-card-foreground border
  bg-opacity-70 rounded-lg items-center mx-auto py-3"
 >
-    <h2 class="text-2xl font-bold mt-2 mb-4 px-6">
-        Start an evaluation
-    </h2>
+	<h2 class="text-2xl font-bold mt-2 mb-4 px-6">Start an evaluation</h2>
 
-    <Separator className="my-2" />
+	<Separator className="my-2" />
 
-    <CreateExecutionForm client:visible />
+	<CreateExecutionForm client:visible />
 </section>

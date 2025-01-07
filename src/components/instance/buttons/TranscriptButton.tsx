@@ -1,19 +1,18 @@
 import { Button } from "@/components/ui/button";
 
 type TranscriptInstanceProps = {
-    id: number;
-}
+	id: number;
+};
 
 export const TranscriptInstance = ({ id }: TranscriptInstanceProps) => {
-    return (
-        <Button
-            variant={"link"}
-            onClick={() => {
-                window.open(`/instances/${id}/transcript`, '_blank')
-            }}
-            >
-            Open Transcript
-        </Button>
-    )
-
-}
+	return (
+		<Button
+			variant={"link"}
+			onClick={() => {
+				window.open(`/instances/${id}/transcript`, "_blank");
+			}}
+		>
+			Open Transcript
+		</Button>
+	);
+};
